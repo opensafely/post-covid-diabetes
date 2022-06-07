@@ -43,7 +43,7 @@ agelabels <- c("18_39", "40_59", "60_79", "80_110")
 
 table_2_subgroups_output <- function(cohort_name){
   
-  # define analyses of interests
+  # Define analyses of interests
   active_analyses <- read_rds("lib/active_analyses.rds")
   active_analyses <- active_analyses %>%dplyr::filter(active == "TRUE")
   
@@ -51,6 +51,7 @@ table_2_subgroups_output <- function(cohort_name){
   
   outcomes<-active_analyses$outcome_variable
   
+  #--------------------Load data and left join end dates------------------------
   survival_data <- read_rds(paste0("output/input_",cohort_name,"_stage1.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort_name,".rds")) 
   end_dates$index_date <- NULL
@@ -72,11 +73,13 @@ table_2_subgroups_output <- function(cohort_name){
            new = c("sex",
                    "ethnicity"))
   
+  #-----------------------Add in age groups category----------------------------
   setDT(survival_data)[ , agegroup := cut(cov_num_age, 
                                           breaks = agebreaks, 
                                           right = FALSE, 
                                           labels = agelabels)]
   
+  #-----------Determine subgroups of interest for each outcome------------------
   for(i in outcomes){
     analyses_to_run <- active_analyses %>% filter(outcome_variable==i)
     
@@ -124,7 +127,18 @@ table_2_subgroups_output <- function(cohort_name){
   analyses_of_interest$strata[analyses_of_interest$strata=="South_Asian"]<- "South Asian"
   analyses_of_interest <- analyses_of_interest %>% filter(cohort_to_run == cohort_name)
   
-
+  #-----------------Add subgroup category for low count redaction---------------
+  analyses_of_interest <- analyses_of_interest %>% 
+    dplyr::mutate(subgroup_cat = case_when(
+      startsWith(subgroup, "agegp") ~ "age",
+      startsWith(subgroup, "covid_history") ~ "covid_history",
+      startsWith(subgroup, "covid_pheno") ~ "covid_pheno",
+      startsWith(subgroup, "ethnicity") ~ "ethnicity",
+      startsWith(subgroup, "prior_history") ~ "prior_history",
+      startsWith(subgroup, "sex") ~ "sex",
+      TRUE ~ as.character(subgroup)))
+  
+  #--------------------Create empty columns for table 2-------------------------
   unexposed_person_days <- unexposed_event_count <- rep("NA", nrow(analyses_of_interest))
   total_person_days <- post_exposure_event_count <- overall_ir <- overall_ir_lower <- overall_ir_upper <- rep("NA", nrow(analyses_of_interest))
   
@@ -136,6 +150,7 @@ table_2_subgroups_output <- function(cohort_name){
   start = grep("unexposed_person_days", col_names)
   end = ncol(analyses_of_interest)
   
+  #-----------Populate analyses_of_interest with events counts/follow up--------
   for(i in 1:nrow(analyses_of_interest)){
     
     print(i)
@@ -183,6 +198,20 @@ table_2_subgroups_output <- function(cohort_name){
     
     print(paste0("event count and person years have been produced successfully for", analyses_of_interest$event[i], " in ", cohort_name, " population!"))
   }
+  
+  #Redact all subgroups levels if one level is redacted so tha back calculation 
+  #is not possible
+  analyses_of_interest <- analyses_of_interest %>%
+    group_by(subgroup_cat,event) %>%
+    dplyr::mutate(post_exposure_event_count = case_when(
+      any(post_exposure_event_count == "[Redacted]") ~ "[Redacted]",
+      TRUE ~ as.character(post_exposure_event_count)))
+  
+  analyses_of_interest <- analyses_of_interest %>%
+    group_by(subgroup_cat,event) %>%
+    dplyr::mutate(unexposed_event_count = case_when(
+      any(unexposed_event_count == "[Redacted]") ~ "[Redacted]",
+      TRUE ~ as.character(unexposed_event_count)))
   
   # write output for table2
   write.csv(analyses_of_interest, file=paste0("output/review/descriptives/table2_",cohort_name, ".csv"), row.names = F)

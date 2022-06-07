@@ -158,6 +158,9 @@ stage2 <- function(cohort_name, covid_history, group) {
   input$cov_cat_consulation_rate_group <- ifelse(input$cov_num_consulation_rate>=1 & input$cov_num_consulation_rate<=5, "1-6", input$cov_cat_consulation_rate_group)
   input$cov_cat_consulation_rate_group <- ifelse(input$cov_num_consulation_rate>=6, "6+", input$cov_cat_consulation_rate_group)
 
+  #Restrict COVID exposures to within study dates
+  input <- input %>% mutate(exp_date_covid19_confirmed = replace(exp_date_covid19_confirmed, which(exp_date_covid19_confirmed>as.Date("2021-12-14") | exp_date_covid19_confirmed<as.Date("2021-06-01")), NA))
+  
   # Populate table 1 
   covar_names <- active_analyses %>% filter(outcome_group==group)
   covar_names<-str_split(active_analyses$covariates, ";")[[1]]

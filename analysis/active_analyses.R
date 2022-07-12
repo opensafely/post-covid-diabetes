@@ -114,3 +114,7 @@ df <- df %>% mutate(covariates = case_when(outcome_variable == "out_date_t2dm_pd
 # df$prior_history_var <- ifelse(df$outcome=="type 2 diabetes" ,"cov_bin_prediabetes",df$prior_history_var)
 # df$prior_history_TRUE <- ifelse(df$outcome=="type 2 diabetes" ,TRUE,df$prior_history_TRUE)
 # df$prior_history_FALSE <- ifelse(df$outcome=="type 2 diabetes" ,TRUE,df$prior_history_FALSE)
+
+# Save active analyses list ----------------------------------------------------
+
+saveRDS(df, file = "lib/active_analyses.rds")

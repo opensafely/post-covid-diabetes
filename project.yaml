@@ -225,6 +225,118 @@ actions:
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_electively_unvaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_electively_unvaccinated.csv
 
+  ## Cox model for t2dm_pd - vaccinated 
+
+  Analysis_cox_t2dm_pd_vaccinated:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd vaccinated
+    needs:
+    - stage1_data_cleaning_both
+    - stage1_end_date_table_vaccinated
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_vaccinated.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_vaccinated.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_vaccinated_to_release.csv
+        compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_pd_vaccinated.csv
+
+  ## Cox model for t2dm_pd - electively_unvaccinated 
+
+  Analysis_cox_t2dm_pd_electively_unvaccinated:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd electively_unvaccinated
+    needs:
+    - stage1_data_cleaning_both
+    - stage1_end_date_table_electively_unvaccinated
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_electively_unvaccinated.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_electively_unvaccinated.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_electively_unvaccinated_to_release.csv
+        compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_pd_electively_unvaccinated.csv
+
+  ## Cox model for t2dm_pd_no - vaccinated 
+
+  Analysis_cox_t2dm_pd_no_vaccinated:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no vaccinated
+    needs:
+    - stage1_data_cleaning_both
+    - stage1_end_date_table_vaccinated
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_no_vaccinated.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_vaccinated.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_vaccinated_to_release.csv
+        compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_pd_no_vaccinated.csv
+
+  ## Cox model for t2dm_pd_no - electively_unvaccinated 
+
+  Analysis_cox_t2dm_pd_no_electively_unvaccinated:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no electively_unvaccinated
+    needs:
+    - stage1_data_cleaning_both
+    - stage1_end_date_table_electively_unvaccinated
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_no_electively_unvaccinated.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_electively_unvaccinated.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_electively_unvaccinated_to_release.csv
+        compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_pd_no_electively_unvaccinated.csv
+
+  ## Cox model for t2dm_obes - vaccinated 
+
+  Analysis_cox_t2dm_obes_vaccinated:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes vaccinated
+    needs:
+    - stage1_data_cleaning_both
+    - stage1_end_date_table_vaccinated
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_vaccinated.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_vaccinated.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_vaccinated_to_release.csv
+        compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_obes_vaccinated.csv
+
+  ## Cox model for t2dm_obes - electively_unvaccinated 
+
+  Analysis_cox_t2dm_obes_electively_unvaccinated:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes electively_unvaccinated
+    needs:
+    - stage1_data_cleaning_both
+    - stage1_end_date_table_electively_unvaccinated
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_electively_unvaccinated.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_electively_unvaccinated.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_electively_unvaccinated_to_release.csv
+        compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_obes_electively_unvaccinated.csv
+
+  ## Cox model for t2dm_obes_no - vaccinated 
+
+  Analysis_cox_t2dm_obes_no_vaccinated:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes_no vaccinated
+    needs:
+    - stage1_data_cleaning_both
+    - stage1_end_date_table_vaccinated
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_no_vaccinated.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_vaccinated.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_vaccinated_to_release.csv
+        compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_obes_no_vaccinated.csv
+
+  ## Cox model for t2dm_obes_no - electively_unvaccinated 
+
+  Analysis_cox_t2dm_obes_no_electively_unvaccinated:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes_no electively_unvaccinated
+    needs:
+    - stage1_data_cleaning_both
+    - stage1_end_date_table_electively_unvaccinated
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_no_electively_unvaccinated.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_electively_unvaccinated.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_electively_unvaccinated_to_release.csv
+        compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_obes_no_electively_unvaccinated.csv
+
   ## Cox model for otherdm - vaccinated 
 
   Analysis_cox_otherdm_vaccinated:

@@ -34,7 +34,8 @@ venn_output <- function(cohort_name, group){
   # Identify active outcomes ---------------------------------------------------
   
   active_analyses <- readr::read_rds("lib/active_analyses.rds")
-  outcomes <- active_analyses[active_analyses$active==TRUE,]$outcome_variable
+  # added extra statement to include only those with venn == TRUE - because some diabetes outcomes only use one data source and so venn is not applicable
+  outcomes <- active_analyses[active_analyses$active==TRUE & active_analyses$venn==TRUE & active_analyses$outcome_group==group,]$outcome_variable
   # remove otherdm and gestational dm as we only use a single source to define these
   outcomes <- outcomes[! outcomes %in% c("out_date_otherdm", "out_date_gestationaldm")]
   

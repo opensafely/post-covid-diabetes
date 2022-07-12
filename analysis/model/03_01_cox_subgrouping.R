@@ -102,6 +102,24 @@ get_vacc_res <- function(event,subgroup,stratify_by_subgroup,stratify_by,time_po
   
   total_covid_cases=nrow(survival_data %>% filter(!is.na(expo_date)))
   
+  
+  #-------------Format region if running COVID subgroup analysis----------------
+  if(startsWith(subgroup,"covid_pheno_")){
+    survival_data <- survival_data %>% mutate(region_name = as.character(region_name))%>%
+      mutate(region_name = case_when(region_name=="London" ~ "South East, including London",
+                                     region_name=="South East" ~ "South East, including London",
+                                     region_name=="West Midlands" ~ "Midlands",
+                                     region_name=="East Midlands" ~ "Midlands",
+                                     region_name=="North West" ~ "North West",
+                                     region_name=="North East" ~ "North East",
+                                     region_name=="East" ~ "East",
+                                     region_name=="Yorkshire and The Humber" ~ "Yorkshire and The Humber",
+                                     region_name=="South West" ~ "South West",
+      )) %>%
+      mutate(region_name = as.factor(region_name))%>%
+      mutate(region_name = relevel(region_name,ref="South East, including London"))
+  }
+  
   # add statement for reduced time cutoffs
   if(time_point == "reduced"){
     res_vacc <- fit_model_reducedcovariates(event,subgroup,stratify_by_subgroup,stratify_by,mdl, survival_data,input,cuts_days_since_expo=cuts_days_since_expo_reduced,cuts_days_since_expo_reduced,covar_names,total_covid_cases,time_point)

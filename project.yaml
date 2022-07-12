@@ -177,19 +177,6 @@ actions:
     - stage1_data_cleaning_both
     - stage1_end_date_table_vaccinated
     outputs:
-      highly_sensitive:
-        cohort: output/reusableaction_input_*
-
-  reusableaction_model_main:
-    run: cox-ipw:v0.0.4 --df_input=reusableaction_input_vaccinated_ami_main_analysis.csv
-      --outcome=out_date_ami --covariate_other=cov_num_consulation_rate;cov_bin_healthcare_worker;cov_cat_ethnicity;cov_cat_deprivation;cov_cat_smoking_status;cov_bin_carehome_status;cov_bin_lipid_medications;cov_bin_antiplatelet_medications;cov_bin_anticoagulation_medications;cov_bin_combined_oral_contraceptive_pill;cov_bin_hormone_replacement_therapy;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_diabetes;cov_bin_obesity;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease
-      --covariate_protect=cov_cat_sex;cov_num_age;cov_cat_region;cov_cat_ethnicity
-      --cox_start=index_date --cox_stop=follow_up_end --controls_per_case=20 --df_output=results_vaccinated_ami_main.csv
-    needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_vaccinated
-    - reusableaction_input
-    outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t1dm_vaccinated.csv
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t1dm_vaccinated.csv
@@ -203,7 +190,6 @@ actions:
     needs:
     - stage1_data_cleaning_both
     - stage1_end_date_table_electively_unvaccinated
-    - select_covariates_for_hosp_covid
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t1dm_electively_unvaccinated.csv
@@ -218,7 +204,6 @@ actions:
     needs:
     - stage1_data_cleaning_both
     - stage1_end_date_table_vaccinated
-    - select_covariates_for_hosp_covid
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_vaccinated.csv
@@ -233,7 +218,6 @@ actions:
     needs:
     - stage1_data_cleaning_both
     - stage1_end_date_table_electively_unvaccinated
-    - select_covariates_for_hosp_covid
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_electively_unvaccinated.csv
@@ -248,7 +232,6 @@ actions:
     needs:
     - stage1_data_cleaning_both
     - stage1_end_date_table_vaccinated
-    - select_covariates_for_hosp_covid
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_otherdm_vaccinated.csv
@@ -263,7 +246,6 @@ actions:
     needs:
     - stage1_data_cleaning_both
     - stage1_end_date_table_electively_unvaccinated
-    - select_covariates_for_hosp_covid
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_otherdm_electively_unvaccinated.csv
@@ -278,7 +260,6 @@ actions:
     needs:
     - stage1_data_cleaning_both
     - stage1_end_date_table_vaccinated
-    - select_covariates_for_hosp_covid
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_gestationaldm_vaccinated.csv
@@ -293,7 +274,6 @@ actions:
     needs:
     - stage1_data_cleaning_both
     - stage1_end_date_table_electively_unvaccinated
-    - select_covariates_for_hosp_covid
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_gestationaldm_electively_unvaccinated.csv
@@ -320,92 +300,4 @@ actions:
       moderately_sensitive:
         hosp_events_by_region_non_suppressed: output/not-for-review/hospitalised_covid_event_counts_by_region_electively_unvaccinated_*_non_suppressed.csv
         hosp_events_by_region_suppressed: output/not-for-review/hospitalised_covid_event_counts_by_region_electively_unvaccinated_*_suppressed.csv
-
-  ## Hospitalised event counts by covariate - vaccinated 
-
-  hosp_event_counts_by_covariate_level_vaccinated:
-    run: r:latest analysis/descriptives/hospitalised_events_split_by_time_period_and_covariate_level.R
-      vaccinated
-    needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_vaccinated
-    outputs:
-      moderately_sensitive:
-        hosp_counts_by_covariate: output/not-for-review/hospitalised_event_counts_by_covariate_level_vaccinated.csv
-
-  ## Hospitalised event counts by covariate - electively_unvaccinated 
-
-  hosp_event_counts_by_covariate_level_electively_unvaccinated:
-    run: r:latest analysis/descriptives/hospitalised_events_split_by_time_period_and_covariate_level.R
-      electively_unvaccinated
-    needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_electively_unvaccinated
-    outputs:
-      moderately_sensitive:
-        hosp_counts_by_covariate: output/not-for-review/hospitalised_event_counts_by_covariate_level_electively_unvaccinated.csv
-
-  select_covariates_for_hosp_covid:
-    run: r:latest analysis/descriptives/determine_covariates_for_hosp_covid.R both
-    needs:
-    - hosp_event_counts_by_covariate_level_vaccinated
-    - hosp_event_counts_by_covariate_level_electively_unvaccinated
-    outputs:
-      moderately_sensitive:
-        covariates_for_hosp_covid_vacc: output/not-for-review/covariates_to_adjust_for_hosp_covid_vaccinated.csv
-        covariates_for_hosp_covid_electively_unvacc: output/not-for-review/covariates_to_adjust_for_hosp_covid_electively_unvaccinated.csv
-
-  check_episode_covar_pe-ethnicity_region:
-    run: r:latest analysis/descriptives/check_episode_covar.R input_pe_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.csv
-      ethnicity;region_name pe-ethnicity_region
-    needs:
-    - Analysis_cox_pe_electively_unvaccinated
-    outputs:
-      moderately_sensitive:
-        check: output/pe-ethnicity_region.csv
-
-  check_episode_covar_pe-available_covars:
-    run: r:latest analysis/descriptives/check_episode_covar.R input_pe_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.csv
-      cov_cat_smoking_status;cov_cat_deprivation;region_name;sex;ethnicity pe-available_covars
-    needs:
-    - Analysis_cox_pe_electively_unvaccinated
-    outputs:
-      moderately_sensitive:
-        check: output/pe-available_covars.csv
-
-  cumulative_incidence-input_pe_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.csv:
-    run: r:latest analysis/descriptives/cumulative_incidence.R input_pe_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.csv
-    needs:
-    - Analysis_cox_pe_electively_unvaccinated
-    outputs:
-      moderately_sensitive:
-        cumulative_outcome_plot: output/cumulative-input_pe_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.jpeg
-        cumulative_outcome_data: output/cumulative-input_pe_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.csv
-
-  cumulative_incidence-input_ate_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.csv:
-    run: r:latest analysis/descriptives/cumulative_incidence.R input_ate_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.csv
-    needs:
-    - Analysis_cox_ate_electively_unvaccinated
-    outputs:
-      moderately_sensitive:
-        cumulative_outcome_plot: output/cumulative-input_ate_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.jpeg
-        cumulative_outcome_data: output/cumulative-input_ate_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.csv
-
-  region_cumulative_incidence-input_pe_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.csv:
-    run: r:latest analysis/descriptives/region_cumulative_incidence.R input_pe_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.csv
-    needs:
-    - Analysis_cox_pe_electively_unvaccinated
-    outputs:
-      moderately_sensitive:
-        region_cumulative_outcome_plot: output/region_cumulative-input_pe_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.jpeg
-        region_cumulative_outcome_data: output/region_cumulative-input_pe_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.csv
-
-  region_cumulative_incidence-input_ate_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.csv:
-    run: r:latest analysis/descriptives/region_cumulative_incidence.R input_ate_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.csv
-    needs:
-    - Analysis_cox_ate_electively_unvaccinated
-    outputs:
-      moderately_sensitive:
-        region_cumulative_outcome_plot: output/region_cumulative-input_ate_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.jpeg
-        region_cumulative_outcome_data: output/region_cumulative-input_ate_covid_pheno_hospitalised_electively_unvaccinated_covariate_testing_normal.csv
 

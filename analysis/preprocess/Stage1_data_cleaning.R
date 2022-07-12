@@ -102,7 +102,7 @@ stage1 <- function(cohort_name, group){
     input$cov_cat_deprivation <- ordered(input$cov_cat_deprivation, levels = c("1-2 (most deprived)","3-4","5-6","7-8","9-10 (least deprived)"))
       
     ## cov_cat_region
-    input$cov_cat_region <- relevel(input$cov_cat_region, ref = "East")
+    input$cov_cat_region <- relevel(input$cov_cat_region, ref = "London")
     
     ## cov_cat_smoking_status
     levels(input$cov_cat_smoking_status) <- list("Ever smoker" = "E", "Missing" = "M", "Never smoker" = "N", "Current smoker" = "S")
@@ -122,10 +122,7 @@ stage1 <- function(cohort_name, group){
     ## vax_cat_product_*
     vax_cat_product_factors <- colnames(input)[grepl("vax_cat_product_",colnames(input))]
     input[,vax_cat_product_factors] <- lapply(input[,vax_cat_product_factors], function(x) ordered(x, levels = c("Pfizer","AstraZeneca","Moderna")))
-    
-    ## Set reference level for binary covariates
-    bin_factors <- colnames(input)[grepl("cov_bin_",colnames(input))]
-    input[,bin_factors] <- lapply(input[,bin_factors], function(x) factor(x, levels = c("FALSE","TRUE")))
+  
 
     #####################
     # 2. Apply QA rules #

@@ -271,6 +271,50 @@ stage1 <- function(cohort_name, group){
         filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
         filter(! out_date_otherdm < index_date | is.na(out_date_otherdm))
       cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date")
+    
+    } else if (group == "diabetes_prediabetes"){
+      # Restrict to only those with a history of pre diabetes
+      input <- input %>% 
+        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm))  %>%
+        filter(cov_bin_prediabetes == TRUE) %>%
+        # change name of t2dm variable to avoid duplicated cox actions
+        dplyr::rename(out_date_t2dm_pd = out_date_t2dm)
+      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date AND restrict to those with a history of prediabetes")
+      
+    } else if (group == "diabetes_no_prediabetes"){
+      # Restrict to only those with NO history of pre diabetes
+      input <- input %>% 
+        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
+        filter(cov_bin_prediabetes == FALSE) %>%
+        # change name of t2dm variable to avoid duplicated cox actions
+        dplyr::rename(out_date_t2dm_pd_no = out_date_t2dm)
+      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date AND restrict to those with NO history of prediabetes")
+      
+    } else if (group == "diabetes_obesity"){
+      # Restrict to only those with a history of pre diabetes
+      input <- input %>% 
+        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
+        filter(cov_cat_bmi_groups == "Obese") %>%
+        # change name of t2dm variable to avoid duplicated cox actions
+        dplyr::rename(out_date_t2dm_obes = out_date_t2dm)
+      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date AND restrict to those with obesity")
+      
+    } else if (group == "diabetes_no_obesity"){
+      # Restrict to only those with NO history of pre diabetes
+      input <- input %>% 
+        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
+        filter(cov_cat_bmi_groups != "Obese") %>%
+        # change name of t2dm variable to avoid duplicated cox actions
+        dplyr::rename(out_date_t2dm_obes_no = out_date_t2dm)
+      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date AND restrict to those with NO obesity")
       
     } else if (group == "diabetes_gestational"){
       # Exclude men from gestational diabetes analysis

@@ -45,7 +45,7 @@ table_2_subgroups_output <- function(cohort_name, group){
   
   # define analyses of interests
   active_analyses <- read_rds("lib/active_analyses.rds")
-  active_analyses <- active_analyses %>%dplyr::filter(active == "TRUE")
+  active_analyses <- active_analyses %>%dplyr::filter(active == "TRUE" & outcome_group == group)
   
   analyses_of_interest <- as.data.frame(matrix(ncol = 8,nrow = 0))
   

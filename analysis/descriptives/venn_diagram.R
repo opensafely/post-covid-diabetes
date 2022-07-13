@@ -259,10 +259,9 @@ venn_output <- function(cohort_name, group){
 # Run function using specified commandArgs and active analyses for group
 
 active_analyses <- read_rds("lib/active_analyses.rds")
-active_analyses <- active_analyses %>% filter(active==TRUE)
+active_analyses <- active_analyses %>% filter(active==TRUE & venn==TRUE)
 group <- unique(active_analyses$outcome_group)
-# remove gestational dm as we only use a single source to define this and so dont need venn diagram
-group <- group[! group %in% c("diabetes_gestational")]
+
 
 for(i in group){
   if (cohort_name == "both") {

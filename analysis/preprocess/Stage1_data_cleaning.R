@@ -261,85 +261,6 @@ stage1 <- function(cohort_name, group){
     sink()
     
     #-------------------------------------------------#
-    # 3.b. Apply outcome specific exclusions criteria #
-    #-------------------------------------------------#
-    
-    if (group == "diabetes"){
-      # Exclude individuals with a recorded diagnosis of diabetes prior to index date
-      input <- input %>% 
-        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
-        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
-        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm))
-      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date")
-    
-    } else if (group == "diabetes_prediabetes"){
-      # Restrict to only those with a history of pre diabetes
-      input <- input %>% 
-        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
-        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
-        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm))  %>%
-        filter(cov_bin_prediabetes == TRUE) %>%
-        # change name of t2dm variable to avoid duplicated cox actions
-        dplyr::rename(out_date_t2dm_pd = out_date_t2dm)
-      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date AND restrict to those with a history of prediabetes")
-      
-    } else if (group == "diabetes_no_prediabetes"){
-      # Restrict to only those with NO history of pre diabetes
-      input <- input %>% 
-        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
-        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
-        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
-        filter(cov_bin_prediabetes == FALSE) %>%
-        # change name of t2dm variable to avoid duplicated cox actions
-        dplyr::rename(out_date_t2dm_pd_no = out_date_t2dm)
-      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date AND restrict to those with NO history of prediabetes")
-      
-    } else if (group == "diabetes_obesity"){
-      # Restrict to only those with a history of pre diabetes
-      input <- input %>% 
-        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
-        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
-        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
-        filter(cov_cat_bmi_groups == "Obese") %>%
-        # change name of t2dm variable to avoid duplicated cox actions
-        dplyr::rename(out_date_t2dm_obes = out_date_t2dm)
-      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date AND restrict to those with obesity")
-      
-    } else if (group == "diabetes_no_obesity"){
-      # Restrict to only those with NO history of pre diabetes
-      input <- input %>% 
-        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
-        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
-        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
-        filter(cov_cat_bmi_groups != "Obese") %>%
-        # change name of t2dm variable to avoid duplicated cox actions
-        dplyr::rename(out_date_t2dm_obes_no = out_date_t2dm)
-      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date AND restrict to those with NO obesity")
-      
-    } else if (group == "diabetes_gestational"){
-      # Exclude men from gestational diabetes analysis
-      input <- input %>% 
-        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
-        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
-        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
-        filter(cov_cat_sex == "Female")
-      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input), as.numeric(cohort_flow[8,1]) - nrow(input), "Gestational diabetes: The study population will be restricted to women.")
-      
-    } else if (group == "mental_health"){
-      # Mental health analyses exclusion criteria
-      input <- input %>% 
-        filter()
-      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input), as.numeric(cohort_flow[8,1]) - nrow(input), "Mental health: .")
-    
-    } else if (group == "CVD"){
-      # Mental health analyses exclusion criteria
-      input <- input %>% 
-        filter()
-      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input), as.numeric(cohort_flow[8,1]) - nrow(input), "CVD: .")
-    }
-    
-    
-    #-------------------------------------------------#
     # 3.c. Apply criteria specific to each sub-cohort #
     #-------------------------------------------------#
     
@@ -400,6 +321,84 @@ stage1 <- function(cohort_name, group){
       #Exclusion criteria 8: Missing JCVI group
       input <- subset(input, is.na(input$vax_cat_jcvi_group)== FALSE)
       cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[9,1]) - nrow(input), "Criteria 8 (Exclusion): Missing JCVI group")
+    }
+    
+    #-------------------------------------------------#
+    # 3.b. Apply outcome specific exclusions criteria #
+    #-------------------------------------------------#
+    
+    if (group == "diabetes"){
+      # Exclude individuals with a recorded diagnosis of diabetes prior to index date
+      input <- input %>% 
+        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm))
+      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date")
+      
+    } else if (group == "diabetes_prediabetes"){
+      # Restrict to only those with a history of pre diabetes
+      input <- input %>% 
+        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm))  %>%
+        filter(cov_bin_prediabetes == TRUE) %>%
+        # change name of t2dm variable to avoid duplicated cox actions
+        dplyr::rename(out_date_t2dm_pd = out_date_t2dm)
+      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date AND restrict to those with a history of prediabetes")
+      
+    } else if (group == "diabetes_no_prediabetes"){
+      # Restrict to only those with NO history of pre diabetes
+      input <- input %>% 
+        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
+        filter(cov_bin_prediabetes == FALSE) %>%
+        # change name of t2dm variable to avoid duplicated cox actions
+        dplyr::rename(out_date_t2dm_pd_no = out_date_t2dm)
+      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date AND restrict to those with NO history of prediabetes")
+      
+    } else if (group == "diabetes_obesity"){
+      # Restrict to only those with a history of pre diabetes
+      input <- input %>% 
+        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
+        filter(cov_cat_bmi_groups == "Obese") %>%
+        # change name of t2dm variable to avoid duplicated cox actions
+        dplyr::rename(out_date_t2dm_obes = out_date_t2dm)
+      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date AND restrict to those with obesity")
+      
+    } else if (group == "diabetes_no_obesity"){
+      # Restrict to only those with NO history of pre diabetes
+      input <- input %>% 
+        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
+        filter(cov_cat_bmi_groups != "Obese") %>%
+        # change name of t2dm variable to avoid duplicated cox actions
+        dplyr::rename(out_date_t2dm_obes_no = out_date_t2dm)
+      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Diabetes specific criteria: Remove those with diabetes prior to study start date AND restrict to those with NO obesity")
+      
+    } else if (group == "diabetes_gestational"){
+      # Exclude men from gestational diabetes analysis
+      input <- input %>% 
+        filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+        filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+        filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
+        filter(cov_cat_sex == "Female")
+      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input), as.numeric(cohort_flow[8,1]) - nrow(input), "Gestational diabetes: The study population will be restricted to women.")
+      
+    } else if (group == "mental_health"){
+      # Mental health analyses exclusion criteria
+      input <- input %>% 
+        filter()
+      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input), as.numeric(cohort_flow[8,1]) - nrow(input), "Mental health: .")
+      
+    } else if (group == "CVD"){
+      # Mental health analyses exclusion criteria
+      input <- input %>% 
+        filter()
+      cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input), as.numeric(cohort_flow[8,1]) - nrow(input), "CVD: .")
     }
     
     #----------------------#

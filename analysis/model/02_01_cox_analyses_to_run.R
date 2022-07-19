@@ -12,7 +12,7 @@ active_analyses <- active_analyses %>%dplyr::filter(outcome_variable==paste0("ou
 
 ## Select covariates of interest
 for(i in c("normal","reduced")){
-   assign(paste0("non_zero_covar_names_",i),read_csv(paste0("output/not-for-review/non_zero_selected_covariates_",cohort,"_",i,"_time_periods.csv")) )
+   assign(paste0("non_zero_covar_names_",i),read_csv(paste0("output/not-for-review/non_zero_selected_covariates_",cohort,"_",group,"_",i,"_time_periods.csv")) )
 }
 
 non_zero_covar_names <- rbind(non_zero_covar_names_normal, non_zero_covar_names_reduced)

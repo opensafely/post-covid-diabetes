@@ -119,6 +119,26 @@ actions:
         DateChecks: output/not-for-review/Check_dates_range_*.csv
         Descriptive_Table: output/review/descriptives/Table1_*.csv
 
+  stage_2_events_split_by_covariate_level_vaccinated:
+    run: r:latest analysis/descriptives/events_split_by_covariate_level.R vaccinated
+    needs:
+    - stage1_data_cleaning_both
+    - stage1_end_date_table_vaccinated
+    outputs:
+      moderately_sensitive:
+        counts_by_covariate_level: output/not-for-review/event_counts_by_covariate_level_vaccinated_*.csv
+        selected_covariates: output/not-for-review/non_zero_selected_covariates_vaccinated_*.csv
+
+  stage_2_events_split_by_covariate_level_electively_unvaccinated:
+    run: r:latest analysis/descriptives/events_split_by_covariate_level.R electively_unvaccinated
+    needs:
+    - stage1_data_cleaning_both
+    - stage1_end_date_table_electively_unvaccinated
+    outputs:
+      moderately_sensitive:
+        counts_by_covariate_level: output/not-for-review/event_counts_by_covariate_level_electively_unvaccinated_*.csv
+        selected_covariates: output/not-for-review/non_zero_selected_covariates_electively_unvaccinated_*.csv
+
   stage3_diabetes_flow_vaccinated:
     run: r:latest analysis/descriptives/diabetes_flowchart.R vaccinated
     needs:

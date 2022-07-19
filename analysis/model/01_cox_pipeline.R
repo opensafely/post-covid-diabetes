@@ -31,8 +31,8 @@ library(Hmisc)
 args = commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
-  event_name="ate"
-  cohort="electively_unvaccinated"
+  event_name="t2dm"
+  cohort="vaccinated"
 }else{
   event_name  = args[[1]]
   cohort = args[[2]]
@@ -65,7 +65,7 @@ analyses_to_run$reduced_timepoint <- lapply(split(analyses_to_run,seq(nrow(analy
                                                 subgroup=analyses_to_run$subgroup,
                                                 stratify_by_subgroup=analyses_to_run$stratify_by_subgroup,
                                                 stratify_by=analyses_to_run$strata,
-                                                input, cuts_days_since_expo,cuts_days_since_expo_reduced)
+                                                input, cuts_days_since_expo,cuts_days_since_expo_reduced, covar_names)
 )
 
 analyses_to_run$reduced_timepoint <-  as.character(analyses_to_run$reduced_timepoint)

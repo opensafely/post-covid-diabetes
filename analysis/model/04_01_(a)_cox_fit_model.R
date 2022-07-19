@@ -122,12 +122,6 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
   # Save sampled data for Stata
   write.csv(sampled_data, paste0("output/input_sampled_data_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv") )
   
-  
-  if(event=="pe" & subgroup =="covid_pheno_hospitalised" & cohort == "electively_unvaccinated"){
-    print("here")
-    data.table::fwrite(data_surv, paste0("output/input_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"))
-    
-  }else{
     data.table::fwrite(data_surv, paste0("output/input_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"))
     
     #Fit model and prep output csv
@@ -141,7 +135,6 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
     write.csv(fit_model, paste0(output_dir,"/tbl_hr_" , event, "_",subgroup,"_", cohort,"_",time_point, "_time_periods.csv"), row.names = T)
     print(paste0("Hazard ratios saved: ", output_dir,"/tbl_hr_" , event, "_",subgroup,"_", cohort,"_",time_point,  "_time_periods.csv"))
     
-  }
 }
 
 
@@ -180,12 +173,6 @@ coxfit <- function(data_surv, interval_names, covar_names, reduced_covar_names, 
   
   combined_results <- as.data.frame(matrix(ncol=11,nrow=0))
   colnames(combined_results) <- c("term","estimate","conf.low","conf.high","std.error","robust.se","results_fitted","model","covariates_removed","cat_covars_collapsed","covariates_fitted")
-  
-  # For electively unvaccinated hospitalised ATE set the region reference as London
-  if(subgroup == "covid_pheno_hospitalised" & ((event_name == "ate" & cohort == "electively_unvaccinated") | (event_name == "vte" & cohort == "vaccinated") | (event_name == "angina" & cohort == "vaccinated"))){
-    data_surv$region_name <- relevel(data_surv$region_name, ref = "London")
-    print("Region releveled with London before fitting cox")
-  }
   
   for(model in mdl){
     #Base formula

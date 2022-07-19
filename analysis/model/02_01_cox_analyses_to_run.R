@@ -11,12 +11,12 @@ active_analyses <- read_rds("lib/active_analyses.rds")
 active_analyses <- active_analyses %>%dplyr::filter(outcome_variable==paste0("out_date_",event_name) & active == "TRUE")
 
 ## Select covariates of interest
-for(i in c("normal","reduced","alternative")){
+for(i in c("normal","reduced")){
    assign(paste0("non_zero_covar_names_",i),read_csv(paste0("output/not-for-review/non_zero_selected_covariates_",cohort,"_",i,"_time_periods.csv")) )
 }
 
-non_zero_covar_names <- rbind(non_zero_covar_names_normal, non_zero_covar_names_reduced, non_zero_covar_names_alternative)
-rm(non_zero_covar_names_normal, non_zero_covar_names_reduced, non_zero_covar_names_alternative)
+non_zero_covar_names <- rbind(non_zero_covar_names_normal, non_zero_covar_names_reduced)
+rm(non_zero_covar_names_normal, non_zero_covar_names_reduced)
 
 non_zero_covar_names <- non_zero_covar_names %>% filter(outcome_event == paste0("out_date_",event_name))
 non_zero_covar_names$outcome_event <- gsub("out_date_", "",non_zero_covar_names$outcome_event)

@@ -182,6 +182,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t1dm_vaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t1dm_vaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t1dm_vaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_t1dm_vaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t1dm_*_vaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t1dm_*_vaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t1dm_*_vaccinated_*_time_periods.csv
 
   ## Cox model for t1dm - electively_unvaccinated 
 
@@ -196,6 +201,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t1dm_electively_unvaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t1dm_electively_unvaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t1dm_electively_unvaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_t1dm_electively_unvaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t1dm_*_electively_unvaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t1dm_*_electively_unvaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t1dm_*_electively_unvaccinated_*_time_periods.csv
 
   ## Cox model for t2dm - vaccinated 
 
@@ -210,6 +220,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_vaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_vaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_vaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_t2dm_vaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_*_vaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_*_vaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_*_vaccinated_*_time_periods.csv
 
   ## Cox model for t2dm - electively_unvaccinated 
 
@@ -224,6 +239,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_electively_unvaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_electively_unvaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_electively_unvaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_t2dm_electively_unvaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_*_electively_unvaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_*_electively_unvaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_*_electively_unvaccinated_*_time_periods.csv
 
   ## Cox model for t2dm_pd - vaccinated 
 
@@ -238,6 +258,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_vaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_vaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_pd_vaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_t2dm_pd_vaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_*_vaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_pd_*_vaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_pd_*_vaccinated_*_time_periods.csv
 
   ## Cox model for t2dm_pd - electively_unvaccinated 
 
@@ -252,6 +277,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_electively_unvaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_electively_unvaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_pd_electively_unvaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_t2dm_pd_electively_unvaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_*_electively_unvaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_pd_*_electively_unvaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_pd_*_electively_unvaccinated_*_time_periods.csv
 
   ## Cox model for t2dm_pd_no - vaccinated 
 
@@ -266,6 +296,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_vaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_vaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_pd_no_vaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_t2dm_pd_no_vaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_no_*_vaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_pd_no_*_vaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_pd_no_*_vaccinated_*_time_periods.csv
 
   ## Cox model for t2dm_pd_no - electively_unvaccinated 
 
@@ -280,6 +315,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_electively_unvaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_electively_unvaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_pd_no_electively_unvaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_t2dm_pd_no_electively_unvaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_no_*_electively_unvaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_pd_no_*_electively_unvaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_pd_no_*_electively_unvaccinated_*_time_periods.csv
 
   ## Cox model for t2dm_obes - vaccinated 
 
@@ -294,6 +334,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_vaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_vaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_obes_vaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_t2dm_obes_vaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_*_vaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_obes_*_vaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_obes_*_vaccinated_*_time_periods.csv
 
   ## Cox model for t2dm_obes - electively_unvaccinated 
 
@@ -308,6 +353,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_electively_unvaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_electively_unvaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_obes_electively_unvaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_t2dm_obes_electively_unvaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_*_electively_unvaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_obes_*_electively_unvaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_obes_*_electively_unvaccinated_*_time_periods.csv
 
   ## Cox model for t2dm_obes_no - vaccinated 
 
@@ -322,6 +372,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_vaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_vaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_obes_no_vaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_t2dm_obes_no_vaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_no_*_vaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_obes_no_*_vaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_obes_no_*_vaccinated_*_time_periods.csv
 
   ## Cox model for t2dm_obes_no - electively_unvaccinated 
 
@@ -336,6 +391,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_electively_unvaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_electively_unvaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_t2dm_obes_no_electively_unvaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_t2dm_obes_no_electively_unvaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_no_*_electively_unvaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_obes_no_*_electively_unvaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_obes_no_*_electively_unvaccinated_*_time_periods.csv
 
   ## Cox model for otherdm - vaccinated 
 
@@ -350,6 +410,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_otherdm_vaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_otherdm_vaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_otherdm_vaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_otherdm_vaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_otherdm_*_vaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_otherdm_*_vaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_otherdm_*_vaccinated_*_time_periods.csv
 
   ## Cox model for otherdm - electively_unvaccinated 
 
@@ -364,6 +429,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_otherdm_electively_unvaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_otherdm_electively_unvaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_otherdm_electively_unvaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_otherdm_electively_unvaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_otherdm_*_electively_unvaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_otherdm_*_electively_unvaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_otherdm_*_electively_unvaccinated_*_time_periods.csv
 
   ## Cox model for gestationaldm - vaccinated 
 
@@ -378,6 +448,11 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_gestationaldm_vaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_gestationaldm_vaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_gestationaldm_vaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_gestationaldm_vaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_gestationaldm_*_vaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_gestationaldm_*_vaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_gestationaldm_*_vaccinated_*_time_periods.csv
 
   ## Cox model for gestationaldm - electively_unvaccinated 
 
@@ -392,4 +467,9 @@ actions:
         compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_gestationaldm_electively_unvaccinated.csv
         compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_gestationaldm_electively_unvaccinated_to_release.csv
         compiled_event_counts_csv: output/review/model/suppressed_compiled_event_counts_gestationaldm_electively_unvaccinated.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/compiled_event_counts_gestationaldm_electively_unvaccinated.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_gestationaldm_*_electively_unvaccinated_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_gestationaldm_*_electively_unvaccinated_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_gestationaldm_*_electively_unvaccinated_*_time_periods.csv
 

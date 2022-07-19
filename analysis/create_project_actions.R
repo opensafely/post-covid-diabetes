@@ -80,6 +80,25 @@ convert_comment_actions <-function(yaml.txt){
 ## Function for typical actions to analyse data #
 #################################################
 # Updated to a typical action running Cox models for one outcome
+# apply_model_function <- function(outcome, cohort){
+#   splice(
+#     comment(glue("Cox model for {outcome} - {cohort}")),
+#     action(
+#       name = glue("Analysis_cox_{outcome}_{cohort}"),
+#       run = "r:latest analysis/model/01_cox_pipeline.R",
+#       arguments = c(outcome,cohort),
+#       needs = list("stage1_data_cleaning_both", glue("stage1_end_date_table_{cohort}")),
+#       moderately_sensitive = list(
+#         analyses_not_run = glue("output/review/model/analyses_not_run_{outcome}_{cohort}.csv"),
+#         compiled_hrs_csv = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}.csv"),
+#         compiled_hrs_csv_to_release = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}_to_release.csv"),
+#         compiled_event_counts_csv = glue("output/review/model/suppressed_compiled_event_counts_{outcome}_{cohort}.csv")
+#       )
+#     )
+#   )
+# }
+
+# Updated to a typical action running Cox models for one outcome
 apply_model_function <- function(outcome, cohort){
   splice(
     comment(glue("Cox model for {outcome} - {cohort}")),
@@ -92,7 +111,13 @@ apply_model_function <- function(outcome, cohort){
         analyses_not_run = glue("output/review/model/analyses_not_run_{outcome}_{cohort}.csv"),
         compiled_hrs_csv = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}.csv"),
         compiled_hrs_csv_to_release = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}_to_release.csv"),
-        compiled_event_counts_csv = glue("output/review/model/suppressed_compiled_event_counts_{outcome}_{cohort}.csv")
+        compiled_event_counts_csv = glue("output/review/model/suppressed_compiled_event_counts_{outcome}_{cohort}.csv"),
+        compiled_event_counts_csv_non_supressed = glue("output/review/model/compiled_event_counts_{outcome}_{cohort}.csv"),
+        describe_data_surv = glue("output/not-for-review/describe_data_surv_{outcome}_*_{cohort}_*_time_periods.txt")
+      ),
+      highly_sensitive = list(
+        dataset = glue("output/input_{outcome}_*_{cohort}_*_time_periods.csv"),
+        sampled_dataset = glue("output/input_sampled_data_{outcome}_*_{cohort}_*_time_periods.csv")
       )
     )
   )

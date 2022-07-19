@@ -31,8 +31,8 @@ library(Hmisc)
 args = commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
-  event_name="ate"
-  cohort="electively_unvaccinated"
+  event_name="t2dm"
+  cohort="vaccinated"
 }else{
   event_name  = args[[1]]
   cohort = args[[2]]

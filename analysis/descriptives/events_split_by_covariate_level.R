@@ -38,7 +38,7 @@ time_periods_normal <- c(7, 14, 28, 56, 84, 197)
 time_periods_reduced <- c(28,197)
 time_periods_alternative <- c(1,8,43,197)
 
-event_by_covariate_level <- function(cohort_name, time_periods,save_name){
+event_by_covariate_level <- function(cohort_name, group,time_periods,save_name){
   
   # define analyses of interests
   active_analyses <- read_rds("lib/active_analyses.rds")
@@ -47,8 +47,8 @@ event_by_covariate_level <- function(cohort_name, time_periods,save_name){
   analyses_of_interest <- as.data.frame(matrix(ncol = 8,nrow = 0))
   
   #Left join end dates table
-  survival_data <- read_rds(paste0("output/input_",cohort_name,"_stage1.rds"))
-  end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort_name,".rds")) 
+  survival_data <- read_rds(paste0("output/input_", cohort_name,"_stage1_", group,".rds"))
+  end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort_name,"_",group,".rds")) 
   end_dates$index_date <- NULL
   
   survival_data<- survival_data %>% left_join(end_dates, by="patient_id")
@@ -187,9 +187,9 @@ event_by_covariate_level <- function(cohort_name, time_periods,save_name){
   results <- results %>% dplyr::select(event, subgroup, covariate, level, unexposed_event_counts, all_of(time_periods_names))
   
   # write output for covariate count table
-  write.csv(results, file=paste0(output_dir,"/event_counts_by_covariate_level_",cohort_name,"_",save_name,"_time_periods.csv"), row.names = F)
+  write.csv(results, file=paste0(output_dir,"/event_counts_by_covariate_level_",cohort_name,"_",group,"_",save_name,"_time_periods.csv"), row.names = F)
   
-  select_covariates_for_cox(results, save_name, time_periods_names, active_analyses,cohort_name)
+  select_covariates_for_cox(results, save_name, time_periods_names, active_analyses, group, cohort_name)
 }
 
 
@@ -381,16 +381,20 @@ select_covariates_for_cox <- function(results, save_name,time_periods_names, act
 
 
 # Run function using specified commandArgs
-if(cohort_name == "both"){
-  event_by_covariate_level("vaccinated",time_periods_normal,"normal")
-  event_by_covariate_level("vaccinated",time_periods_reduced,"reduced")
-  event_by_covariate_level("vaccinated",time_periods_alternative,"alternative")
-  event_by_covariate_level("electively_unvaccinated",time_periods_normal,"normal")
-  event_by_covariate_level("electively_unvaccinated",time_periods_reduced,"reduced")
-  event_by_covariate_level("electively_unvaccinated",time_periods_alternative,"alternative")
-}else{
-  event_by_covariate_level(cohort_name,time_periods_normal,"normal")
-  event_by_covariate_level(cohort_name,time_periods_reduced,"reduced")
-  event_by_covariate_level(cohort_name,time_periods_alternative,"alternative")
-}
 
+active_analyses <- read_rds("lib/active_analyses.rds")
+active_analyses <- active_analyses %>% filter(active==TRUE)
+group <- unique(active_analyses$outcome_group)
+
+
+for(i in group){
+if(cohort_name == "both"){
+  event_by_covariate_level("vaccinated",i, time_periods_normal,"normal")
+  event_by_covariate_level("vaccinated",i, time_periods_reduced,"reduced")
+  event_by_covariate_level("electively_unvaccinated",i, time_periods_normal,"normal")
+  event_by_covariate_level("electively_unvaccinated",i, time_periods_reduced,"reduced")
+}else{
+  event_by_covariate_level(cohort_name,i, time_periods_normal,"normal")
+  event_by_covariate_level(cohort_name,i, time_periods_reduced,"reduced")
+}
+}

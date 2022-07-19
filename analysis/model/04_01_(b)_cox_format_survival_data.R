@@ -302,6 +302,8 @@ fit_get_data_surv <- function(event,subgroup, stratify_by_subgroup, stratify_by,
       interval_period <- intervals_with_days_cat$interval[i]
       data_surv[,paste0("person_days_",interval_period)] <- ifelse(data_surv$days_cat == days_category,(data_surv$tstop - data_surv$tstart)*data_surv$cox_weights,0)
       intervals_with_days_cat$person_days_follow_up[which(intervals_with_days_cat$days_cat==days_category)] <- sum(data_surv[,paste0("person_days_",interval_period)])
+      # ADD MEDIAN
+      intervals_with_days_cat$median_follow <- median(data_surv[,paste0("person_days_",interval_period)])
     }
     
     intervals_with_days_cat$days_cat <- NULL

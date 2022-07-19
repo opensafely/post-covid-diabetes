@@ -11,9 +11,50 @@ active_analyses <- read_rds("lib/active_analyses.rds")
 active_analyses <- active_analyses %>%dplyr::filter(outcome_variable==paste0("out_date_",event_name) & active == "TRUE")
 
 ## Select covariates of interest
-for(i in c("normal","reduced")){
-   assign(paste0("non_zero_covar_names_",i),read_csv(paste0("output/not-for-review/non_zero_selected_covariates_",cohort,"_",group,"_",i,"_time_periods.csv")) )
-}
+
+if(event_name == "out_date_ami" | event_name == "out_date_stroke_isch" | event_name == "out_date_dvt" |
+   event_name == "out_date_pe" | event_name == "out_date_tia" | event_name == "out_date_stroke_sah_hs" |
+   event_name == "out_date_hf" | event_name == "out_date_angina" | event_name == "out_date_ate" |
+   event_name == "out_date_vte" | event_name == "out_date_ami_primary_position" | event_name == "out_date_stroke_isch_primary_position" |
+   event_name == "out_date_dvt_primary_position" | event_name == "out_date_pe_primary_position" | event_name == "out_date_tia_primary_position" |
+   event_name == "out_date_stroke_sah_hs_primary_position" | event_name == "out_date_hf_primary_position" | event_name == "out_date_angina_primary_position" |
+   event_name == "out_date_ate_primary_position" | event_name == "out_date_vte_primary_position"){
+  
+  for(i in c("normal","reduced")){
+    assign(paste0("non_zero_covar_names_",i),read_csv(paste0("output/not-for-review/non_zero_selected_covariates_",cohort,"_CVD_",i,"_time_periods.csv")) )
+  }
+  
+} else if(event_name == "t1dm" | event_name == "t2dm" | event_name == "otherdm"){
+  for(i in c("normal","reduced")){
+    assign(paste0("non_zero_covar_names_",i),read_csv(paste0("output/not-for-review/non_zero_selected_covariates_",cohort,"_diabetes_",i,"_time_periods.csv")) )
+  }
+  
+} else if (event_name == "t2dm_pd"){
+  for(i in c("normal","reduced")){
+    assign(paste0("non_zero_covar_names_",i),read_csv(paste0("output/not-for-review/non_zero_selected_covariates_",cohort,"_diabetes_prediabetes_",i,"_time_periods.csv")) )
+  }
+  
+} else if (event_name == "t2dm_pd_no"){
+  for(i in c("normal","reduced")){
+    assign(paste0("non_zero_covar_names_",i),read_csv(paste0("output/not-for-review/non_zero_selected_covariates_",cohort,"_diabetes_no_prediabetes_",i,"_time_periods.csv")) )
+  }
+  
+} else if (event_name == "t2dm_obes"){
+  for(i in c("normal","reduced")){
+    assign(paste0("non_zero_covar_names_",i),read_csv(paste0("output/not-for-review/non_zero_selected_covariates_",cohort,"_diabetes_obesity_",i,"_time_periods.csv")) )
+  }
+  
+} else if (event_name == "t2dm_obes_no"){
+  for(i in c("normal","reduced")){
+    assign(paste0("non_zero_covar_names_",i),read_csv(paste0("output/not-for-review/non_zero_selected_covariates_",cohort,"_diabetes_no_obesity_",i,"_time_periods.csv")) )
+  }
+  
+} else if (event_name == "gestationaldm"){
+  for(i in c("normal","reduced")){
+    assign(paste0("non_zero_covar_names_",i),read_csv(paste0("output/not-for-review/non_zero_selected_covariates_",cohort,"_diabetes_gestational_",i,"_time_periods.csv")) )
+  }
+  
+} 
 
 non_zero_covar_names <- rbind(non_zero_covar_names_normal, non_zero_covar_names_reduced)
 rm(non_zero_covar_names_normal, non_zero_covar_names_reduced)

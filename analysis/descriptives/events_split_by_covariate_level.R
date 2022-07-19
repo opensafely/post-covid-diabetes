@@ -190,7 +190,7 @@ event_by_covariate_level <- function(cohort_name, group,time_periods,save_name){
   # write output for covariate count table
   write.csv(results, file=paste0(output_dir,"/event_counts_by_covariate_level_",cohort_name,"_",save_name,"_time_periods.csv"), row.names = F)
   
-  select_covariates_for_cox(results, save_name, time_periods_names, active_analyses, cohort_name)
+  select_covariates_for_cox(results, save_name, time_periods_names, active_analyses, cohort_name,group)
 }
 
 
@@ -335,36 +335,45 @@ select_covariates_for_cox <- function(results, save_name,time_periods_names, act
   for(i in active_analyses$outcome_variable){
     protected_covariates<-str_split(active_analyses %>% filter(outcome_variable == i)%>% select(covariates),";")[[1]]
     protected_covariates <- protected_covariates[grepl("cov_num|cov_cat",protected_covariates)]
-    protected_covariates
+    
     tmp <- results %>% filter(event ==i)
     tmp <- tmp %>% filter(!covariate %in% protected_covariates)
-    tmp$keep_covariate <- NA
     
-    #I can't think of a better way to do this that doesn't involve have to specify the 
-    #column names - thecolumn names are all saved under time_period_names but can't get it to 
-    #work dynamically
-    
-    if(save_name == "normal"){
-      tmp <- tmp %>%
-        group_by(event, covariate, subgroup) %>%
-        dplyr::mutate(keep_covariate = case_when(
-          any(unexposed_event_counts == 0 | days0_7_event_counts == 0 | days7_14_event_counts == 0 |
-                days14_28_event_counts == 0 | days28_56_event_counts ==0 | days56_84_event_counts ==0 | days84_197_event_counts ==0) ~ "remove_covariate",
-          TRUE ~ "keep_covariate"))
-    }else if(save_name == "reduced"){
-      tmp <- tmp %>%
-        group_by(event, covariate, subgroup) %>%
-        dplyr::mutate(keep_covariate = case_when(
-          any(unexposed_event_counts == 0 | days0_28_event_counts == 0 | days0_28_event_counts == 0) ~ "remove_covariate",
-          TRUE ~ "keep_covariate"))
+    if(nrow(tmp)>0){
+      tmp$keep_covariate <- NA
+      
+      #I can't think of a better way to do this that doesn't involve have to specify the 
+      #column names - thecolumn names are all saved under time_period_names but can't get it to 
+      #work dynamically
+      
+      if(save_name == "normal"){
+        tmp <- tmp %>%
+          group_by(event, covariate, subgroup) %>%
+          dplyr::mutate(keep_covariate = case_when(
+            any(unexposed_event_counts == 0 | days0_7_event_counts == 0 | days7_14_event_counts == 0 |
+                  days14_28_event_counts == 0 | days28_56_event_counts ==0 | days56_84_event_counts ==0 | days84_197_event_counts ==0) ~ "remove_covariate",
+            TRUE ~ "keep_covariate"))
+      }else if(save_name == "reduced"){
+        tmp <- tmp %>%
+          group_by(event, covariate, subgroup) %>%
+          dplyr::mutate(keep_covariate = case_when(
+            any(unexposed_event_counts == 0 | days0_28_event_counts == 0 | days0_28_event_counts == 0) ~ "remove_covariate",
+            TRUE ~ "keep_covariate"))
+      }
+      
+      for(subgroup_name in unique(tmp$subgroup)){
+        df <- tmp %>% filter(keep_covariate == "keep_covariate" & subgroup == subgroup_name)
+        covariates_to_adjust_for[nrow(covariates_to_adjust_for)+1,] <- c(i,subgroup_name, paste(c(unique(df$covariate),protected_covariates), collapse = ";"))
+      }
+      
+    }else{
+      for(subgroup_name in unique(results$subgroup)){
+        covariates_to_adjust_for[nrow(covariates_to_adjust_for)+1,] <- c(i,subgroup_name, paste(protected_covariates, collapse = ";"))
+      }
     }
     
-    for(subgroup_name in unique(tmp$subgroup)){
-      df <- tmp %>% filter(keep_covariate == "keep_covariate" & subgroup == subgroup_name)
-      covariates_to_adjust_for[nrow(covariates_to_adjust_for)+1,] <- c(i,subgroup_name, paste(c(unique(df$covariate),protected_covariates), collapse = ";"))
     }
     
-  }
   
   covariates_to_adjust_for$time_period <-  save_name
   write.csv(covariates_to_adjust_for, file=paste0(output_dir,"/non_zero_selected_covariates_",cohort_name,"_",group,"_",save_name,"_time_periods.csv"), row.names = F)

@@ -303,11 +303,11 @@ fit_get_data_surv <- function(event,subgroup, stratify_by_subgroup, stratify_by,
       data_surv[,paste0("person_days_",interval_period)] <- ifelse(data_surv$days_cat == days_category,(data_surv$tstop - data_surv$tstart)*data_surv$cox_weights,0)
       intervals_with_days_cat$person_days_follow_up[which(intervals_with_days_cat$days_cat==days_category)] <- sum(data_surv[,paste0("person_days_",interval_period)])
       # ADD MEDIAN
-      intervals_with_days_cat$median_follow <- median(data_surv[,paste0("person_days_",interval_period)])
+        intervals_with_days_cat$median_follow[which(intervals_with_days_cat$days_cat==days_category)] <- median(data_surv[[paste0("person_days_",interval_period)]])
     }
     
     intervals_with_days_cat$days_cat <- NULL
-    intervals_with_days_cat[nrow(intervals_with_days_cat)+1,] <- c("all post expo", sum(intervals_with_days_cat$person_days_follow_up[which(intervals_with_days_cat$interval != "pre expo")]))
+    intervals_with_days_cat[nrow(intervals_with_days_cat)+1,] <- c("all post expo", sum(intervals_with_days_cat$person_days_follow_up[which(intervals_with_days_cat$interval != "pre expo")]), median(intervals_with_days_cat$median_follow[which(intervals_with_days_cat$interval != "pre expo")]))
     
     
     tbl_event_count <- tbl_event_count %>% left_join(intervals_with_days_cat, by=c("expo_week"="interval"))

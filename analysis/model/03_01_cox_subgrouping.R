@@ -26,7 +26,7 @@ get_vacc_res <- function(event,subgroup,stratify_by_subgroup,stratify_by,time_po
   }
 
   for(i in c("hospitalised","non_hospitalised")){
-    if(stratify_by == i){
+    if(stratify_by == i & !is.na(stratify_by)){
       survival_data$follow_up_end <- NULL
       setnames(survival_data, 
                old = c(c(paste0(i,"_follow_up_end")),

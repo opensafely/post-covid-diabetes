@@ -126,7 +126,7 @@ if(length(event_count_done)>0){
 #=========================COMBINE EVENT COUNTS AND HRS==========================
 
 if(length(results_done)>0){
-  event_counts_to_left_join=data.frame(matrix(nrow=0,ncol=8))
+  event_counts_to_left_join=data.frame(matrix(nrow=0,ncol=9))
   colnames(event_counts_to_left_join)=c("term","subgroup","event","expo_week","events_total","median_follow_up","cohort","time_points","model")
   
   for(i in 1:nrow(analyses_to_run)){

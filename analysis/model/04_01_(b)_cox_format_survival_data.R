@@ -297,6 +297,8 @@ fit_get_data_surv <- function(event,subgroup, stratify_by_subgroup, stratify_by,
     intervals_with_days_cat <- intervals_with_days_cat[order(intervals_with_days_cat$days_cat),]
     intervals_with_days_cat$person_days_follow_up <- NA
     
+    intervals_with_days_cat$median_follow <- NA
+    
     for(i in 1:nrow(intervals_with_days_cat)){
       days_category <- intervals_with_days_cat$days_cat[i]
       interval_period <- intervals_with_days_cat$interval[i]

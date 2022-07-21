@@ -127,8 +127,7 @@ if(length(event_count_done)>0){
 
 if(length(results_done)>0){
   event_counts_to_left_join=data.frame(matrix(nrow=0,ncol=8))
-  colnames(event_counts_to_left_join)=c("term","subgroup","event","expo_week","events_total","cohort","time_points","model")
-  
+  colnames(event_counts_to_left_join)=c("term","subgroup","event","expo_week","events_total","median_follow_up","cohort","time_points","model")
   
   for(i in 1:nrow(analyses_to_run)){
     subgroup_of_interest=analyses_to_run$subgroup[i]
@@ -141,17 +140,18 @@ if(length(results_done)>0){
       df_hr_subgroup=df_hr_subgroup[1:nrow(df_counts_subgroup),]
       df_hr_subgroup$expo_week=df_counts_subgroup$expo_week
       df_hr_subgroup$events_total=df_counts_subgroup$events_total
-      df_hr_subgroup=df_hr_subgroup%>%select(term,subgroup,event,expo_week,events_total,cohort,time_points,model)
+      df_hr_subgroup$median_follow_up <- df_counts_subgroup$median_follow
+      df_hr_subgroup=df_hr_subgroup%>%select(term,subgroup,event,expo_week,events_total,median_follow_up,cohort,time_points,model)
       event_counts_to_left_join=rbind(event_counts_to_left_join,df_hr_subgroup)
     }
   }
-    
+  
   combined_hr_event_counts=df_hr%>%left_join(event_counts_to_left_join, by=c("term","event","subgroup","cohort","time_points","model"))
   
-  combined_hr_event_counts=combined_hr_event_counts%>%select(term,estimate,conf.low,conf.high,std.error,robust.se,expo_week,events_total,
-                                                               event,subgroup,model,cohort,time_points,total_covid19_cases,results_fitted,covariates_removed,cat_covars_collapsed,covariates_fitted)
-  
 
+  combined_hr_event_counts=combined_hr_event_counts%>%select(term,estimate,conf.low,conf.high,std.error,robust.se,expo_week,events_total,median_follow_up,
+                                                             event,subgroup,model,cohort,time_points,total_covid19_cases,results_fitted,covariates_removed,cat_covars_collapsed,covariates_fitted)
+  
   # Add in suppression for counts <=5
   combined_hr_event_counts$redacted_results <- "NA"
 
@@ -179,7 +179,7 @@ if(length(results_done)>0){
   write.csv(supressed_combined_hr_event_counts,paste0(output_dir,"/suppressed_compiled_HR_results_",event_name,"_", cohort,".csv") , row.names=F)
   print(paste0("Supressed HR with event counts saved: ", output_dir,"/suppressed_compiled_HR_results_",event_name,"_", cohort,".csv"))
   
-  supressed_combined_hr_event_counts <- supressed_combined_hr_event_counts %>% select(!c("expo_week","events_total"))
+  supressed_combined_hr_event_counts <- supressed_combined_hr_event_counts %>% select(!c("events_total"))
   write.csv(supressed_combined_hr_event_counts,paste0(output_dir,"/suppressed_compiled_HR_results_",event_name,"_", cohort,"_to_release.csv") , row.names=F)
   
 }else{

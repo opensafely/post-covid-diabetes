@@ -78,8 +78,8 @@ event_counts_completed <- pmap(list(event_count_done),
 
 if(length(event_count_done)>0){
   df_event_counts <- rbindlist(event_counts_completed, fill=TRUE)  %>% dplyr::select(!"V1")
-  write.csv(df_event_counts, paste0(output_dir,"/compiled_event_counts_", event_name, "_", cohort,".csv") , row.names=F)
-  print(paste0("Compiled event counts saved: ", output_dir,"/compiled_event_counts_", event_name,"_", cohort,".csv"))
+  write.csv(df_event_counts, paste0(output_dir,"/compiled_event_counts_NOT_for_release_", event_name, "_", cohort,".csv") , row.names=F)
+  print(paste0("Compiled event counts saved: ", output_dir,"/compiled_event_counts_NOT_for_release_", event_name,"_", cohort,".csv"))
   
   # Add in suppression for counts <=5
   df_event_counts$redacted_results <- "NA"
@@ -110,16 +110,16 @@ if(length(event_count_done)>0){
                                                                                                               "No redacted results"))
   supressed_df_event_counts <- supressed_df_event_counts[order(supressed_df_event_counts$redacted_results),]
   
-  write.csv(supressed_df_event_counts, paste0(output_dir,"/suppressed_compiled_event_counts_", event_name,"_", cohort,".csv") , row.names=F)
-  print(paste0("Supressed event counts saved: ", output_dir,"/suppressed_compiled_event_counts_", event_name,"_", cohort,".csv"))
+  write.csv(supressed_df_event_counts, paste0(output_dir,"/suppressed_compiled_event_counts_NOT_for_release_", event_name,"_", cohort,".csv") , row.names=F)
+  print(paste0("Supressed event counts saved: ", output_dir,"/suppressed_compiled_event_counts_NOT_for_release_", event_name,"_", cohort,".csv"))
   
 }else{
   df_event_counts <- as.data.frame(matrix(ncol = 7))
   colnames(df_event_counts)<- c("expo_week", "events_total", "event", "subgroup", "cohort", "time_points","redacted_results")
-  write.csv(df_event_counts, paste0(output_dir,"/compiled_event_counts_", event_name,"_", cohort,".csv") , row.names=F)
-  print(paste0("Compiled event counts saved: ", output_dir,"/compiled_event_counts_", event_name,"_", cohort,".csv"))
-  write.csv(df_event_counts, paste0(output_dir,"/suppressed_compiled_event_counts_", event_name,"_", cohort,".csv") , row.names=F)
-  print(paste0("Supressed event counts saved: ", output_dir,"/suppressed_compiled_event_counts_", event_name,"_", cohort,".csv"))
+  write.csv(df_event_counts, paste0(output_dir,"/compiled_event_counts_NOT_for_release_", event_name,"_", cohort,".csv") , row.names=F)
+  print(paste0("Compiled event counts saved: ", output_dir,"/compiled_event_counts_NOT_for_release_", event_name,"_", cohort,".csv"))
+  write.csv(df_event_counts, paste0(output_dir,"/suppressed_compiled_event_counts_NOT_for_release_", event_name,"_", cohort,".csv") , row.names=F)
+  print(paste0("Supressed event counts saved: ", output_dir,"/suppressed_compiled_event_counts_NOT_for_release_", event_name,"_", cohort,".csv"))
   
 }
 

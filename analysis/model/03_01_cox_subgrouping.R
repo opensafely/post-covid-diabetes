@@ -5,7 +5,7 @@
 ## =============================================================================
 source(file.path(scripts_dir,"04_01_(a)_cox_fit_model.R"))
 
-get_vacc_res <- function(event,subgroup,stratify_by_subgroup,stratify_by,time_point,input,covar_names,cuts_days_since_expo,cuts_days_since_expo_reduced,mdl){
+get_vacc_res <- function(event,subgroup,stratify_by_subgroup,stratify_by,time_point,input,covar_names,reduced_covar_names,cuts_days_since_expo,cuts_days_since_expo_reduced,mdl){
   print(paste0("Working on subgroup: ", subgroup, " ", cohort))
   print(paste0("Using ",time_point," time point"))
   
@@ -26,7 +26,7 @@ get_vacc_res <- function(event,subgroup,stratify_by_subgroup,stratify_by,time_po
   }
 
   for(i in c("hospitalised","non_hospitalised")){
-    if(stratify_by == i){
+    if(stratify_by == i & !is.na(stratify_by)){
       survival_data$follow_up_end <- NULL
       setnames(survival_data, 
                old = c(c(paste0(i,"_follow_up_end")),
@@ -102,32 +102,13 @@ get_vacc_res <- function(event,subgroup,stratify_by_subgroup,stratify_by,time_po
   
   total_covid_cases=nrow(survival_data %>% filter(!is.na(expo_date)))
   
-  
-  #-------------Format region if running COVID subgroup analysis----------------
-  if(startsWith(subgroup,"covid_pheno_")){
-    survival_data <- survival_data %>% mutate(region_name = as.character(region_name))%>%
-      mutate(region_name = case_when(region_name=="London" ~ "South East, including London",
-                                     region_name=="South East" ~ "South East, including London",
-                                     region_name=="West Midlands" ~ "Midlands",
-                                     region_name=="East Midlands" ~ "Midlands",
-                                     region_name=="North West" ~ "North West",
-                                     region_name=="North East" ~ "North East",
-                                     region_name=="East" ~ "East",
-                                     region_name=="Yorkshire and The Humber" ~ "Yorkshire and The Humber",
-                                     region_name=="South West" ~ "South West",
-      )) %>%
-      mutate(region_name = as.factor(region_name))%>%
-      mutate(region_name = relevel(region_name,ref="South East, including London"))
-  }
-  
   # add statement for reduced time cutoffs
   if(time_point == "reduced"){
-    res_vacc <- fit_model_reducedcovariates(event,subgroup,stratify_by_subgroup,stratify_by,mdl, survival_data,input,cuts_days_since_expo=cuts_days_since_expo_reduced,cuts_days_since_expo_reduced,covar_names,total_covid_cases,time_point)
-  }else{
-    res_vacc <- fit_model_reducedcovariates(event,subgroup,stratify_by_subgroup,stratify_by,mdl, survival_data,input,cuts_days_since_expo, cuts_days_since_expo_reduced,covar_names,total_covid_cases,time_point)
+    res_vacc <- fit_model_reducedcovariates(event,subgroup,stratify_by_subgroup,stratify_by,mdl, survival_data,input,cuts_days_since_expo=cuts_days_since_expo_reduced,cuts_days_since_expo_reduced,covar_names,reduced_covar_names,total_covid_cases,time_point)
+  }else if(time_point == "normal"){
+    res_vacc <- fit_model_reducedcovariates(event,subgroup,stratify_by_subgroup,stratify_by,mdl, survival_data,input,cuts_days_since_expo, cuts_days_since_expo_reduced,covar_names,reduced_covar_names,total_covid_cases,time_point)
   }
 
-  # res_vacc <- fit_model_reducedcovariates(event,subgroup,stratify_by_subgroup,stratify_by,mdl, survival_data,input,cuts_days_since_expo,cuts_days_since_expo_reduced,covar_names,total_covid_cases)
   print(paste0("Finished working on subgroup: ", subgroup, ", ",mdl,", ", cohort))
   return(res_vacc)
 }

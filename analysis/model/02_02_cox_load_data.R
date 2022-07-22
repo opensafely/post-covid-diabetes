@@ -37,7 +37,7 @@ if(event_name == "out_date_ami" | event_name == "out_date_stroke_isch" | event_n
 } else if(event_name == "t1dm" | event_name == "t2dm" | event_name == "otherdm"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes.rds"))
-
+  
 } else if (event_name == "t2dm_pd"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_prediabetes.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_prediabetes.rds"))
@@ -155,7 +155,7 @@ cohort_cols <- c("patient_id",
                  "non_hospitalised_follow_up_end",
                  "hospitalised_censor_date",
                  "non_hospitalised_censor_date")
- 
+
 
 #-----------------------CREATE EMPTY ANALYSES NOT RUN DF------------------------
 analyses_not_run=data.frame(matrix(nrow=0,ncol = 7))

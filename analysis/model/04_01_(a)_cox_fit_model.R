@@ -203,8 +203,8 @@ coxfit <- function(data_surv, interval_names, covar_names, reduced_covar_names, 
       }
     }
 
-    #If subgroup is not sex then add sex into formula
-    if ((startsWith(subgroup,"sex"))==F & (!"sex" %in% covariates_excl_region_sex_age)){
+    #If subgroup is not sex then add sex into formula - also do not add sex if event name is gestational dm (analyses performed in women only)
+    if ((startsWith(subgroup,"sex"))==F & (!"sex" %in% covariates_excl_region_sex_age) & event_name != "out_date_gestationaldm"){
       surv_formula <- paste(surv_formula, "sex", sep="+")
     }
 

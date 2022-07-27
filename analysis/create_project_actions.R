@@ -341,7 +341,19 @@ actions_list <- splice(
   splice(
     # over outcomes
     unlist(lapply(outcomes_model, function(x) splice(unlist(lapply(cohort_to_run, function(y) apply_model_function(outcome = x, cohort = y)), recursive = FALSE))
-      ),recursive = FALSE)))
+      ),recursive = FALSE)),
+  
+  comment("Temporary action - check JCVI groups"),
+  action(
+    name = "check_jcvi",
+    run = "r:latest analysis/tmp/check_jcvi.R both",
+    needs = list("preprocess_data_vaccinated","preprocess_data_electively_unvaccinated"),
+    moderately_sensitive = list(
+      venn_diagram = glue("output/not-for-review/tmp/check_jcvi_*")
+    )
+  )
+  
+  )
 
   # #comment("Split hospitalised COVID by region - vaccinated"),
   # action(

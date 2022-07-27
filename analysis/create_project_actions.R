@@ -212,10 +212,7 @@ actions_list <- splice(
     run = "r:latest analysis/preprocess/preprocess_data.R vaccinated",
     needs = list("generate_study_population_index", "generate_study_population_vaccinated", "generate_study_population_electively_unvaccinated"),
     moderately_sensitive = list(
-      describe = glue("output/not-for-review/describe_*.txt"),
-      describe_index = glue("output/not-for-review/describe_tmp_index_vaccinated.txt"),
-      describe_cohort = glue("output/not-for-review/describe_tmp_vaccinated.txt"),
-      descrive_venn = glue("output/not-for-review/describe_venn_vaccinated.txt")
+      describe = glue("output/not-for-review/describe_*.txt")
     ),
     highly_sensitive = list(
       cohort = glue("output/input_vaccinated.rds"),
@@ -229,10 +226,7 @@ actions_list <- splice(
     run = "r:latest analysis/preprocess/preprocess_data.R electively_unvaccinated",
     needs = list("generate_study_population_index", "generate_study_population_vaccinated", "generate_study_population_electively_unvaccinated"),
     moderately_sensitive = list(
-      describe = glue("output/not-for-review/describe_input_electively_unvaccinated_*.txt"),
-      describe_index = glue("output/not-for-review/describe_tmp_index_electively_unvaccinated.txt"),
-      describe_cohort = glue("output/not-for-review/describe_tmp_electively_unvaccinated.txt"),
-      descrive_venn = glue("output/not-for-review/describe_venn_electively_unvaccinated.txt")
+      describe = glue("output/not-for-review/describe_input_electively_unvaccinated_*.txt")
     ),
     highly_sensitive = list(
       cohort = glue("output/input_electively_unvaccinated.rds"),

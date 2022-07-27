@@ -509,3 +509,14 @@ actions:
         dataset: output/input_gestationaldm_*_electively_unvaccinated_*_time_periods.csv
         sampled_dataset: output/input_sampled_data_gestationaldm_*_electively_unvaccinated_*_time_periods.csv
 
+  ## Temporary action - check JCVI groups 
+
+  check_jcvi:
+    run: r:latest analysis/tmp/check_jcvi.R both
+    needs:
+    - preprocess_data_vaccinated
+    - preprocess_data_electively_unvaccinated
+    outputs:
+      moderately_sensitive:
+        venn_diagram: output/not-for-review/tmp/check_jcvi_*
+

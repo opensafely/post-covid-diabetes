@@ -28,7 +28,9 @@ check_jcvi <- function(cohort_name) {
   
   input <- input %>%
     dplyr::mutate(age_group = dplyr::case_when(
-      cov_num_age < 18 ~ "<18",
+      cov_num_age < 0 ~ "<0",
+      cov_num_age >= 0 & cov_num_age < 16 ~ "0-15",
+      cov_num_age >= 16 & cov_num_age < 17 ~ "16-17",
       cov_num_age >= 18 & cov_num_age < 30 ~ "18-29",
       cov_num_age >= 30 & cov_num_age < 40 ~ "30-39",
       cov_num_age >= 40 & cov_num_age < 50 ~ "40-49",

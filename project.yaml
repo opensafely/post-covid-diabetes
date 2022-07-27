@@ -51,7 +51,7 @@ actions:
     - generate_study_population_electively_unvaccinated
     outputs:
       moderately_sensitive:
-        describe: output/not-for-review/describe_input_vaccinated_*.txt
+        describe: output/not-for-review/describe_*.txt
         describe_index: output/not-for-review/describe_tmp_index_vaccinated.txt
         describe_cohort: output/not-for-review/describe_tmp_vaccinated.txt
         descrive_venn: output/not-for-review/describe_venn_vaccinated.txt

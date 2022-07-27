@@ -87,6 +87,10 @@ rm(tmp1,tmp2)
 print("tmp1 and tmp2 now removed from environment")
 print("Spine dataset created successfully")
 
+sink(paste0("output/not-for-review/describe_input_spine",cohort_name,"_PRE_preprocess.txt"))
+print(Hmisc::describe(df))
+sink()
+
 # Covert all dates to date format ----------------------------------------------
 
 for (i in colnames(df)[grepl("_date",colnames(df))]) {
@@ -249,7 +253,7 @@ sink(paste0("output/not-for-review/describe_tmp_index_",cohort_name,".txt"))
 print(Hmisc::describe(tmp_index))
 sink()
 
-sink(paste0("output/not-for-review/describe_tmp_",cohort_name,".txt"))
+sink(paste0("output/not-for-review/describe_tmp_other",cohort_name,".txt"))
 print(Hmisc::describe(tmp_other))
 sink()
 

@@ -34,6 +34,9 @@ df <- arrow::read_feather(file = "output/input_index.feather",
                                          "qa_num_birth_year",
                                          "death_date"))
 
+print("Spine dataset (input index feather) read in successfully")
+print(paste0(nrow(df), " rows in spine dataset line 38"))
+
 # Load data --------------------------------------------------------------------
 
 tmp1 <- arrow::read_feather(file = "output/input_electively_unvaccinated.feather",
@@ -41,6 +44,9 @@ tmp1 <- arrow::read_feather(file = "output/input_electively_unvaccinated.feather
                                            "cov_cat_sex",
                                            "vax_date_eligible",
                                            "vax_cat_jcvi_group"))
+
+print("tmp1 dataset (input index electively unvaccinated) read in successfully")
+print(paste0(nrow(tmp1), " rows in tmp1 dataset line 49"))
 
 tmp2 <- arrow::read_feather(file = "output/input_vaccinated.feather",
                             col_select = c("patient_id",
@@ -54,6 +60,9 @@ tmp2 <- arrow::read_feather(file = "output/input_vaccinated.feather",
                                            "vax_date_Moderna_2",
                                            "vax_date_Moderna_3"))
 
+print("tmp2 dataset (input index vaccinated) read in successfully")
+print(paste0(nrow(tmp2), " rows in tmp1 dataset line 64"))
+
 # Overwrite patient IDs for dummy data only ------------------------------------
 
 if(Sys.getenv("OPENSAFELY_BACKEND") %in% c("", "expectations")) {
@@ -65,16 +74,31 @@ if(Sys.getenv("OPENSAFELY_BACKEND") %in% c("", "expectations")) {
 # Make single spine dataset ----------------------------------------------------
 
 df <- merge(df,tmp1, by = "patient_id")
-df <- merge(df,tmp2, by = "patient_id")
-rm(tmp1,tmp2)
 
+print("df (spine) and tmp1 (input index electively unvaccinated) merged successfully")
+print(paste0(nrow(df), " rows in merged dataset line 79"))
+
+df <- merge(df,tmp2, by = "patient_id")
+
+print("df (merged dataset) and tmp2  merged successfully")
+print(paste0(nrow(df), " rows in merged dataset line 84"))
+
+rm(tmp1,tmp2)
+print("tmp1 and tmp2 now removed from environment")
 print("Spine dataset created successfully")
+
+sink(paste0("output/not-for-review/describe_input_spine",cohort_name,"_PRE_preprocess.txt"))
+print(Hmisc::describe(df))
+sink()
 
 # Covert all dates to date format ----------------------------------------------
 
 for (i in colnames(df)[grepl("_date",colnames(df))]) {
   df[,i] <- as.Date(df[,i])
 }
+
+print("Dates converted to date format")
+print(paste0(nrow(df), " rows in dataset line 97"))
 
 # Overwrite vaccination information for dummy data only ------------------------
 
@@ -104,6 +128,9 @@ for (cat_product in c("AstraZeneca","Pfizer","Moderna")) {
   
 }
 
+print("New tmp df with vaccinations for a given product")
+print(paste0(nrow(tmp), " rows in tmp dataset line 128"))
+
 # Combine vaccinations for each product into a wide format table ---------------
 
 tmp <- df %>% 
@@ -115,6 +142,9 @@ tmp <- df %>%
       dplyr::full_join(tmp_Moderna, by=c("patient_id", "date_covid")),
     by = "patient_id"
   ) 
+
+print("Vaccinations combined for each product into a wide format table")
+print(paste0(nrow(tmp), " rows in tmp dataset line 143"))
 
 # Determine product at each vaccination date -----------------------------------
 
@@ -140,6 +170,9 @@ tmp$cat_product <- ifelse((!is.na(tmp$vax_index_AstraZeneca)) +
                             (!is.na(tmp$vax_index_Moderna)) > 1,
                           "duplicate",tmp$cat_product)
 
+print("Produce at each vaccination date determined")
+print(paste0(nrow(tmp), " rows in tmp dataset line 170"))
+
 # Determine vaccination order --------------------------------------------------
 
 tmp <- tmp %>%
@@ -147,6 +180,9 @@ tmp <- tmp %>%
   dplyr::group_by(patient_id) %>%
   dplyr::mutate(vax_index=dplyr::row_number()) %>%
   dplyr::ungroup()
+
+print("Vaccination order determined")
+print(paste0(nrow(tmp), " rows in tmp dataset line 181"))
 
 # Make summary variables for vaccination dates and products --------------------
 
@@ -158,10 +194,16 @@ tmp <- tmp %>%
     names_glue = "vax_{.value}_{vax_index}"
   )
 
+print("Summary variables made for vaccination dates and products")
+print(paste0(nrow(tmp), " rows in tmp dataset line 194"))
+
 # Add summary variables to main data -------------------------------------------
 
 df <- merge(df, tmp, by = "patient_id", all.x = TRUE)
 rm(tmp_AstraZeneca, tmp_Moderna, tmp_Pfizer)
+
+print("df and tmp datasets merged by patient id")
+print(paste0(nrow(df), " rows in spine dataset line 202"))
 
 print("Vaccination information recorded successfully")
 
@@ -173,6 +215,9 @@ df <- df[,c("patient_id","death_date",
             colnames(df)[grepl("vax_date_covid_",colnames(df))], # Vaccination dates
             colnames(df)[grepl("vax_cat_",colnames(df))], # Vaccination products
             colnames(df)[grepl("cov_",colnames(df))])] # Covariates
+
+print("Dataset column names tidied")
+print(paste0(nrow(df), " rows in dataset line 216"))
 
 # Determine patient index date -----------------------------------------------
 
@@ -191,11 +236,16 @@ df$index_source <- ifelse(df$study_start_date>df$pat_start_date ,"study_start_da
 df$index_date <- as.Date(ifelse(df$study_start_date>df$pat_start_date ,df$study_start_date,df$pat_start_date), origin = "1970-01-01")# Convert dates to date format -------------------------------------------------
 
 print("Index date and source determined successfully")
+print(paste0(nrow(df), " rows in dataset line 235"))
 
 # Load covariate data ----------------------------------------------------------
 
 tmp_index <- arrow::read_feather(file = "output/input_index.feather")
 tmp_other <- arrow::read_feather(file = paste0("output/input_",cohort_name,".feather"))
+
+print("Covariate data loaded")
+print(paste0(nrow(tmp_index), " rows in tmp index (input_index.feather) line 243"))
+print(paste0(nrow(tmp_other), " rows in tmp other (input_{cohort}.feather) line 244"))
 
 # Describe data --------------------------------------------------------------
 
@@ -203,7 +253,7 @@ sink(paste0("output/not-for-review/describe_tmp_index_",cohort_name,".txt"))
 print(Hmisc::describe(tmp_index))
 sink()
 
-sink(paste0("output/not-for-review/describe_tmp_",cohort_name,".txt"))
+sink(paste0("output/not-for-review/describe_tmp_other",cohort_name,".txt"))
 print(Hmisc::describe(tmp_other))
 sink()
 
@@ -220,20 +270,33 @@ if(Sys.getenv("OPENSAFELY_BACKEND") %in% c("", "expectations")) {
 tmp_index <- tmp_index[tmp_index$patient_id %in% df[df$index_source=="study_start_date",]$patient_id,
                        intersect(colnames(tmp_index),colnames(tmp_other))]
 
+print("Covariate tmp index data merged")
+print(paste0(nrow(tmp_index), " rows in tmp index line 270"))
+
 tmp_other <- tmp_other[tmp_other$patient_id %in% df[df$index_source=="pat_start_date",]$patient_id,
                        intersect(colnames(tmp_index),colnames(tmp_other))]
 
+print("Covariate tmp other data merged")
+print(paste0(nrow(tmp_other), " rows in tmp other (input_{cohort}.feather) line 277"))
+
 tmp <- rbind(tmp_index, tmp_other)
+
+print("tmp index and tmp other rbinded together")
+print(paste0(nrow(tmp), " rows in tmp line 281"))
 
 df <- merge(df, tmp, by = "patient_id")
 rm(tmp, tmp_index,tmp_other)
 
 print("Non-spine variables added to dataset successfully")
+print(paste0(nrow(df), " rows in df line 287"))
 
 #Combine BMI variables to create one history of obesity variable ---------------
 
 df$cov_bin_obesity <-ifelse(df$cov_bin_obesity==TRUE |df$cov_cat_bmi_groups=="Obese",TRUE,FALSE)
 df[,c("cov_num_bmi")] <- NULL
+
+print("obesity variable created successfully")
+print(paste0(nrow(df), " rows in df line 295"))
 
 # Convert dates to date format -------------------------------------------------
 
@@ -266,7 +329,8 @@ for (i in colnames(df)[grepl("_bin",colnames(df))]) {
 }
 
 print("Variable formats updated successfully")
-
+print(paste0(nrow(df), " rows in df line 328")
+      )
 # Define COVID-19 severity ---------------------------------------------------
 
 df$sub_cat_covid19_hospital <- "no_infection"
@@ -285,6 +349,7 @@ df[,c("sub_date_covid19_hospital")] <- NULL
 df <- df[!is.na(df$patient_id),]
 
 print("COVID19 severity determined successfully")
+print(paste0(nrow(df), " rows in df line 348"))
 
 # QC for consultation variable
 # max to 365 (average of one per day)
@@ -297,6 +362,7 @@ df <- df %>%
 
 print("Consultation variable after QC")
 summary(df$cov_num_consulation_rate)
+print(paste0(nrow(df), " rows in df line 362"))
 
 # Add diabetes variables and algorithm when relevant (i.e. diabetes outcome active)
 active_analyses <- read_rds("lib/active_analyses.rds")
@@ -353,6 +419,7 @@ if (any(diabetes_analyses$active==TRUE)){
   source(file.path(scripts_dir,"diabetes_algorithm.R"))
   df <- diabetes_algo(df)
   print("Diabetes algorithm run successfully")
+  print(paste0(nrow(df), " rows in df line 418 after diabetes algo"))
 }
 
 # Restrict columns and save analysis dataset ---------------------------------
@@ -373,6 +440,7 @@ df1[,colnames(df)[grepl("tmp_",colnames(df))]] <- NULL
 saveRDS(df1, file = paste0("output/input_",cohort_name,".rds"))
 
 print("Input data saved successfully")
+print(paste0(nrow(df1), " rows in df1 saved as input dataset line 439"))
 
 # Describe data --------------------------------------------------------------
 

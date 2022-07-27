@@ -212,7 +212,7 @@ actions_list <- splice(
     run = "r:latest analysis/preprocess/preprocess_data.R vaccinated",
     needs = list("generate_study_population_index", "generate_study_population_vaccinated", "generate_study_population_electively_unvaccinated"),
     moderately_sensitive = list(
-      describe = glue("output/not-for-review/describe_*.txt"),
+      describe = glue("output/not-for-review/describe_*.txt")
     ),
     highly_sensitive = list(
       cohort = glue("output/input_vaccinated.rds"),
@@ -226,7 +226,7 @@ actions_list <- splice(
     run = "r:latest analysis/preprocess/preprocess_data.R electively_unvaccinated",
     needs = list("generate_study_population_index", "generate_study_population_vaccinated", "generate_study_population_electively_unvaccinated"),
     moderately_sensitive = list(
-      describe = glue("output/not-for-review/describe_input_electively_unvaccinated_*.txt"),
+      describe = glue("output/not-for-review/describe_input_electively_unvaccinated_*.txt")
     ),
     highly_sensitive = list(
       cohort = glue("output/input_electively_unvaccinated.rds"),

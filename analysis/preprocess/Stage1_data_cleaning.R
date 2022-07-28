@@ -163,8 +163,8 @@ stage1 <- function(cohort_name, group){
     
     
     #Remove rows that are TRUE for at least one rule
-    input_QA=input%>%filter(rule1==FALSE & rule2==FALSE & rule3==FALSE & rule4==FALSE & rule5==FALSE & rule6==FALSE & rule7==FALSE)
-    input_QA=input_QA %>% select(-c(rule1,rule2,rule3,rule4,rule5,rule6,rule7))
+    input_QA=input%>%filter(rule1==FALSE & rule2==FALSE & rule3==FALSE & rule5==FALSE & rule6==FALSE & rule7==FALSE)
+    input_QA=input_QA %>% select(-c(rule1,rule2,rule3,rule5,rule6,rule7))
     # View(input_QA)
     
     #Save QA'd input as .rds
@@ -180,7 +180,7 @@ stage1 <- function(cohort_name, group){
     QA_summary[3,1]="Rule 3"
     QA_summary[3,2]=nrow(input%>%filter(rule3==T))
     QA_summary[4,1]="Rule 4"
-    QA_summary[4,2]=nrow(input%>%filter(rule4==T))
+    # QA_summary[4,2]=nrow(input%>%filter(rule4==T))
     QA_summary[5,1]="Rule 5"
     QA_summary[5,2]=nrow(input%>%filter(rule5==T))
     QA_summary[6,1]="Rule 6"
@@ -191,12 +191,12 @@ stage1 <- function(cohort_name, group){
     QA_summary[8,2]=nrow(input)-nrow(input_QA)
     
     
-    #Save Qa summary as .csv
-    write.csv(QA_summary, file = file.path("output/review/descriptives", paste0("QA_summary_",cohort_name, "_",group, ".csv")) , row.names=F)
-    
-    # Remove QA variables from dataset
-    input <- input_QA[ , !names(input_QA) %in% c("qa_num_birth_year", "qa_bin_pregnancy", "qa_bin_prostate_cancer")]
-    
+    # #Save Qa summary as .csv
+    # write.csv(QA_summary, file = file.path("output/review/descriptives", paste0("QA_summary_",cohort_name, "_",group, ".csv")) , row.names=F)
+    # 
+    # # Remove QA variables from dataset
+    # input <- input_QA[ , !names(input_QA) %in% c("qa_num_birth_year", "qa_bin_pregnancy", "qa_bin_prostate_cancer")]
+    input <- input_QA
     
     #########################################
     # 3. Apply exclusion/inclusion criteria #
@@ -224,7 +224,10 @@ stage1 <- function(cohort_name, group){
     
     #Inclusion criteria 2: Known age between 18 and 110 on 01/06/2021 
     #input <- input[!is.na(input$cov_num_age),] # Commented out this code line since it should be dealt with in the next code line
-    input <- subset(input, input$cov_num_age >= 18 & input$cov_num_age <= 110) # Subset input if age between 18 and 110 on 01/06/2021.
+    input <- subset(input, input$cov_num_age >= 18) # Subset input if age between 18 and 110 on 01/06/2021.
+    print(paste0(nrow(input), " rows after including those aged18 or over"))
+    input <- subset(input, input$cov_num_age <= 110) # Subset input if age between 18 and 110 on 01/06/2021.
+    print(paste0(nrow(input), " rows after including those aged 110 or under"))
     cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[3,1]) - nrow(input), "Criteria 2 (Inclusion): Known age between 18 and 110 on 01/06/2021") # Feed into the cohort flow
     
     #Inclusion criteria 3: Known sex
@@ -256,7 +259,7 @@ stage1 <- function(cohort_name, group){
     #cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),"Criteria 6 (Exclusion): SARS-CoV-2 infection recorded prior index date")
     
     # A simple check if factor reference level has changed
-    describe_vars <- tidyselect::vars_select(names(input), contains(c('_cat_', 'cov_bin','cov_cat','qa_bin','exp_cat','vax_cat', 'step'), ignore.case = TRUE))
+    describe_vars <- tidyselect::vars_select(names(input), contains(c('_cat_', 'cov_bin','cov_cat','qa_bin','exp_cat','vax_cat', 'step', 'rule4'), ignore.case = TRUE))
     meta_data_factors <- lapply(input[,c(describe_vars)], table)
     
     # NB: write.csv is not feasible to output list with uneven length
@@ -323,7 +326,9 @@ stage1 <- function(cohort_name, group){
       cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[8,1]) - nrow(input), "Criteria 7 (Exclusion): Have a record of a first vaccination prior index date")
       
       #Exclusion criteria 8: Missing JCVI group
-      input <- subset(input, is.na(input$vax_cat_jcvi_group)== FALSE)
+      input <- subset(input, vax_cat_jcvi_group == "01" | vax_cat_jcvi_group == "02" | vax_cat_jcvi_group == "03" | vax_cat_jcvi_group == "04" |
+                        vax_cat_jcvi_group == "05" | vax_cat_jcvi_group == "06" | vax_cat_jcvi_group == "07" | vax_cat_jcvi_group == "08" |
+                        vax_cat_jcvi_group == "09" | vax_cat_jcvi_group == "10" | vax_cat_jcvi_group == "11" | vax_cat_jcvi_group == "12")
       cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[9,1]) - nrow(input), "Criteria 8 (Exclusion): Missing JCVI group")
     }
     
@@ -425,9 +430,25 @@ stage1 <- function(cohort_name, group){
     print(g)
     dev.off()
     
+    ### ADD RULE 4 ###
+    
+    print(paste0(nrow(input), " rows in before rule 4"))
+    
+    input=input%>%filter(rule4==FALSE)
+    QA_summary[4,2]=nrow(input%>%filter(rule4==T))
+    
+    print(paste0(nrow(input), " rows in after rule 4"))
+    
+    #Save Qa summary as .csv
+    write.csv(QA_summary, file = file.path("output/review/descriptives", paste0("QA_summary_",cohort_name, "_",group, ".csv")) , row.names=F)
+    
+    # Remove QA variables from dataset
+    input <- input[ , !names(input) %in% c("qa_num_birth_year", "qa_bin_pregnancy", "qa_bin_prostate_cancer")]
+    
     #-------------------------------------#
     # 4. Create the final stage 1 dataset #
     #-------------------------------------#
+    
     # Remove inclusion/exclusion variables from dataset
     input <- input[ , !names(input) %in% c("start_alive", "vax_gap", "vax_mixed", "vax_prior_unknown", "prior_vax1")]
     

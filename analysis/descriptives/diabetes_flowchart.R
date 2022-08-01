@@ -101,10 +101,6 @@ diabetes_flow_function <- function(cohort_name, group) {
     # DIABETES UNLIKELY
     s = sum(diabetes_df$out_cat_diabetes == "DM unlikely", na.rm = T))
   
-  # REDACT <=5 TO NA --------------------------------------------------------------
-  
-  values <- lapply(values, function(x) replace(x, x <= 5, NA))
-  
   # EXPORT RAW DATA FOR FLOWCHART -------------------------------------------
   # exporting data so that flow chart can easily be produced/tweaked outside of L4. 
   
@@ -112,7 +108,21 @@ diabetes_flow_function <- function(cohort_name, group) {
   values_df_t <- data.table::transpose(values_df) # transpose df
   names(values_df_t) <- lapply(values_df_t[1, ], as.character) # make row 1 the column names
   values_df_t <- values_df_t[-1, ] 
-  write.csv(values_df_t, file = paste0("output/review/figure-data/diabetes_flow_values_",cohort_name,"_",group,".csv")) # save
+  
+  # DISCLOSURE CONTROL ------------------------------------------------------
+  
+  # round to nearest value
+  ceiling_any <- function(x, to=1){
+    # round to nearest 100 millionth to avoid floating point errors
+    ceiling(plyr::round_any(x/to, 1/100000000))*to
+  }
+  
+  values_df_t <- values_df_t %>%
+    mutate_all(~ as.numeric(.)) %>%
+    mutate_all(~ ceiling_any(., to=7)) %>%
+    mutate_all(~ replace(., .==0, 7))
+  
+  write.csv(values_df_t, file = paste0("output/review/figure-data/diabetes_flow_values_",cohort_name,"_",group,".csv"), row.names = FALSE) # save
   
 }
 

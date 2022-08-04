@@ -11,6 +11,11 @@ from cohortextractor import (
     codelist_from_csv,
 )
 
+#study dates
+from grouping_variables import (
+    study_dates,
+    days)
+    
 ## Codelists from codelist.py (which pulls them from the codelist folder)
 from codelists import *
 
@@ -20,9 +25,11 @@ from datetime import date
 ## Study definition helper
 import study_definition_helper_functions as helpers
 
+# Define pandemic_start
+pandemic_start = study_dates["pandemic_start"]
 # Define common variables function
 
-def generate_common_variables(index_date_variable):
+def generate_common_variables(index_date_variable,end_date_variable):
 
     dynamic_variables = dict(
 

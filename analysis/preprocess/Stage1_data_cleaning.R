@@ -462,7 +462,7 @@ active_analyses <- active_analyses %>% filter(active==TRUE)
 group <- unique(active_analyses$outcome_group)
 
 for(i in group){
-if (cohort_name == "both") {
+if (cohort_name == "all") {
   stage1("electively_unvaccinated", i)
   stage1("vaccinated", i)
 } else{

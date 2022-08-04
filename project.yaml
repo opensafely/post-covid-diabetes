@@ -2,7 +2,7 @@ version: '3.0'
 
 expectations:
 
-  population_size: 100000
+  population_size: 1000
 
 actions:
 
@@ -13,67 +13,109 @@ actions:
   ## # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # 
 
   vax_eligibility_inputs:
-    run: r:latest analysis/vax_eligibility_inputs.R
+    run: r:latest analysis/metadates.R
     outputs:
       highly_sensitive:
-        vax_study_dates_json: output/vax_study_dates.json
+        study_dates_json: output/study_dates.json
         vax_jcvi_groups: output/vax_jcvi_groups.csv
         vax_eligible_dates: output/vax_eligible_dates.csv
 
-  generate_study_population_electively_unvaccinated:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_electively_unvaccinated
+  generate_study_population_prelim:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_prelim
       --output-format feather
     needs:
     - vax_eligibility_inputs
     outputs:
       highly_sensitive:
-        cohort: output/input_electively_unvaccinated.feather
+        cohort: output/input_prelim.feather
 
-  generate_study_population_vaccinated:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_vaccinated
-      --output-format feather
-    outputs:
-      highly_sensitive:
-        cohort: output/input_vaccinated.feather
-
-  generate_study_population_index:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_index
-      --output-format feather
-    outputs:
-      highly_sensitive:
-        cohort: output/input_index.feather
-
-  preprocess_data_vaccinated:
-    run: r:latest analysis/preprocess/preprocess_data.R vaccinated
+  generate_index_dates:
+    run: r:latest analysis/prelim.R
     needs:
-    - generate_study_population_index
-    - generate_study_population_vaccinated
-    - generate_study_population_electively_unvaccinated
+    - vax_eligibility_inputs
+    - generate_study_population_prelim
+    outputs:
+      highly_sensitive:
+        index_dates: output/index_dates.csv
+
+  generate_study_population_prevax:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_prevax
+      --output-format feather
+    needs:
+    - vax_eligibility_inputs
+    - generate_index_dates
+    outputs:
+      highly_sensitive:
+        cohort: output/input_prevax.feather
+
+  generate_study_population_vax:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_vax
+      --output-format feather
+    needs:
+    - generate_index_dates
+    - vax_eligibility_inputs
+    outputs:
+      highly_sensitive:
+        cohort: output/input_vax.feather
+
+  generate_study_population_unvax:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_unvax
+      --output-format feather
+    needs:
+    - vax_eligibility_inputs
+    - generate_index_dates
+    outputs:
+      highly_sensitive:
+        cohort: output/input_unvax.feather
+
+  preprocess_data_prevax:
+    run: r:latest analysis/preprocess/preprocess_data_prevax.R
+    needs:
+    - generate_study_population_prelim
+    - generate_study_population_prevax
+    - generate_study_population_vax
+    - generate_study_population_unvax
     outputs:
       moderately_sensitive:
-        describe: output/not-for-review/describe_*.txt
+        describe: output/not-for-review/describe_input_prevax_*.txt
       highly_sensitive:
-        cohort: output/input_vaccinated.rds
-        venn: output/venn_vaccinated.rds
+        cohort: output/input_prevax.rds
+        venn: output/venn_prevax.rds
 
-  preprocess_data_electively_unvaccinated:
-    run: r:latest analysis/preprocess/preprocess_data.R electively_unvaccinated
+  preprocess_data_vax:
+    run: r:latest analysis/preprocess/preprocess_data.R vax
     needs:
-    - generate_study_population_index
-    - generate_study_population_vaccinated
-    - generate_study_population_electively_unvaccinated
+    - generate_study_population_prelim
+    - generate_study_population_prevax
+    - generate_study_population_vax
+    - generate_study_population_unvax
     outputs:
       moderately_sensitive:
-        describe: output/not-for-review/describe_input_electively_unvaccinated_*.txt
+        describe: output/not-for-review/describe_input_vax_*.txt
       highly_sensitive:
-        cohort: output/input_electively_unvaccinated.rds
-        venn: output/venn_electively_unvaccinated.rds
+        cohort: output/input_vax.rds
+        venn: output/venn_vax.rds
 
-  stage1_data_cleaning_both:
-    run: r:latest analysis/preprocess/Stage1_data_cleaning.R both
+  preprocess_data_unvax:
+    run: r:latest analysis/preprocess/preprocess_data.R unvax
     needs:
-    - preprocess_data_vaccinated
-    - preprocess_data_electively_unvaccinated
+    - generate_study_population_prelim
+    - generate_study_population_prevax
+    - generate_study_population_vax
+    - generate_study_population_unvax
+    outputs:
+      moderately_sensitive:
+        describe: output/not-for-review/describe_input_unvax_*.txt
+      highly_sensitive:
+        cohort: output/input_unvax.rds
+        venn: output/venn_unvax.rds
+
+  stage1_data_cleaning_all:
+    run: r:latest analysis/preprocess/Stage1_data_cleaning.R all
+    needs:
+    - preprocess_data_prevax
+    - preprocess_data_vax
+    - preprocess_data_unvax
     outputs:
       moderately_sensitive:
         refactoring: output/not-for-review/meta_data_factors_*.csv
@@ -83,434 +125,627 @@ actions:
       highly_sensitive:
         cohort: output/input_*.rds
 
-  stage1_end_date_table_vaccinated:
-    run: r:latest analysis/preprocess/create_follow_up_end_date.R vaccinated
+  stage1_end_date_table_prevax:
+    run: r:latest analysis/preprocess/create_follow_up_end_date.R prevax
     needs:
-    - preprocess_data_vaccinated
-    - preprocess_data_electively_unvaccinated
-    - stage1_data_cleaning_both
+    - preprocess_data_prevax
+    - preprocess_data_vax
+    - preprocess_data_unvax
+    - stage1_data_cleaning_all
     outputs:
       highly_sensitive:
-        end_date_table: output/follow_up_end_dates_vaccinated_*.rds
+        end_date_table: output/follow_up_end_dates_prevax_*.rds
 
-  stage1_end_date_table_electively_unvaccinated:
-    run: r:latest analysis/preprocess/create_follow_up_end_date.R electively_unvaccinated
+  stage1_end_date_table_vax:
+    run: r:latest analysis/preprocess/create_follow_up_end_date.R vax
     needs:
-    - preprocess_data_vaccinated
-    - preprocess_data_electively_unvaccinated
-    - stage1_data_cleaning_both
+    - preprocess_data_prevax
+    - preprocess_data_vax
+    - preprocess_data_unvax
+    - stage1_data_cleaning_all
     outputs:
       highly_sensitive:
-        end_date_table: output/follow_up_end_dates_electively_unvaccinated_*.rds
+        end_date_table: output/follow_up_end_dates_vax_*.rds
 
-  stage2_missing_table1_both:
-    run: r:latest analysis/descriptives/Stage2_missing_table1.R both
+  stage1_end_date_table_unvax:
+    run: r:latest analysis/preprocess/create_follow_up_end_date.R unvax
     needs:
-    - stage1_data_cleaning_both
+    - preprocess_data_prevax
+    - preprocess_data_vax
+    - preprocess_data_unvax
+    - stage1_data_cleaning_all
+    outputs:
+      highly_sensitive:
+        end_date_table: output/follow_up_end_dates_unvax_*.rds
+
+  stage2_missing_table1_all:
+    run: r:latest analysis/descriptives/Stage2_missing_table1.R all
+    needs:
+    - stage1_data_cleaning_all
     outputs:
       moderately_sensitive:
         Missing_RangeChecks: output/not-for-review/Check_missing_range_*.csv
         DateChecks: output/not-for-review/Check_dates_range_*.csv
         Descriptive_Table: output/review/descriptives/Table1_*.csv
 
-  stage_2_events_split_by_covariate_level_vaccinated:
-    run: r:latest analysis/descriptives/events_split_by_covariate_level.R vaccinated
+  stage_2_events_split_by_covariate_level_prevax:
+    run: r:latest analysis/descriptives/events_split_by_covariate_level.R prevax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_vaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
-        counts_by_covariate_level: output/not-for-review/event_counts_by_covariate_level_vaccinated_*.csv
-        selected_covariates: output/not-for-review/non_zero_selected_covariates_vaccinated_*.csv
+        counts_by_covariate_level: output/not-for-review/event_counts_by_covariate_level_prevax_*.csv
+        selected_covariates: output/not-for-review/non_zero_selected_covariates_prevax_*.csv
 
-  stage_2_events_split_by_covariate_level_electively_unvaccinated:
-    run: r:latest analysis/descriptives/events_split_by_covariate_level.R electively_unvaccinated
+  stage_2_events_split_by_covariate_level_vax:
+    run: r:latest analysis/descriptives/events_split_by_covariate_level.R vax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_electively_unvaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
-        counts_by_covariate_level: output/not-for-review/event_counts_by_covariate_level_electively_unvaccinated_*.csv
-        selected_covariates: output/not-for-review/non_zero_selected_covariates_electively_unvaccinated_*.csv
+        counts_by_covariate_level: output/not-for-review/event_counts_by_covariate_level_vax_*.csv
+        selected_covariates: output/not-for-review/non_zero_selected_covariates_vax_*.csv
 
-  stage3_diabetes_flow_vaccinated:
-    run: r:latest analysis/descriptives/diabetes_flowchart.R vaccinated
+  stage_2_events_split_by_covariate_level_unvax:
+    run: r:latest analysis/descriptives/events_split_by_covariate_level.R unvax
     needs:
-    - stage1_data_cleaning_both
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
-        flow_df: output/review/figure-data/diabetes_flow_values_vaccinated_*.csv
+        counts_by_covariate_level: output/not-for-review/event_counts_by_covariate_level_unvax_*.csv
+        selected_covariates: output/not-for-review/non_zero_selected_covariates_unvax_*.csv
 
-  stage3_diabetes_flow_electively_unvaccinated:
-    run: r:latest analysis/descriptives/diabetes_flowchart.R electively_unvaccinated
+  stage3_diabetes_flow_prevax:
+    run: r:latest analysis/descriptives/diabetes_flowchart.R prevax
     needs:
-    - stage1_data_cleaning_both
+    - stage1_data_cleaning_all
     outputs:
       moderately_sensitive:
-        flow_df: output/review/figure-data/diabetes_flow_values_electively_unvaccinated_*.csv
+        flow_df: output/review/figure-data/diabetes_flow_values_prevax_*.csv
 
-  ## Stage 4 - Table 2 - vaccinated cohort 
-
-  stage4_table_2_vaccinated:
-    run: r:latest analysis/descriptives/table_2.R vaccinated
+  stage3_diabetes_flow_vax:
+    run: r:latest analysis/descriptives/diabetes_flowchart.R vax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_vaccinated
+    - stage1_data_cleaning_all
     outputs:
       moderately_sensitive:
-        input_table_2: output/review/descriptives/table2_vaccinated_*.csv
+        flow_df: output/review/figure-data/diabetes_flow_values_vax_*.csv
 
-  ## Stage 4 - Table 2 - electively_unvaccinated cohort 
-
-  stage4_table_2_electively_unvaccinated:
-    run: r:latest analysis/descriptives/table_2.R electively_unvaccinated
+  stage3_diabetes_flow_unvax:
+    run: r:latest analysis/descriptives/diabetes_flowchart.R unvax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_electively_unvaccinated
+    - stage1_data_cleaning_all
     outputs:
       moderately_sensitive:
-        input_table_2: output/review/descriptives/table2_electively_unvaccinated_*.csv
+        flow_df: output/review/figure-data/diabetes_flow_values_unvax_*.csv
 
-  stage4_venn_diagram_both:
-    run: r:latest analysis/descriptives/venn_diagram.R both
+  ## Stage 4 - Table 2 - prevax cohort 
+
+  stage4_table_2_prevax:
+    run: r:latest analysis/descriptives/table_2.R prevax
     needs:
-    - preprocess_data_vaccinated
-    - preprocess_data_electively_unvaccinated
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_vaccinated
-    - stage1_end_date_table_electively_unvaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_prevax
+    outputs:
+      moderately_sensitive:
+        input_table_2: output/review/descriptives/table2_prevax_*.csv
+
+  ## Stage 4 - Table 2 - vax cohort 
+
+  stage4_table_2_vax:
+    run: r:latest analysis/descriptives/table_2.R vax
+    needs:
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_vax
+    outputs:
+      moderately_sensitive:
+        input_table_2: output/review/descriptives/table2_vax_*.csv
+
+  ## Stage 4 - Table 2 - unvax cohort 
+
+  stage4_table_2_unvax:
+    run: r:latest analysis/descriptives/table_2.R unvax
+    needs:
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_unvax
+    outputs:
+      moderately_sensitive:
+        input_table_2: output/review/descriptives/table2_unvax_*.csv
+
+  stage4_venn_diagram_all:
+    run: r:latest analysis/descriptives/venn_diagram.R all
+    needs:
+    - preprocess_data_prevax
+    - preprocess_data_vax
+    - preprocess_data_unvax
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_prevax
+    - stage1_end_date_table_vax
+    - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
         venn_diagram: output/review/venn-diagrams/venn_diagram_*
 
-  ## Cox model for t1dm - vaccinated 
+  ## Cox model for t1dm - prevax 
 
-  Analysis_cox_t1dm_vaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R t1dm vaccinated
+  Analysis_cox_t1dm_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R t1dm prevax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_vaccinated
-    - stage_2_events_split_by_covariate_level_vaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_prevax
+    - stage_2_events_split_by_covariate_level_prevax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t1dm_vaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t1dm_vaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t1dm_vaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t1dm_vaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t1dm_vaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_t1dm_*_vaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t1dm_prevax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t1dm_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t1dm_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t1dm_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t1dm_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t1dm_*_prevax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_t1dm_*_vaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_t1dm_*_vaccinated_*_time_periods.csv
+        dataset: output/input_t1dm_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t1dm_*_prevax_*_time_periods.csv
 
-  ## Cox model for t1dm - electively_unvaccinated 
+  ## Cox model for t1dm - vax 
 
-  Analysis_cox_t1dm_electively_unvaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R t1dm electively_unvaccinated
+  Analysis_cox_t1dm_vax:
+    run: r:latest analysis/model/01_cox_pipeline.R t1dm vax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_electively_unvaccinated
-    - stage_2_events_split_by_covariate_level_electively_unvaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_vax
+    - stage_2_events_split_by_covariate_level_vax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t1dm_electively_unvaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t1dm_electively_unvaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t1dm_electively_unvaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t1dm_electively_unvaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t1dm_electively_unvaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_t1dm_*_electively_unvaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t1dm_vax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t1dm_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t1dm_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t1dm_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t1dm_vax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t1dm_*_vax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_t1dm_*_electively_unvaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_t1dm_*_electively_unvaccinated_*_time_periods.csv
+        dataset: output/input_t1dm_*_vax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t1dm_*_vax_*_time_periods.csv
 
-  ## Cox model for t2dm - vaccinated 
+  ## Cox model for t1dm - unvax 
 
-  Analysis_cox_t2dm_vaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm vaccinated
+  Analysis_cox_t1dm_unvax:
+    run: r:latest analysis/model/01_cox_pipeline.R t1dm unvax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_vaccinated
-    - stage_2_events_split_by_covariate_level_vaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_unvax
+    - stage_2_events_split_by_covariate_level_unvax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_vaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_vaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_vaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_vaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_vaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_*_vaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t1dm_unvax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t1dm_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t1dm_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t1dm_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t1dm_unvax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t1dm_*_unvax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_t2dm_*_vaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_t2dm_*_vaccinated_*_time_periods.csv
+        dataset: output/input_t1dm_*_unvax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t1dm_*_unvax_*_time_periods.csv
 
-  ## Cox model for t2dm - electively_unvaccinated 
+  ## Cox model for t2dm - prevax 
 
-  Analysis_cox_t2dm_electively_unvaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm electively_unvaccinated
+  Analysis_cox_t2dm_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm prevax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_electively_unvaccinated
-    - stage_2_events_split_by_covariate_level_electively_unvaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_prevax
+    - stage_2_events_split_by_covariate_level_prevax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_electively_unvaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_electively_unvaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_electively_unvaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_electively_unvaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_electively_unvaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_*_electively_unvaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_prevax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_*_prevax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_t2dm_*_electively_unvaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_t2dm_*_electively_unvaccinated_*_time_periods.csv
+        dataset: output/input_t2dm_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_*_prevax_*_time_periods.csv
 
-  ## Cox model for t2dm_pd - vaccinated 
+  ## Cox model for t2dm - vax 
 
-  Analysis_cox_t2dm_pd_vaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd vaccinated
+  Analysis_cox_t2dm_vax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm vax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_vaccinated
-    - stage_2_events_split_by_covariate_level_vaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_vax
+    - stage_2_events_split_by_covariate_level_vax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_vaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_vaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_vaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_vaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_vaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_*_vaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_vax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_vax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_*_vax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_t2dm_pd_*_vaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_t2dm_pd_*_vaccinated_*_time_periods.csv
+        dataset: output/input_t2dm_*_vax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_*_vax_*_time_periods.csv
 
-  ## Cox model for t2dm_pd - electively_unvaccinated 
+  ## Cox model for t2dm - unvax 
 
-  Analysis_cox_t2dm_pd_electively_unvaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd electively_unvaccinated
+  Analysis_cox_t2dm_unvax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm unvax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_electively_unvaccinated
-    - stage_2_events_split_by_covariate_level_electively_unvaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_unvax
+    - stage_2_events_split_by_covariate_level_unvax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_electively_unvaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_electively_unvaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_electively_unvaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_electively_unvaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_electively_unvaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_*_electively_unvaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_unvax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_unvax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_*_unvax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_t2dm_pd_*_electively_unvaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_t2dm_pd_*_electively_unvaccinated_*_time_periods.csv
+        dataset: output/input_t2dm_*_unvax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_*_unvax_*_time_periods.csv
 
-  ## Cox model for t2dm_pd_no - vaccinated 
+  ## Cox model for t2dm_pd - prevax 
 
-  Analysis_cox_t2dm_pd_no_vaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no vaccinated
+  Analysis_cox_t2dm_pd_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd prevax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_vaccinated
-    - stage_2_events_split_by_covariate_level_vaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_prevax
+    - stage_2_events_split_by_covariate_level_prevax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_no_vaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_vaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_vaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_no_vaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_no_vaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_no_*_vaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_prevax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_*_prevax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_t2dm_pd_no_*_vaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_t2dm_pd_no_*_vaccinated_*_time_periods.csv
+        dataset: output/input_t2dm_pd_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_pd_*_prevax_*_time_periods.csv
 
-  ## Cox model for t2dm_pd_no - electively_unvaccinated 
+  ## Cox model for t2dm_pd - vax 
 
-  Analysis_cox_t2dm_pd_no_electively_unvaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no electively_unvaccinated
+  Analysis_cox_t2dm_pd_vax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd vax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_electively_unvaccinated
-    - stage_2_events_split_by_covariate_level_electively_unvaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_vax
+    - stage_2_events_split_by_covariate_level_vax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_no_electively_unvaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_electively_unvaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_electively_unvaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_no_electively_unvaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_no_electively_unvaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_no_*_electively_unvaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_vax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_vax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_*_vax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_t2dm_pd_no_*_electively_unvaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_t2dm_pd_no_*_electively_unvaccinated_*_time_periods.csv
+        dataset: output/input_t2dm_pd_*_vax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_pd_*_vax_*_time_periods.csv
 
-  ## Cox model for t2dm_obes - vaccinated 
+  ## Cox model for t2dm_pd - unvax 
 
-  Analysis_cox_t2dm_obes_vaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes vaccinated
+  Analysis_cox_t2dm_pd_unvax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd unvax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_vaccinated
-    - stage_2_events_split_by_covariate_level_vaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_unvax
+    - stage_2_events_split_by_covariate_level_unvax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_vaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_vaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_vaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_vaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_vaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_*_vaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_unvax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_unvax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_*_unvax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_t2dm_obes_*_vaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_t2dm_obes_*_vaccinated_*_time_periods.csv
+        dataset: output/input_t2dm_pd_*_unvax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_pd_*_unvax_*_time_periods.csv
 
-  ## Cox model for t2dm_obes - electively_unvaccinated 
+  ## Cox model for t2dm_pd_no - prevax 
 
-  Analysis_cox_t2dm_obes_electively_unvaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes electively_unvaccinated
+  Analysis_cox_t2dm_pd_no_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no prevax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_electively_unvaccinated
-    - stage_2_events_split_by_covariate_level_electively_unvaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_prevax
+    - stage_2_events_split_by_covariate_level_prevax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_electively_unvaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_electively_unvaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_electively_unvaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_electively_unvaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_electively_unvaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_*_electively_unvaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_no_prevax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_no_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_no_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_no_*_prevax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_t2dm_obes_*_electively_unvaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_t2dm_obes_*_electively_unvaccinated_*_time_periods.csv
+        dataset: output/input_t2dm_pd_no_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_pd_no_*_prevax_*_time_periods.csv
 
-  ## Cox model for t2dm_obes_no - vaccinated 
+  ## Cox model for t2dm_pd_no - vax 
 
-  Analysis_cox_t2dm_obes_no_vaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes_no vaccinated
+  Analysis_cox_t2dm_pd_no_vax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no vax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_vaccinated
-    - stage_2_events_split_by_covariate_level_vaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_vax
+    - stage_2_events_split_by_covariate_level_vax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_no_vaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_vaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_vaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_no_vaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_no_vaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_no_*_vaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_no_vax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_no_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_no_vax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_no_*_vax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_t2dm_obes_no_*_vaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_t2dm_obes_no_*_vaccinated_*_time_periods.csv
+        dataset: output/input_t2dm_pd_no_*_vax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_pd_no_*_vax_*_time_periods.csv
 
-  ## Cox model for t2dm_obes_no - electively_unvaccinated 
+  ## Cox model for t2dm_pd_no - unvax 
 
-  Analysis_cox_t2dm_obes_no_electively_unvaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes_no electively_unvaccinated
+  Analysis_cox_t2dm_pd_no_unvax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no unvax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_electively_unvaccinated
-    - stage_2_events_split_by_covariate_level_electively_unvaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_unvax
+    - stage_2_events_split_by_covariate_level_unvax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_no_electively_unvaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_electively_unvaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_electively_unvaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_no_electively_unvaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_no_electively_unvaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_no_*_electively_unvaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_no_unvax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_no_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_no_unvax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_no_*_unvax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_t2dm_obes_no_*_electively_unvaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_t2dm_obes_no_*_electively_unvaccinated_*_time_periods.csv
+        dataset: output/input_t2dm_pd_no_*_unvax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_pd_no_*_unvax_*_time_periods.csv
 
-  ## Cox model for otherdm - vaccinated 
+  ## Cox model for t2dm_obes - prevax 
 
-  Analysis_cox_otherdm_vaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R otherdm vaccinated
+  Analysis_cox_t2dm_obes_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes prevax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_vaccinated
-    - stage_2_events_split_by_covariate_level_vaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_prevax
+    - stage_2_events_split_by_covariate_level_prevax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_otherdm_vaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_otherdm_vaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_otherdm_vaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_otherdm_vaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_otherdm_vaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_otherdm_*_vaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_prevax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_*_prevax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_otherdm_*_vaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_otherdm_*_vaccinated_*_time_periods.csv
+        dataset: output/input_t2dm_obes_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_obes_*_prevax_*_time_periods.csv
 
-  ## Cox model for otherdm - electively_unvaccinated 
+  ## Cox model for t2dm_obes - vax 
 
-  Analysis_cox_otherdm_electively_unvaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R otherdm electively_unvaccinated
+  Analysis_cox_t2dm_obes_vax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes vax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_electively_unvaccinated
-    - stage_2_events_split_by_covariate_level_electively_unvaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_vax
+    - stage_2_events_split_by_covariate_level_vax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_otherdm_electively_unvaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_otherdm_electively_unvaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_otherdm_electively_unvaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_otherdm_electively_unvaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_otherdm_electively_unvaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_otherdm_*_electively_unvaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_vax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_vax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_*_vax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_otherdm_*_electively_unvaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_otherdm_*_electively_unvaccinated_*_time_periods.csv
+        dataset: output/input_t2dm_obes_*_vax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_obes_*_vax_*_time_periods.csv
 
-  ## Cox model for gestationaldm - vaccinated 
+  ## Cox model for t2dm_obes - unvax 
 
-  Analysis_cox_gestationaldm_vaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R gestationaldm vaccinated
+  Analysis_cox_t2dm_obes_unvax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes unvax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_vaccinated
-    - stage_2_events_split_by_covariate_level_vaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_unvax
+    - stage_2_events_split_by_covariate_level_unvax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_gestationaldm_vaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_gestationaldm_vaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_gestationaldm_vaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_gestationaldm_vaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_gestationaldm_vaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_gestationaldm_*_vaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_unvax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_unvax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_*_unvax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_gestationaldm_*_vaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_gestationaldm_*_vaccinated_*_time_periods.csv
+        dataset: output/input_t2dm_obes_*_unvax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_obes_*_unvax_*_time_periods.csv
 
-  ## Cox model for gestationaldm - electively_unvaccinated 
+  ## Cox model for t2dm_obes_no - prevax 
 
-  Analysis_cox_gestationaldm_electively_unvaccinated:
-    run: r:latest analysis/model/01_cox_pipeline.R gestationaldm electively_unvaccinated
+  Analysis_cox_t2dm_obes_no_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes_no prevax
     needs:
-    - stage1_data_cleaning_both
-    - stage1_end_date_table_electively_unvaccinated
-    - stage_2_events_split_by_covariate_level_electively_unvaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_prevax
+    - stage_2_events_split_by_covariate_level_prevax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_gestationaldm_electively_unvaccinated.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_gestationaldm_electively_unvaccinated.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_gestationaldm_electively_unvaccinated_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_gestationaldm_electively_unvaccinated.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_gestationaldm_electively_unvaccinated.csv
-        describe_data_surv: output/not-for-review/describe_data_surv_gestationaldm_*_electively_unvaccinated_*_time_periods.txt
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_no_prevax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_no_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_no_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_no_*_prevax_*_time_periods.txt
       highly_sensitive:
-        dataset: output/input_gestationaldm_*_electively_unvaccinated_*_time_periods.csv
-        sampled_dataset: output/input_sampled_data_gestationaldm_*_electively_unvaccinated_*_time_periods.csv
+        dataset: output/input_t2dm_obes_no_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_obes_no_*_prevax_*_time_periods.csv
 
-  ## Temporary action - check JCVI groups 
+  ## Cox model for t2dm_obes_no - vax 
 
-  check_jcvi:
-    run: r:latest analysis/tmp/check_jcvi.R both
+  Analysis_cox_t2dm_obes_no_vax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes_no vax
     needs:
-    - preprocess_data_vaccinated
-    - preprocess_data_electively_unvaccinated
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_vax
+    - stage_2_events_split_by_covariate_level_vax
     outputs:
       moderately_sensitive:
-        venn_diagram: output/not-for-review/tmp/check_jcvi_*
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_no_vax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_no_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_no_vax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_no_*_vax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_obes_no_*_vax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_obes_no_*_vax_*_time_periods.csv
+
+  ## Cox model for t2dm_obes_no - unvax 
+
+  Analysis_cox_t2dm_obes_no_unvax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes_no unvax
+    needs:
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_unvax
+    - stage_2_events_split_by_covariate_level_unvax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_no_unvax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_no_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_no_unvax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_no_*_unvax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_obes_no_*_unvax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_obes_no_*_unvax_*_time_periods.csv
+
+  ## Cox model for otherdm - prevax 
+
+  Analysis_cox_otherdm_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R otherdm prevax
+    needs:
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_prevax
+    - stage_2_events_split_by_covariate_level_prevax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_otherdm_prevax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_otherdm_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_otherdm_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_otherdm_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_otherdm_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_otherdm_*_prevax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_otherdm_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_otherdm_*_prevax_*_time_periods.csv
+
+  ## Cox model for otherdm - vax 
+
+  Analysis_cox_otherdm_vax:
+    run: r:latest analysis/model/01_cox_pipeline.R otherdm vax
+    needs:
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_vax
+    - stage_2_events_split_by_covariate_level_vax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_otherdm_vax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_otherdm_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_otherdm_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_otherdm_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_otherdm_vax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_otherdm_*_vax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_otherdm_*_vax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_otherdm_*_vax_*_time_periods.csv
+
+  ## Cox model for otherdm - unvax 
+
+  Analysis_cox_otherdm_unvax:
+    run: r:latest analysis/model/01_cox_pipeline.R otherdm unvax
+    needs:
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_unvax
+    - stage_2_events_split_by_covariate_level_unvax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_otherdm_unvax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_otherdm_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_otherdm_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_otherdm_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_otherdm_unvax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_otherdm_*_unvax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_otherdm_*_unvax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_otherdm_*_unvax_*_time_periods.csv
+
+  ## Cox model for gestationaldm - prevax 
+
+  Analysis_cox_gestationaldm_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R gestationaldm prevax
+    needs:
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_prevax
+    - stage_2_events_split_by_covariate_level_prevax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_gestationaldm_prevax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_gestationaldm_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_gestationaldm_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_gestationaldm_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_gestationaldm_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_gestationaldm_*_prevax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_gestationaldm_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_gestationaldm_*_prevax_*_time_periods.csv
+
+  ## Cox model for gestationaldm - vax 
+
+  Analysis_cox_gestationaldm_vax:
+    run: r:latest analysis/model/01_cox_pipeline.R gestationaldm vax
+    needs:
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_vax
+    - stage_2_events_split_by_covariate_level_vax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_gestationaldm_vax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_gestationaldm_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_gestationaldm_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_gestationaldm_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_gestationaldm_vax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_gestationaldm_*_vax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_gestationaldm_*_vax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_gestationaldm_*_vax_*_time_periods.csv
+
+  ## Cox model for gestationaldm - unvax 
+
+  Analysis_cox_gestationaldm_unvax:
+    run: r:latest analysis/model/01_cox_pipeline.R gestationaldm unvax
+    needs:
+    - stage1_data_cleaning_all
+    - stage1_end_date_table_unvax
+    - stage_2_events_split_by_covariate_level_unvax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/analyses_not_run_gestationaldm_unvax.csv
+        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_gestationaldm_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_gestationaldm_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_gestationaldm_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_gestationaldm_unvax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_gestationaldm_*_unvax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_gestationaldm_*_unvax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_gestationaldm_*_unvax_*_time_periods.csv
 

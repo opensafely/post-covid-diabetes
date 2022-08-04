@@ -31,7 +31,7 @@ dict_elig = { elig_dates['date'][i] : elig_dates['description'][i] for i in elig
 ratio_elig = { elig_dates['date'][i] : 1/len(elig_dates.index) for i in elig_dates.index }
 
 #study_dates
-with open("./output/vax_study_dates.json") as f:
+with open("./output/study_dates.json") as f:
   study_dates = json.load(f)
 
 # define variables explicitly

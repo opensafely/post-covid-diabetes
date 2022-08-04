@@ -11,7 +11,7 @@ args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
   # use for interactive testing
-  cohort_name <- "vaccinated"
+  cohort_name <- "vax"
 } else {
   cohort_name <- args[[1]]
 }
@@ -21,7 +21,11 @@ fs::dir_create(here::here("output", "review"))
 
 # Define other parameters ------------------------------------------------------
 
+# if(cohort_name == "prevax"){
+#   study_start <- "2020-01-01"
+# } else if (cohort_name == "vax" | cohort_name == "unvax"){
 study_start <- "2021-06-01"
+# }
 
 # Create spine dataset ---------------------------------------------------------
 

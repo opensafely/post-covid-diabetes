@@ -208,7 +208,8 @@ stage2 <- function(cohort_name, covid_history, group) {
   table1$Covariate_level <-  sub('\\:.*', '', table1$Covariate_level) # Remove everything after :
   
   table1 <- table1 %>%
-    filter(!(Covariate == "cov_num_consulation_rate" & !Covariate_level=="Mean   "))
+    filter(!(Covariate == "cov_num_consulation_rate" & !Covariate_level=="Mean   ")) %>%
+    filter(!(Covariate == "cov_num_tc_hdl_ratio" & !Covariate_level=="Mean   "))
   
   table1_count_all <- as.data.frame(matrix(nrow = 1, ncol = 2))
   colnames(table1_count_all) <- c("Covariate","Covariate_level")

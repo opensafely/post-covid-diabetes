@@ -44,7 +44,7 @@ def generate_common_variables(index_date_variable,end_date_variable):
         date_format="YYYY-MM-DD",
         on_or_after=f"{index_date_variable}",
         return_expectations={
-            "date": {"earliest": "index_date", "latest" : "today"},
+            "date": {"earliest": study_dates["pandemic_start"], "latest" : "today"},
             "rate": "uniform",
             "incidence": 0.1,
         },
@@ -61,7 +61,7 @@ def generate_common_variables(index_date_variable,end_date_variable):
         date_format="YYYY-MM-DD",
         find_first_match_in_period=True,
         return_expectations={
-            "date": {"earliest": "index_date", "latest" : "today"},
+            "date": {"earliest": study_dates["pandemic_start"], "latest" : "today"},
             "rate": "uniform",
             "incidence": 0.1,
         },
@@ -74,7 +74,7 @@ def generate_common_variables(index_date_variable,end_date_variable):
         date_format="YYYY-MM-DD",
         find_first_match_in_period=True,
         return_expectations={
-            "date": {"earliest": "index_date", "latest" : "today"},
+            "date": {"earliest": study_dates["pandemic_start"], "latest" : "today"},
             "rate": "uniform",
             "incidence": 0.1,
         },
@@ -87,7 +87,7 @@ def generate_common_variables(index_date_variable,end_date_variable):
         match_only_underlying_cause=True,
         date_format="YYYY-MM-DD",
         return_expectations={
-            "date": {"earliest": "index_date", "latest" : "today"},
+            "date": {"earliest": study_dates["pandemic_start"], "latest" : "today"},
             "rate": "uniform",
             "incidence": 0.1
         },
@@ -1123,7 +1123,7 @@ def generate_common_variables(index_date_variable,end_date_variable):
         date_format="YYYY-MM-DD",
         find_first_match_in_period=True,
         return_expectations={
-            "date": {"earliest": "index_date", "latest" : "today"},
+            "date": {"earliest": study_dates["pandemic_start"], "latest" : "today"},
             "rate": "uniform",
             "incidence": 0.5,
         },

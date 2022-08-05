@@ -27,8 +27,21 @@ fs::dir_create(here::here("output", "review"))
 ## Study start date
 study_start <- "2020-01-01"
 
+# Create spine dataset ---------------------------------------------------------
+
+dfspine <- arrow::read_feather(file = "output/input_prelim.feather",
+                          col_select = c("patient_id",
+                                         "death_date"))
+
+print("Spine dataset (input prelim feather) read in successfully")
+print(paste0(nrow(df), " rows in spine dataset"))
+
 ## Load dataset
 df <- arrow::read_feather(file = "output/input_prevax.feather")
+
+## merge with spine 
+
+df <- merge(df,dfspine, by = "patient_id")
 
 # QC for consultation variable
 # max to 365 (average of one per day)
@@ -52,7 +65,7 @@ df <- df %>%
 # dates, numerics, factors, logicals
 
 df <- df %>%
-  rename(tmp_out_max_hba1c_mmol_mol_date = tmp_out_num_max_hba1c_date,
+  dplyr::rename(tmp_out_max_hba1c_mmol_mol_date = tmp_out_num_max_hba1c_date,
          tmp_out_bmi_date_measured = cov_num_bmi_date_measured) %>%
   mutate(across(contains('_date'), ~ as.Date(as.character(.)))) %>%
   mutate(across(contains('_birth_year'), ~ format(as.Date(.), "%Y"))) %>%

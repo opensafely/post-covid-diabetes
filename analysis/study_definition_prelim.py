@@ -251,6 +251,7 @@ study = StudyDefinition(
             "category": {"ratios": {"M": 0.49, "F": 0.51}},
             }
         ),
+
     # Define vaccine eligibility variables
 
         **jcvi_variables,

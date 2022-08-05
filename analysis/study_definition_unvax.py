@@ -97,6 +97,73 @@ study = StudyDefinition(
         returning_type = 'str',  
         ),
 
+    # Define fixed covariates other than sex
+
+        ## 2019 consultation rate
+        cov_num_consulation_rate=patients.with_gp_consultations(
+                between=["2019-01-01", "2019-12-31"],
+                returning="number_of_matches_in_period",
+                return_expectations={
+                    "int": {"distribution": "poisson", "mean": 5},
+                },
+            ),
+    
+        ## Healthcare worker    
+        cov_bin_healthcare_worker=patients.with_healthcare_worker_flag_on_covid_vaccine_record(
+            returning='binary_flag', 
+            return_expectations={"incidence": 0.01},
+        ),
+
+# Define quality assurances
+
+        ## Prostate cancer
+            ### Primary care
+        prostate_cancer_snomed=patients.with_these_clinical_events(
+                prostate_cancer_snomed_clinical,
+                returning='binary_flag',
+                return_expectations={
+                    "incidence": 0.03,
+                },
+            ),
+            ### HES APC
+        prostate_cancer_hes=patients.admitted_to_hospital(
+                with_these_diagnoses=prostate_cancer_icd10,
+                returning='binary_flag',
+                return_expectations={
+                    "incidence": 0.03,
+                },
+            ),
+            ### ONS
+        prostate_cancer_death=patients.with_these_codes_on_death_certificate(
+                prostate_cancer_icd10,
+                returning='binary_flag',
+                return_expectations={
+                    "incidence": 0.02
+                },
+            ),
+            ### Combined
+        qa_bin_prostate_cancer=patients.maximum_of(
+                "prostate_cancer_snomed", "prostate_cancer_hes", "prostate_cancer_death"
+            ),
+
+        ## Pregnancy
+        qa_bin_pregnancy=patients.with_these_clinical_events(
+                pregnancy_snomed_clinical,
+                returning='binary_flag',
+                return_expectations={
+                    "incidence": 0.03,
+                },
+            ),
+        
+        ## Year of birth
+        qa_num_birth_year=patients.date_of_birth(
+                date_format="YYYY",
+                return_expectations={
+                    "date": {"earliest": "1900-01-01", "latest": "today"},
+                    "rate": "uniform",
+                },
+            ),
+
     # Define vaccine eligibility variables
 
         **jcvi_variables, 

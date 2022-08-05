@@ -1,7 +1,7 @@
 # Set seed ---------------------------------------------------------------------
 
-set.seed(1)
-
+set.seed(12)
+# KT changed seed because I wasn't getting any AZ_3 vaccinations
 # Make vax spine ---------------------------------------------------------------
 
 tmp <- df[,c("patient_id","vax_date_eligible")]

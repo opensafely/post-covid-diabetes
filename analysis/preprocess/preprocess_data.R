@@ -29,42 +29,33 @@ study_start <- "2021-06-01"
 
 # Create spine dataset ---------------------------------------------------------
 
-df <- arrow::read_feather(file = "output/input_index.feather",
+df <- arrow::read_feather(file = "output/input_prelim.feather",
                           col_select = c("patient_id",
-                                         "cov_num_consulation_rate",
-                                         "cov_bin_healthcare_worker",
-                                         "qa_bin_prostate_cancer",
-                                         "qa_bin_pregnancy",
-                                         "qa_num_birth_year",
-                                         "death_date"))
+                                         "death_date",
+                                         "vax_date_Pfizer_1",
+                                         "vax_date_Pfizer_2",
+                                         "vax_date_Pfizer_3",
+                                         "vax_date_AstraZeneca_1",
+                                         "vax_date_AstraZeneca_2",
+                                         "vax_date_AstraZeneca_3",
+                                         "vax_date_Moderna_1",
+                                         "vax_date_Moderna_2",
+                                         "vax_date_Moderna_3"))
 
-print("Spine dataset (input index feather) read in successfully")
-print(paste0(nrow(df), " rows in spine dataset line 38"))
+print("Spine dataset (input prelim feather) read in successfully")
+print(paste0(nrow(df), " rows in spine dataset"))
 
 # Load data --------------------------------------------------------------------
 
-tmp1 <- arrow::read_feather(file = "output/input_electively_unvaccinated.feather",
-                            col_select = c("patient_id",
-                                           "cov_cat_sex",
-                                           "vax_date_eligible",
-                                           "vax_cat_jcvi_group"))
+tmp1 <- arrow::read_feather(file = "output/input_unvax.feather")
 
-print("tmp1 dataset (input index electively unvaccinated) read in successfully")
+print("tmp1 dataset (input index unvax read in successfully")
 print(paste0(nrow(tmp1), " rows in tmp1 dataset line 49"))
 
-tmp2 <- arrow::read_feather(file = "output/input_vaccinated.feather",
-                            col_select = c("patient_id",
-                                           "vax_date_Pfizer_1",
-                                           "vax_date_Pfizer_2",
-                                           "vax_date_Pfizer_3",
-                                           "vax_date_AstraZeneca_1",
-                                           "vax_date_AstraZeneca_2",
-                                           "vax_date_AstraZeneca_3",
-                                           "vax_date_Moderna_1",
-                                           "vax_date_Moderna_2",
-                                           "vax_date_Moderna_3"))
+tmp2 <- arrow::read_feather(file = "output/input_vax.feather",
+                            col_select = c("patient_id"))
 
-print("tmp2 dataset (input index vaccinated) read in successfully")
+print("tmp2 dataset (input index vax) read in successfully")
 print(paste0(nrow(tmp2), " rows in tmp1 dataset line 64"))
 
 # Overwrite patient IDs for dummy data only ------------------------------------
@@ -79,7 +70,7 @@ if(Sys.getenv("OPENSAFELY_BACKEND") %in% c("", "expectations")) {
 
 df <- merge(df,tmp1, by = "patient_id")
 
-print("df (spine) and tmp1 (input index electively unvaccinated) merged successfully")
+print("df (spine) and tmp1 (input index unvax) merged successfully")
 print(paste0(nrow(df), " rows in merged dataset line 79"))
 
 df <- merge(df,tmp2, by = "patient_id")
@@ -213,12 +204,13 @@ print("Vaccination information recorded successfully")
 
 # Tidy dataset -----------------------------------------------------------------
 
-df <- df[,c("patient_id","death_date",
-            colnames(df)[grepl("qa_",colnames(df))],
-            colnames(df)[grepl("vax_date_eligible",colnames(df))], # Vaccination eligibility
-            colnames(df)[grepl("vax_date_covid_",colnames(df))], # Vaccination dates
-            colnames(df)[grepl("vax_cat_",colnames(df))], # Vaccination products
-            colnames(df)[grepl("cov_",colnames(df))])] # Covariates
+# df <- df[,c("patient_id","death_date",
+#             colnames(df)[grepl("qa_",colnames(df))],
+#             colnames(df)[grepl("vax_date_eligible",colnames(df))], # Vaccination eligibility
+#             colnames(df)[grepl("vax_date_covid_",colnames(df))], # Vaccination dates
+#             colnames(df)[grepl("vax_cat_",colnames(df))], # Vaccination products
+#             colnames(df)[grepl("cov_",colnames(df))], #Covariates
+#             colnames(df)[grepl("num",colnames(df))])] # Numeric
 
 print("Dataset column names tidied")
 print(paste0(nrow(df), " rows in dataset line 216"))
@@ -227,11 +219,11 @@ print(paste0(nrow(df), " rows in dataset line 216"))
 
 df$study_start_date <- as.Date(study_start)
 
-if(cohort_name=="vaccinated"){
+if(cohort_name=="vax"){
   df$pat_start_date <- as.Date(df$vax_date_covid_2)+14
 }
 
-if(cohort_name=="electively_unvaccinated"){
+if(cohort_name=="unvax"){
   df$pat_start_date <- as.Date(df$vax_date_eligible)+84
 }
 
@@ -244,7 +236,7 @@ print(paste0(nrow(df), " rows in dataset line 235"))
 
 # Load covariate data ----------------------------------------------------------
 
-tmp_index <- arrow::read_feather(file = "output/input_index.feather")
+tmp_index <- arrow::read_feather(file = "output/input_prelim.feather")
 tmp_other <- arrow::read_feather(file = paste0("output/input_",cohort_name,".feather"))
 
 print("Covariate data loaded")

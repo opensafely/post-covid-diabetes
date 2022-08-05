@@ -237,6 +237,8 @@ print(paste0(nrow(df), " rows in dataset line 235"))
 # Load covariate data ----------------------------------------------------------
 
 tmp_index <- arrow::read_feather(file = "output/input_prelim.feather")
+# tmp_index$cov_cat_sex <- NULL
+# tmp_index$vax_date_eligible <- NULL
 tmp_other <- arrow::read_feather(file = paste0("output/input_",cohort_name,".feather"))
 
 print("Covariate data loaded")
@@ -432,6 +434,9 @@ df1 <- df[,c("patient_id","death_date","index_date",
              colnames(df)[grepl("vax_cat_",colnames(df))])] # Vaccination products
 
 df1[,colnames(df)[grepl("tmp_",colnames(df))]] <- NULL
+
+names(df1) <- gsub(".x", "", names(df1), fixed = TRUE)
+df1 <- df1 %>% select(-contains(".y"))
 
 saveRDS(df1, file = paste0("output/input_",cohort_name,".rds"))
 

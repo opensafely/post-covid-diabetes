@@ -53,7 +53,8 @@ args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
   # use for interactive testing
-  cohort_name <- "vaccinated"
+  cohort_name <- "vax"
+  group <- "diabetes"
 } else {
   cohort_name <- args[[1]]
 }
@@ -61,15 +62,35 @@ if(length(args)==0){
 fs::dir_create(here::here("output", "not-for-review"))
 fs::dir_create(here::here("output", "review", "descriptives"))
 
+# START DATES
+
+start_date_prevax = as.Date("2020-01-01")
+end_date_prevax = as.Date("2021-06-18") # General End date: 2021-06-18 (date last JCVI group eligible for vaccination - Decision on Jan 18th 2022)
+
+start_date_delta = as.Date("2021-06-01")
+end_date_delta = as.Date("2021-12-14") # General End date: 2021-12-14 (Decision on Dec 20th 2021)
+
 stage1 <- function(cohort_name, group){
 
     input <- read_rds(file.path("output", paste0("input_",cohort_name,".rds")))
     
-    print(paste0(cohort_name, " ", group, " ", nrow(input), " rows in the input fileA"))
+    print(paste0(cohort_name, " ", group, " ", nrow(input), " rows in the input file"))
     
     # Define general start date and end date
-    start_date = as.Date("2021-06-01")
-    end_date = as.Date("2021-12-14") # General End date: 2021-12-14 (Decision on Dec 20th 2021)
+    
+    if (cohort_name == "prevax") {
+
+    start_date = start_date_prevax
+    end_date = end_date_prevax 
+    input <- input %>% mutate(index_date = start_date)
+    
+    } else if (cohort_name == "unvax" | cohort_name == "vax"){
+    
+    start_date = start_date_delta
+    end_date = end_date_delta
+    
+    }
+      
     # NOTE: no censoring of end date for death/event at this stage
                            
     ######################################################
@@ -157,7 +178,6 @@ stage1 <- function(cohort_name, group){
     #Rule 6: Prostate cancer codes for women
     input$rule6=NA
     input$rule6=(input$qa_bin_prostate_cancer == TRUE & input$cov_cat_sex=="Female")
-    
     
     #Remove rows that are TRUE for at least one rule
     input_QA=input%>%filter(rule1==FALSE & rule2==FALSE & rule3==FALSE & rule4==FALSE & rule5==FALSE & rule6==FALSE)
@@ -266,7 +286,7 @@ stage1 <- function(cohort_name, group){
     # 3.b. Apply criteria specific to each sub-cohort #
     #-------------------------------------------------#
     
-    if (cohort_name == "vaccinated") {
+    if (cohort_name == "vax") {
       
       #Exclusion criteria 7: Do not have a record of two vaccination doses prior to the study end date
       input$vax_gap <- input$vax_date_covid_2 - input$vax_date_covid_1 #Determine the vaccination gap in days : gap is NA if any vaccine date is missing
@@ -303,11 +323,11 @@ stage1 <- function(cohort_name, group){
       cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[13,1]) - nrow(input), "Criteria 11 (Exclusion): Received mixed vaccine products before 07-05-2021")
       
       #Inclusions criteria 12: Index date is before cohort end date - will remove anyone who is not fully vaccinated by the cohort end date
-      input <- input %>% filter (!is.na(index_date) & index_date <= end_date & index_date >= start_date)
+      input <- input %>% filter (!is.na(index_date) & index_date <= end_date & index_date >= start_date_delta)
       cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[14,1]) - nrow(input), "Criteria 12 (Inclusion): Patient index date is within the study start and end dates i.e patient is fully vaccinated before the study end date")
       
       
-    } else if (cohort_name == "electively_unvaccinated"){
+    } else if (cohort_name == "unvax"){
       
       #Exclusion criteria 7: Have a record of one or more vaccination prior index date
       # i.e. Have a record of a first vaccination prior index date (no more vax 2 and 3 variables available in this dataset)
@@ -331,7 +351,7 @@ stage1 <- function(cohort_name, group){
       cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[10,1]) - nrow(input), "Criteria 8 (Exclusion): Missing or unknown JCVI group")
       
       #Inclusions criteria 9: Index date is before cohort end date - will remove anyone whose eligibility date + 84 days is after study end date (only those with unknown JCVI group)
-      input <- input %>% filter (!is.na(index_date) & index_date <= end_date & index_date >= start_date)
+      input <- input %>% filter (!is.na(index_date) & index_date <= end_date & index_date >= start_date_delta)
       cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[11,1]) - nrow(input), "Criteria 11 (Inclusion): Patient index date is within the study start and end dates i.e patients eligibility date + 84 days is before the study end date")
       
     }
@@ -456,8 +476,9 @@ group <- unique(active_analyses$outcome_group)
 
 for(i in group){
 if (cohort_name == "all") {
-  stage1("electively_unvaccinated", i)
-  stage1("vaccinated", i)
+  stage1("prevax", i)
+  stage1("vax", i)
+  stage1("unvax", i)
 } else{
   stage1(cohort_name, i)
 }

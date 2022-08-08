@@ -38,9 +38,12 @@ agelabels <- c("18_39", "40_59", "60_79", "80_110")
 
 # TIME PERIODS 
 
-time_periods_normal <- c(7, 14, 28, 56, 84, 197) 
-time_periods_reduced <- c(28,197)
-time_periods_alternative <- c(1,8,43,197)
+time_periods_normal_prevax <- c(7, 14, 28, 56, 84, 197, 365, 535) 
+time_periods_reduced_prevax <- c(28, 197, 535) 
+
+time_periods_normal_delta <- c(7, 14, 28, 56, 84, 197) 
+time_periods_reduced_delta  <- c(28,197)
+# time_periods_alternative <- c(1,8,43,197)
 
 event_by_covariate_level <- function(cohort_name, group,time_periods,save_name){
   
@@ -81,7 +84,7 @@ event_by_covariate_level <- function(cohort_name, group,time_periods,save_name){
     
     ##Set which cohorts are required
     if(analyses_to_run$cohort=="all"){
-      cohort_to_run=c("vaccinated", "electively_unvaccinated")
+      cohort_to_run=c("prevax", "vax", "unvax")
     }else{
       analyses_to_run=active_analyses$cohort
     }  
@@ -384,23 +387,28 @@ select_covariates_for_cox <- function(results, save_name,time_periods_names, act
   
 }
 
-
-
 # Run function using specified commandArgs
 
 active_analyses <- read_rds("lib/active_analyses.rds")
 active_analyses <- active_analyses %>% filter(active==TRUE)
 group <- unique(active_analyses$outcome_group)
 
-
 for(i in group){
-if(cohort_name == "both"){
-  event_by_covariate_level("vaccinated",i, time_periods_normal,"normal")
-  event_by_covariate_level("vaccinated",i, time_periods_reduced,"reduced")
-  event_by_covariate_level("electively_unvaccinated",i, time_periods_normal,"normal")
-  event_by_covariate_level("electively_unvaccinated",i, time_periods_reduced,"reduced")
-}else{
-  event_by_covariate_level(cohort_name,i, time_periods_normal,"normal")
-  event_by_covariate_level(cohort_name,i, time_periods_reduced,"reduced")
+if(cohort_name == "all"){
+  event_by_covariate_level("prevax",i, time_periods_normal_prevax,"normal")
+  event_by_covariate_level("prevax",i, time_periods_reduced_prevax,"reduced")
+  event_by_covariate_level("vax",i, time_periods_normal_delta,"normal")
+  event_by_covariate_level("vax",i, time_periods_reduced_delta,"reduced")
+  event_by_covariate_level("unvax",i, time_periods_normal_delta,"normal")
+  event_by_covariate_level("unvax",i, time_periods_reduced_delta,"reduced")
+}else if(cohort_name == "prevax"){
+  event_by_covariate_level("prevax",i, time_periods_normal_prevax,"normal")
+  event_by_covariate_level("prevax",i, time_periods_reduced_prevax,"reduced")
+}else if(cohort_name == "vax"){
+  event_by_covariate_level("vax",i, time_periods_normal_delta,"normal")
+  event_by_covariate_level("vax",i, time_periods_reduced_delta,"reduced")
+}else if(cohort_name == "unvax"){
+  event_by_covariate_level("unvax",i, time_periods_normal_delta,"normal")
+  event_by_covariate_level("unvax",i, time_periods_reduced_delta,"reduced")
 }
 }

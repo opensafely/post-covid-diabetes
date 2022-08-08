@@ -28,7 +28,7 @@ args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
   # use for interactive testing
-  cohort_name <- "vaccinated"
+  cohort_name <- "vax"
   #cohort_name = "electively_unvaccinated"
 }else{
   cohort_name <- args[[1]]
@@ -134,9 +134,10 @@ group <- unique(active_analyses$outcome_group)
 
 
 for(i in group){
-  if (cohort_name == "both") {
-    diabetes_flow_function("electively_unvaccinated", i)
-    diabetes_flow_function("vaccinated", i)
+  if (cohort_name == "all") {
+    diabetes_flow_function("prevax", i)
+    diabetes_flow_function("vax", i)
+    diabetes_flow_function("unvax", i)
   } else{
     diabetes_flow_function(cohort_name, i)
   }

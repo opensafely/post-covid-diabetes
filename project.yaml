@@ -2,7 +2,7 @@ version: '3.0'
 
 expectations:
 
-  population_size: 10000
+  population_size: 100000
 
 actions:
 
@@ -38,6 +38,16 @@ actions:
       highly_sensitive:
         index_dates: output/index_dates.csv
 
+  generate_study_population_unvaccinated:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_unvaccinated
+      --output-format feather
+    needs:
+    - vax_eligibility_inputs
+    - generate_index_dates
+    outputs:
+      highly_sensitive:
+        cohort: output/input_unvaccinated.feather
+
   generate_study_population_prevax:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_prevax
       --output-format feather
@@ -48,25 +58,15 @@ actions:
       highly_sensitive:
         cohort: output/input_prevax.feather
 
-  generate_study_population_vax:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_vax
+  generate_study_population_vaccinated:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_vaccinated
       --output-format feather
     needs:
     - generate_index_dates
     - vax_eligibility_inputs
     outputs:
       highly_sensitive:
-        cohort: output/input_vax.feather
-
-  generate_study_population_unvax:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_unvax
-      --output-format feather
-    needs:
-    - vax_eligibility_inputs
-    - generate_index_dates
-    outputs:
-      highly_sensitive:
-        cohort: output/input_unvax.feather
+        cohort: output/input_vaccinated.feather
 
   preprocess_data_prevax:
     run: r:latest analysis/preprocess/preprocess_data_prevax.R

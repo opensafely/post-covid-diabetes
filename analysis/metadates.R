@@ -8,9 +8,6 @@
 library('tidyverse')
 library('here')
 
-fs::dir_create(here::here("output", "not-for-review"))
-fs::dir_create(here::here("output", "review")) 
-
 # create study_dates ----
 
 study_dates <-

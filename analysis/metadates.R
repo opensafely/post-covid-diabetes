@@ -10,6 +10,9 @@ library('here')
 
 # create study_dates ----
 
+fs::dir_create(here::here("output", "not-for-review"))
+fs::dir_create(here::here("output", "review")) 
+
 study_dates <-
   list(
     earliest_expec = "1900-01-01",

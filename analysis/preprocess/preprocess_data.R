@@ -47,12 +47,12 @@ print(paste0(nrow(df), " rows in spine dataset"))
 
 # Load data --------------------------------------------------------------------
 
-tmp1 <- arrow::read_feather(file = "output/input_unvaccinated.feather")
+tmp1 <- arrow::read_feather(file = "output/input_unvax.feather")
 
 print("tmp1 dataset (input index unvax read in successfully")
 print(paste0(nrow(tmp1), " rows in tmp1 dataset line 49"))
 
-tmp2 <- arrow::read_feather(file = "output/input_vaccinated.feather",
+tmp2 <- arrow::read_feather(file = "output/input_vax.feather",
                             col_select = c("patient_id"))
 
 print("tmp2 dataset (input index vax) read in successfully")

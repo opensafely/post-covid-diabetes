@@ -31,7 +31,8 @@ study_start <- "2020-01-01"
 
 dfspine <- arrow::read_feather(file = "output/input_prelim.feather",
                           col_select = c("patient_id",
-                                         "death_date"))
+                                         "death_date",
+                                         "vax_date_covid_1"))
 
 print("Spine dataset (input prelim feather) read in successfully")
 print(paste0(nrow(df), " rows in spine dataset"))

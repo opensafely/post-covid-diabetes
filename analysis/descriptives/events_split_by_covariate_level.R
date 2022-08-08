@@ -14,8 +14,7 @@ args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
   # use for interactive testing
-  cohort_name <- "vaccinated"
-  #cohort_name = "electively_unvaccinated"
+  cohort_name <- "vax"
 }else{
   cohort_name <- args[[1]]
 }
@@ -26,13 +25,18 @@ fs::dir_create(here::here("output", "review", "descriptives"))
 output_dir <- "output/not-for-review"
 scripts_dir <- "analysis/model"
 
+# DATES 
 
-#delta period
-cohort_start = as.Date("2021-06-01", format="%Y-%m-%d")
-cohort_end = as.Date("2021-12-14", format="%Y-%m-%d")
+cohort_start_date_prevax <- as.Date("2020-01-01")
+cohort_end_date_prevax <- as.Date("2021-06-18")
+
+cohort_start_date_delta <- as.Date("2021-06-01")
+cohort_end_date_delta <- as.Date("2021-12-14")
 
 agebreaks <- c(0, 40, 60, 80, 111)
 agelabels <- c("18_39", "40_59", "60_79", "80_110")
+
+# TIME PERIODS 
 
 time_periods_normal <- c(7, 14, 28, 56, 84, 197) 
 time_periods_reduced <- c(28,197)

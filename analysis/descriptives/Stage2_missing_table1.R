@@ -36,7 +36,7 @@ library(lubridate)
 args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
-  cohort_name <- "electively_unvaccinated" # interactive testing
+  cohort_name <- "unvax" # interactive testing
 } else {
   cohort_name <- args[[1]]
 }
@@ -49,9 +49,11 @@ active_analyses <- read_rds("lib/active_analyses.rds")
 active_analyses <- active_analyses %>% filter(active == TRUE)
 outcome_groups <- unique(active_analyses$outcome_group)
 
-#delta period
-cohort_start = as.Date("2021-06-01", format="%Y-%m-%d")
-cohort_end = as.Date("2021-12-14", format="%Y-%m-%d")
+cohort_start_date_prevax <- as.Date("2020-01-01")
+cohort_end_date_prevax <- as.Date("2021-06-18")
+
+cohort_start_date_delta <- as.Date("2021-06-01")
+cohort_end_date_delta <- as.Date("2021-12-14")
 
 # Define stage2 function -------------------------------------------------------
 
@@ -159,12 +161,21 @@ stage2 <- function(cohort_name, covid_history, group) {
   
   input$cov_cat_consulation_rate_group <- ""
   input$cov_cat_consulation_rate_group <- ifelse(input$cov_num_consulation_rate==0, "0", input$cov_cat_consulation_rate_group)
-  input$cov_cat_consulation_rate_group <- ifelse(input$cov_num_consulation_rate>=1 & input$cov_num_consulation_rate<=5, "1-6", input$cov_cat_consulation_rate_group)
+  input$cov_cat_consulation_rate_group <- ifelse(input$cov_num_consulation_rate>=1 & input$cov_num_consulation_rate<=5, "1 to 6", input$cov_cat_consulation_rate_group)
   input$cov_cat_consulation_rate_group <- ifelse(input$cov_num_consulation_rate>=6, "6+", input$cov_cat_consulation_rate_group)
   
   #Restrict COVID exposures to within study dates
-  input <- input %>% mutate(exp_date_covid19_confirmed = replace(exp_date_covid19_confirmed, which(exp_date_covid19_confirmed>cohort_end | exp_date_covid19_confirmed<cohort_start), NA))
   
+  if (cohort_name == "prevax") {
+    
+    input <- input %>% mutate(exp_date_covid19_confirmed = replace(exp_date_covid19_confirmed, which(exp_date_covid19_confirmed>cohort_end_date_prevax | exp_date_covid19_confirmed<cohort_start_date_prevax), NA))
+    
+  } else if (cohort_name == "unvax" | cohort_name == "vax"){
+    
+    input <- input %>% mutate(exp_date_covid19_confirmed = replace(exp_date_covid19_confirmed, which(exp_date_covid19_confirmed>cohort_end_date_delta | exp_date_covid19_confirmed<cohort_start_date_delta), NA))
+    
+  }
+
   # Populate table 1 
   covar_names <- active_analyses %>% filter(outcome_group==group)
   covar_names<-str_split(active_analyses$covariates, ";")[[1]]
@@ -327,11 +338,13 @@ stage2 <- function(cohort_name, covid_history, group) {
 # Run function using specified commandArgs
 
 for(group in outcome_groups){
-  if(cohort_name == "both"){
-    stage2("vaccinated", "with_covid_history", group)
-    stage2("vaccinated", "without_covid_history", group)
-    stage2("electively_unvaccinated", "with_covid_history", group)
-    stage2("electively_unvaccinated", "without_covid_history", group)
+  if(cohort_name == "all"){
+    stage2("prevax", "with_covid_history", group)
+    stage2("prevax", "without_covid_history", group)
+    stage2("vax", "with_covid_history", group)
+    stage2("vax", "without_covid_history", group)
+    stage2("unvax", "with_covid_history", group)
+    stage2("unvax", "without_covid_history", group)
   }else{
     stage2(cohort_name, "with_covid_history", group)
     stage2(cohort_name, "without_covid_history", group)

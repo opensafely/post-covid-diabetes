@@ -22,7 +22,7 @@ args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
   # use for interactive testing
-  cohort_name <- "vaccinated"
+  cohort_name <- "vax"
 } else {
   cohort_name <- args[[1]]
 }
@@ -267,9 +267,10 @@ group <- unique(active_analyses$outcome_group)
 
 
 for(i in group){
-  if (cohort_name == "both") {
-    venn_output("electively_unvaccinated", i)
-    venn_output("vaccinated", i)
+  if (cohort_name == "all") {
+    venn_output("prevax", i)
+    venn_output("vax", i)
+    venn_output("unvax", i)
   } else{
     venn_output(cohort_name, i)
   }

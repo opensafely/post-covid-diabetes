@@ -1062,11 +1062,11 @@ def generate_common_variables(index_date_variable,end_date_variable):
     tmp_cov_num_hdl_cholesterol=patients.max_recorded_value(
         hdl_cholesterol_snomed,
         on_most_recent_day_of_measurement=True, 
-        between=["2015-01-01", f"{index_date_variable}"],
+        between=[f"{index_date_variable}- 5years", f"{index_date_variable} -1 day"],
         date_format="YYYY-MM-DD",
         return_expectations={
             "float": {"distribution": "normal", "mean": 2.0, "stddev": 1.5},
-            "date": {"earliest": "2015-01-01", "latest": "2022-02-01"},
+            "date": {"earliest": study_dates["earliest_expec"] , "latest": "today"},
             "incidence": 0.80,
         },
     ),

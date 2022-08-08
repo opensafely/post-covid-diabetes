@@ -24,7 +24,7 @@ args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
   # use for interactive testing
-  cohort_name <- "vaccinated"
+  cohort_name <- "vax"
   #cohort_name = "electively_unvaccinated"
 }else{
   cohort_name <- args[[1]]
@@ -33,9 +33,13 @@ if(length(args)==0){
 fs::dir_create(here::here("output", "not-for-review"))
 fs::dir_create(here::here("output", "review", "descriptives"))
 
-#delta period
-cohort_start = as.Date("2021-06-01", format="%Y-%m-%d")
-cohort_end = as.Date("2021-12-14", format="%Y-%m-%d")
+# DATES
+
+cohort_start_date_prevax <- as.Date("2020-01-01")
+cohort_end_date_prevax <- as.Date("2021-06-18")
+
+cohort_start_date_delta <- as.Date("2021-06-01")
+cohort_end_date_delta <- as.Date("2021-12-14")
 
 agebreaks <- c(0, 40, 60, 80, 111)
 agelabels <- c("18_39", "40_59", "60_79", "80_110")
@@ -83,7 +87,7 @@ table_2_subgroups_output <- function(cohort_name, group){
     
     ##Set which cohorts are required
     if(analyses_to_run$cohort=="all"){
-      cohort_to_run=c("vaccinated", "electively_unvaccinated")
+      cohort_to_run=c("prevax", "vax", "unvax")
     }else{
       analyses_to_run=active_analyses$cohort
     }  
@@ -351,9 +355,10 @@ group <- unique(active_analyses$outcome_group)
 
 
 for(i in group){
-  if (cohort_name == "both") {
-    table_2_subgroups_output("electively_unvaccinated", i)
-    table_2_subgroups_output("vaccinated", i)
+  if (cohort_name == "all") {
+    table_2_subgroups_output("prevax", i)
+    table_2_subgroups_output("vax", i)
+    table_2_subgroups_output("unvax", i)
   } else{
     table_2_subgroups_output(cohort_name, i)
   }

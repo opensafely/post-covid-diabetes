@@ -73,8 +73,8 @@ actions:
     needs:
     - generate_study_population_prelim
     - generate_study_population_prevax
-    - generate_study_population_vax
-    - generate_study_population_unvax
+    - generate_study_population_vaccinated
+    - generate_study_population_unvaccinated
     outputs:
       moderately_sensitive:
         describe: output/not-for-review/describe_input_prevax_*.txt
@@ -87,8 +87,8 @@ actions:
     needs:
     - generate_study_population_prelim
     - generate_study_population_prevax
-    - generate_study_population_vax
-    - generate_study_population_unvax
+    - generate_study_population_vaccinated
+    - generate_study_population_unvaccinated
     outputs:
       moderately_sensitive:
         describe: output/not-for-review/describe_input_vax_*.txt
@@ -101,8 +101,8 @@ actions:
     needs:
     - generate_study_population_prelim
     - generate_study_population_prevax
-    - generate_study_population_vax
-    - generate_study_population_unvax
+    - generate_study_population_vaccinated
+    - generate_study_population_unvaccinated
     outputs:
       moderately_sensitive:
         describe: output/not-for-review/describe_input_unvax_*.txt

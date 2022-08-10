@@ -107,7 +107,7 @@ study = StudyDefinition(
             date_format="YYYY-MM-DD",
             return_expectations={
                 "date": {"earliest": study_dates["pandemic_start"], "latest": "today"},
-                "incidence": 0.7
+                "incidence": 0.8
             },
         ),
         vax_date_covid_2=patients.with_tpp_vaccination_record(
@@ -118,7 +118,7 @@ study = StudyDefinition(
             date_format="YYYY-MM-DD",
             return_expectations={
                 "date": {"earliest": study_dates["pandemic_start"], "latest" : "today"}, # dates can only be 'index_date','today', or specified date
-                "incidence": 0.6
+                "incidence": 0.7
             },
         ),
 

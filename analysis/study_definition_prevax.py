@@ -162,6 +162,7 @@ study = StudyDefinition(
                 return_expectations={
                     "date": {"earliest": "1900-01-01", "latest": "today"},
                     "rate": "uniform",
+                    "incidence": 1.0
                 },
             ),
             

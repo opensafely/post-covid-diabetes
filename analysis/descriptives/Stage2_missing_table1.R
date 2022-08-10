@@ -36,7 +36,8 @@ library(lubridate)
 args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
-  cohort_name <- "unvax" # interactive testing
+  cohort_name <- "prevax" # interactive testing
+  group <- "diabetes"
 } else {
   cohort_name <- args[[1]]
 }

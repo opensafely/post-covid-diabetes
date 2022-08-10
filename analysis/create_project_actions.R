@@ -13,7 +13,7 @@ library(readr)
 ## defaults ----
 defaults_list <- list(
   version = "3.0",
-  expectations= list(population_size=100000L)
+  expectations= list(population_size=200000L)
 )
 
 active_analyses <- read_rds("lib/active_analyses.rds")
@@ -380,14 +380,14 @@ actions_list <- splice(
     moderately_sensitive = list(
       venn_diagram = glue("output/review/venn-diagrams/venn_diagram_*")
       )
-  ),
+  ))
 
-  #comment("Stage 5 - Apply models"),
-  splice(
-    # over outcomes
-    unlist(lapply(outcomes_model, function(x) splice(unlist(lapply(cohort_to_run, function(y) apply_model_function(outcome = x, cohort = y)), recursive = FALSE))
-      ),recursive = FALSE))
-  )
+  # #comment("Stage 5 - Apply models"),
+  # splice(
+  #   # over outcomes
+  #   unlist(lapply(outcomes_model, function(x) splice(unlist(lapply(cohort_to_run, function(y) apply_model_function(outcome = x, cohort = y)), recursive = FALSE))
+  #     ),recursive = FALSE))
+  # )
 
 ## combine everything ----
 project_list <- splice(

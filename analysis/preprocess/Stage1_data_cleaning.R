@@ -53,7 +53,7 @@ args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
   # use for interactive testing
-  cohort_name <- "vax"
+  cohort_name <- "all"
   group <- "diabetes"
 } else {
   cohort_name <- args[[1]]
@@ -84,11 +84,16 @@ stage1 <- function(cohort_name, group){
     end_date = end_date_prevax 
     input <- input %>% mutate(index_date = start_date)
     
-    } else if (cohort_name == "unvax" | cohort_name == "vax"){
+    } else if (cohort_name == "vax"){
     
     start_date = start_date_delta
     end_date = end_date_delta
+    input <- input %>% mutate(index_date = index_date_vax)
     
+    } else if (cohort_name == "unvax"){
+    start_date = start_date_delta
+    end_date = end_date_delta
+    input <- input %>% mutate(index_date = index_date_unvax)  
     }
       
     # NOTE: no censoring of end date for death/event at this stage
@@ -307,19 +312,34 @@ stage1 <- function(cohort_name, group){
       
       #Exclusion criteria 11: Mixed vaccine products received before 07-05-2021
       # Trick to run the mixed vaccine code on dummy data with limited levels -> To ensure that the levels are the same in vax_cat_product variables
-      levels(input$vax_cat_product_1) <- union(levels(input$vax_cat_product_1), levels(input$vax_cat_product_2))
-      levels(input$vax_cat_product_2) <- levels(input$vax_cat_product_1)
       
-      #Determines mixed vaccination before 7/5/2021
-      input$vax_mixed <- ifelse((input$vax_cat_product_1!=input$vax_cat_product_2 & (is.na(input$vax_date_covid_2)==FALSE & input$vax_date_covid_2 < as.Date ("2021-05-07")) ),1,0)
-      #Some testing on dummy data returns NA for vax_mixed when vax_date_covid_2 < 2021-05-07 and both vaccine products are NA
-      #Ensure vax_mixed is not NA but 0
-      input$vax_mixed <- replace(input$vax_mixed, is.na(input$vax_mixed),0)
-      #Determines unknown vaccine product before 7/5/2021
-      input$vax_prior_unknown <- ifelse(is.na(input$vax_cat_product_1) | is.na(input$vax_cat_product_2), 1,0)# unknown products
-      input$vax_prior_unknown <- ifelse(is.na(input$vax_date_covid_2), 1,input$vax_prior_unknown) #unknown vaccination 2 date
-      input$vax_prior_unknown <- ifelse(input$vax_prior_unknown==1 & input$vax_date_covid_2 < as.Date ("2021-05-07"),1,0)#Remove if vaccination products are mixed or not known, prior to "2021-05-07"
-      input <- subset(input, input$vax_mixed==0 | input$vax_prior_unknown==0)
+      input <- input %>%
+        mutate(AZ_date = ifelse(vax_date_AstraZeneca_1 < as.Date("2021-05-07"), 1,
+                                ifelse(vax_date_AstraZeneca_2 < as.Date("2021-05-07"), 1,
+                                       ifelse(vax_date_AstraZeneca_3 < as.Date("2021-05-07"), 1, 0)))) %>%
+        mutate(Moderna_date = ifelse(vax_date_Moderna_1 < as.Date("2021-05-07"), 1,
+                                ifelse(vax_date_Moderna_2 < as.Date("2021-05-07"), 1,
+                                       ifelse(vax_date_Moderna_3 < as.Date("2021-05-07"), 1, 0)))) %>%
+        mutate(Pfizer_date = ifelse(vax_date_Pfizer_1 < as.Date("2021-05-07"), 1,
+                                ifelse(vax_date_Pfizer_2 < as.Date("2021-05-07"), 1,
+                                       ifelse(vax_date_Pfizer_3 < as.Date("2021-05-07"), 1, 0)))) %>%
+        rowwise() %>%
+        mutate(vax_mixed = sum(across(c("AZ_date", "Moderna_date", "Pfizer_date")), na.rm = T)) %>%
+        dplyr::filter(vax_mixed < 2)
+      
+      # levels(input$vax_cat_product_1) <- union(levels(input$vax_cat_product_1), levels(input$vax_cat_product_2))
+      # levels(input$vax_cat_product_2) <- levels(input$vax_cat_product_1)
+      # 
+      # #Determines mixed vaccination before 7/5/2021
+      # input$vax_mixed <- ifelse((input$vax_cat_product_1!=input$vax_cat_product_2 & (is.na(input$vax_date_covid_2)==FALSE & input$vax_date_covid_2 < as.Date ("2021-05-07")) ),1,0)
+      # #Some testing on dummy data returns NA for vax_mixed when vax_date_covid_2 < 2021-05-07 and both vaccine products are NA
+      # #Ensure vax_mixed is not NA but 0
+      # input$vax_mixed <- replace(input$vax_mixed, is.na(input$vax_mixed),0)
+      # #Determines unknown vaccine product before 7/5/2021
+      # input$vax_prior_unknown <- ifelse(is.na(input$vax_cat_product_1) | is.na(input$vax_cat_product_2), 1,0)# unknown products
+      # input$vax_prior_unknown <- ifelse(is.na(input$vax_date_covid_2), 1,input$vax_prior_unknown) #unknown vaccination 2 date
+      # input$vax_prior_unknown <- ifelse(input$vax_prior_unknown==1 & input$vax_date_covid_2 < as.Date ("2021-05-07"),1,0)#Remove if vaccination products are mixed or not known, prior to "2021-05-07"
+      # input <- subset(input, input$vax_mixed==0 | input$vax_prior_unknown==0)
       cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[13,1]) - nrow(input), "Criteria 11 (Exclusion): Received mixed vaccine products before 07-05-2021")
       
       #Inclusions criteria 12: Index date is before cohort end date - will remove anyone who is not fully vaccinated by the cohort end date

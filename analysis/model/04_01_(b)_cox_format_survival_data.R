@@ -330,8 +330,17 @@ fit_get_data_surv <- function(event,subgroup, stratify_by_subgroup, stratify_by,
     
     print(tbl_event_count)
     
-    #Any time periods with <=5 events? If yes, will reduce time periods
-    ind_any_zeroeventperiod <- any((tbl_event_count$events_total <= 5) & (!identical(cuts_days_since_expo, c(28, 197))))
+    if(cohort == "prevax"){
+
+      #Any time periods with <=5 events? If yes, will reduce time periods
+      ind_any_zeroeventperiod <- any((tbl_event_count$events_total <= 5) & (!identical(cuts_days_since_expo, c(28, 197, 535))))
+      
+    } else if (cohort == "vax" | cohort == "unvax"){
+      
+      #Any time periods with <=5 events? If yes, will reduce time periods
+      ind_any_zeroeventperiod <- any((tbl_event_count$events_total <= 5) & (!identical(cuts_days_since_expo, c(28, 197))))
+      
+    }
     
     if(time_point == "alternative"){
       ind_any_zeroeventperiod = "FALSE"

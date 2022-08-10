@@ -32,8 +32,8 @@ library(matrixStats)
 args = commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
-  event_name="t1dm"
-  cohort="vaccinated"
+  event_name="t2dm"
+  cohort="vax"
 }else{
   event_name  = args[[1]]
   cohort = args[[2]]

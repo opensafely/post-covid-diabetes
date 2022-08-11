@@ -52,9 +52,13 @@ preprocess <- function(cohort_name){
   ## Load dataset
   df <- arrow::read_feather(file = paste0("output/input_",cohort_name,".feather"))
   
+  print(paste0(cohort_name," ", nrow(df), " rows in input dataset"))
+  
   ## merge with spine 
   
   df <- merge(df,dfspine, by = "patient_id")
+  
+  print(paste0(cohort_name," ", nrow(df), " rows in dataset after merging spine with input"))
   
   # QC for consultation variable
   # max to 365 (average of one per day)

@@ -69,7 +69,7 @@ preprocess <- function(cohort_name){
   df <- df %>%
     mutate(cov_num_consulation_rate = replace(cov_num_consulation_rate, cov_num_consulation_rate > 365, 365))
   
-  print(paste0(cohort_name,"Consultation variable after QC"))
+  print(paste0(cohort_name," Consultation variable after QC"))
   summary(df$cov_num_consulation_rate)
   
   # Combine BMI variables to create one history of obesity variable ---------------
@@ -155,7 +155,7 @@ preprocess <- function(cohort_name){
   source(file.path(scripts_dir,"diabetes_algorithm.R"))
   df <- diabetes_algo(df)
   print("Diabetes algorithm run successfully")
-  print(paste0(nrow(df), " rows in df line 418 after diabetes algo"))
+  print(paste0(nrow(df), " rows in df after diabetes algo"))
   
   # Restrict columns and save analysis dataset ---------------------------------
   

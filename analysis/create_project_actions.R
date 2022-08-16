@@ -332,7 +332,7 @@ actions_list <- splice(
     run = "r:latest analysis/descriptives/format_table1.R",
     needs = list("stage2_missing_table1_all"),
     moderately_sensitive = list(
-      formatted_tables = glue("output/for-review/descriptives/Table1_*.csv")
+      formatted_tables = glue("output/review/descriptives/Table1_*.csv")
     )
   ),
   

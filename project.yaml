@@ -174,7 +174,7 @@ actions:
     - stage2_missing_table1_all
     outputs:
       moderately_sensitive:
-        formatted_tables: output/for-review/descriptives/Table1_*.csv
+        formatted_tables: output/review/descriptives/Table1_*.csv
 
   stage_2_events_split_by_covariate_level_prevax:
     run: r:latest analysis/descriptives/events_split_by_covariate_level.R prevax

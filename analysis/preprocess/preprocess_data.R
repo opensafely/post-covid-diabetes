@@ -29,6 +29,17 @@ if(length(args)==0){
 fs::dir_create(here::here("output", "not-for-review"))
 fs::dir_create(here::here("output", "review"))
 
+# READ IN INDEX DATES AND SUMMARISE TO LOG FILE
+
+index_dates <- read_csv("output/index_dates.csv")
+index_dates <- index_dates %>%
+  select(contains("date"))
+for(i in names(index_dates)){
+  print(summary(index_dates[i]))
+}
+
+# CREATE PREPROCESS FUNCTION
+
 preprocess <- function(cohort_name){
   # Create spine dataset ---------------------------------------------------------
   

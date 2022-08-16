@@ -55,6 +55,6 @@ for(group in outcome_groups){
   
   # SAVE TABLE 1
   
-  write.csv(table1_merged, paste0("output/review/descriptives/Table1_",group,"_Formatted_To_Release.csv"), row.names = FALSE)
+  write.csv(table1_merged, paste0("output/review/descriptives/Table1_Formatted_To_Release_",group,"_.csv"), row.names = FALSE)
 }
   

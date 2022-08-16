@@ -230,7 +230,7 @@ actions_list <- splice(
   action(
     name = "preprocess_data_prevax",
     run = "r:latest analysis/preprocess/preprocess_data.R prevax",
-    needs = list("generate_study_population_prelim", "generate_study_population_prevax", "generate_study_population_vax", "generate_study_population_unvax"),
+    needs = list("generate_index_dates", "generate_study_population_prelim", "generate_study_population_prevax", "generate_study_population_vax", "generate_study_population_unvax"),
     moderately_sensitive = list(
       describe = glue("output/not-for-review/describe_input_prevax_*.txt")
     ),
@@ -244,7 +244,7 @@ actions_list <- splice(
   action(
     name = "preprocess_data_vax",
     run = "r:latest analysis/preprocess/preprocess_data.R vax",
-    needs = list("generate_study_population_prelim", "generate_study_population_prevax", "generate_study_population_vax", "generate_study_population_unvax"),
+    needs = list("generate_index_dates", "generate_study_population_prelim", "generate_study_population_prevax", "generate_study_population_vax", "generate_study_population_unvax"),
     moderately_sensitive = list(
       describe = glue("output/not-for-review/describe_input_vax_*.txt")
     ),
@@ -258,7 +258,7 @@ actions_list <- splice(
   action(
     name = "preprocess_data_unvax",
     run = "r:latest analysis/preprocess/preprocess_data.R unvax",
-    needs = list("generate_study_population_prelim", "generate_study_population_prevax", "generate_study_population_vax", "generate_study_population_unvax"),
+    needs = list("generate_index_dates", "generate_study_population_prelim", "generate_study_population_prevax", "generate_study_population_vax", "generate_study_population_unvax"),
     moderately_sensitive = list(
       describe = glue("output/not-for-review/describe_input_unvax_*.txt")
     ),

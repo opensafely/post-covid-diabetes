@@ -71,6 +71,7 @@ actions:
   preprocess_data_prevax:
     run: r:latest analysis/preprocess/preprocess_data.R prevax
     needs:
+    - generate_index_dates
     - generate_study_population_prelim
     - generate_study_population_prevax
     - generate_study_population_vax
@@ -85,6 +86,7 @@ actions:
   preprocess_data_vax:
     run: r:latest analysis/preprocess/preprocess_data.R vax
     needs:
+    - generate_index_dates
     - generate_study_population_prelim
     - generate_study_population_prevax
     - generate_study_population_vax
@@ -99,6 +101,7 @@ actions:
   preprocess_data_unvax:
     run: r:latest analysis/preprocess/preprocess_data.R unvax
     needs:
+    - generate_index_dates
     - generate_study_population_prelim
     - generate_study_population_prevax
     - generate_study_population_vax

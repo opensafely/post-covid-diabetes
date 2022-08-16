@@ -326,6 +326,16 @@ actions_list <- splice(
     )
   ),
   
+  #comment("Format Table 1"),
+  action(
+    name = "format_table1",
+    run = "r:latest analysis/descriptives/format_table1.R",
+    needs = list("stage2_missing_table1_all"),
+    moderately_sensitive = list(
+      formatted_tables = glue("output/for-review/descriptives/Table1_*.csv")
+    )
+  ),
+  
   #comment("Stage 2 - Event counts by covariate level),
   splice(
     # over cohorts

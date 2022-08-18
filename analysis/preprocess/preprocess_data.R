@@ -63,6 +63,8 @@ preprocess <- function(cohort_name){
   df <- arrow::read_feather(file = paste0("output/input_",cohort_name,".feather"))
   
   print(paste0(cohort_name," ", nrow(df), " rows in input dataset"))
+  print(purrr::map(df, ~sum(is.na(.))))
+  print(summary(df))
   
   ## merge with spine 
   

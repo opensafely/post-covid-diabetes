@@ -77,10 +77,6 @@ analyses_to_run <- rbind(analyses_to_run, analyses_to_run_normal_timepoint)
 
 rm(analyses_to_run_normal_timepoint)
 
-# Join in reduced covariates
-
-rm(non_zero_covar_names)
-
 analyses_to_run$covariates <- NA
 
 # Source remainder of relevant files --------------------------------------------------------

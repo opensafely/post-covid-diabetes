@@ -87,7 +87,7 @@ apply_model_function <- function(outcome, cohort){
       name = glue("Analysis_cox_{outcome}_{cohort}"),
       run = "r:latest analysis/model/01_cox_pipeline.R",
       arguments = c(outcome,cohort),
-      needs = list("stage1_data_cleaning_all", glue("stage1_end_date_table_{cohort}"),glue("stage_2_events_split_by_covariate_level_{cohort}")),
+      needs = list("stage1_data_cleaning_all", glue("stage1_end_date_table_{cohort}")),
       moderately_sensitive = list(
         analyses_not_run = glue("output/review/model/analyses_not_run_{outcome}_{cohort}.csv"),
         compiled_hrs_csv = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}.csv"),
@@ -112,7 +112,7 @@ apply_model_function_covariate_testing <- function(outcome, cohort){
       name = glue("Analysis_cox_{outcome}_{cohort}_covariate_testing"),
       run = "r:latest analysis/model/01_cox_pipeline.R",
       arguments = c(outcome,cohort,"test_all"),
-      needs = list("stage1_data_cleaning_all", glue("stage1_end_date_table_{cohort}"),glue("stage_2_events_split_by_covariate_level_{cohort}")),
+      needs = list("stage1_data_cleaning_all", glue("stage1_end_date_table_{cohort}")),
       moderately_sensitive = list(
         analyses_not_run = glue("output/review/model/analyses_not_run_{outcome}_{cohort}_covariate_testing_test_all.csv"),
         compiled_hrs_csv = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}_covariate_testing_test_all.csv"),
@@ -139,21 +139,6 @@ table2 <- function(cohort){
   )
 }
 
-event_counts_by_covariate_level <- function(cohort){
-  splice(
-    action(
-      name = glue("stage_2_events_split_by_covariate_level_{cohort}"),
-      run = "r:latest analysis/descriptives/events_split_by_covariate_level.R",
-      arguments = c(cohort),
-      needs = list("stage1_data_cleaning_all",glue("stage1_end_date_table_{cohort}")),
-      moderately_sensitive = list(
-        counts_by_covariate_level = glue("output/not-for-review/event_counts_by_covariate_level_{cohort}_*.csv"),
-        selected_covariates = glue("output/not-for-review/non_zero_selected_covariates_{cohort}_*.csv")
-        
-      )
-    )
-  )
-}
 
 ##########################################################
 ## Define and combine all actions into a list of actions #
@@ -335,12 +320,7 @@ actions_list <- splice(
       formatted_tables = glue("output/review/descriptives/Table1_Formatted_To_Release_*.csv")
     )
   ),
-  
-  #comment("Stage 2 - Event counts by covariate level),
-  splice(
-    # over cohorts
-    unlist(lapply(cohort_to_run, function(x) event_counts_by_covariate_level(cohort = x)), recursive = FALSE)
-  ),
+
 
   #comment("Stage 3 - Diabetes flow - prevax"),  
   

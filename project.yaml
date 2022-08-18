@@ -179,36 +179,6 @@ actions:
       moderately_sensitive:
         formatted_tables: output/review/descriptives/Table1_Formatted_To_Release_*.csv
 
-  stage_2_events_split_by_covariate_level_prevax:
-    run: r:latest analysis/descriptives/events_split_by_covariate_level.R prevax
-    needs:
-    - stage1_data_cleaning_all
-    - stage1_end_date_table_prevax
-    outputs:
-      moderately_sensitive:
-        counts_by_covariate_level: output/not-for-review/event_counts_by_covariate_level_prevax_*.csv
-        selected_covariates: output/not-for-review/non_zero_selected_covariates_prevax_*.csv
-
-  stage_2_events_split_by_covariate_level_vax:
-    run: r:latest analysis/descriptives/events_split_by_covariate_level.R vax
-    needs:
-    - stage1_data_cleaning_all
-    - stage1_end_date_table_vax
-    outputs:
-      moderately_sensitive:
-        counts_by_covariate_level: output/not-for-review/event_counts_by_covariate_level_vax_*.csv
-        selected_covariates: output/not-for-review/non_zero_selected_covariates_vax_*.csv
-
-  stage_2_events_split_by_covariate_level_unvax:
-    run: r:latest analysis/descriptives/events_split_by_covariate_level.R unvax
-    needs:
-    - stage1_data_cleaning_all
-    - stage1_end_date_table_unvax
-    outputs:
-      moderately_sensitive:
-        counts_by_covariate_level: output/not-for-review/event_counts_by_covariate_level_unvax_*.csv
-        selected_covariates: output/not-for-review/non_zero_selected_covariates_unvax_*.csv
-
   stage3_diabetes_flow_prevax:
     run: r:latest analysis/descriptives/diabetes_flowchart.R prevax
     needs:
@@ -287,7 +257,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_prevax
-    - stage_2_events_split_by_covariate_level_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t1dm_prevax.csv
@@ -307,7 +276,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_vax
-    - stage_2_events_split_by_covariate_level_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t1dm_vax.csv
@@ -327,7 +295,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_unvax
-    - stage_2_events_split_by_covariate_level_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t1dm_unvax.csv
@@ -347,7 +314,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_prevax
-    - stage_2_events_split_by_covariate_level_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_prevax.csv
@@ -367,7 +333,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_vax
-    - stage_2_events_split_by_covariate_level_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_vax.csv
@@ -387,7 +352,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_unvax
-    - stage_2_events_split_by_covariate_level_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_unvax.csv
@@ -407,7 +371,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_prevax
-    - stage_2_events_split_by_covariate_level_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_prevax.csv
@@ -427,7 +390,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_vax
-    - stage_2_events_split_by_covariate_level_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_vax.csv
@@ -447,7 +409,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_unvax
-    - stage_2_events_split_by_covariate_level_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_unvax.csv
@@ -467,7 +428,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_prevax
-    - stage_2_events_split_by_covariate_level_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_no_prevax.csv
@@ -487,7 +447,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_vax
-    - stage_2_events_split_by_covariate_level_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_no_vax.csv
@@ -507,7 +466,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_unvax
-    - stage_2_events_split_by_covariate_level_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_no_unvax.csv
@@ -527,7 +485,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_prevax
-    - stage_2_events_split_by_covariate_level_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_prevax.csv
@@ -547,7 +504,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_vax
-    - stage_2_events_split_by_covariate_level_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_vax.csv
@@ -567,7 +523,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_unvax
-    - stage_2_events_split_by_covariate_level_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_unvax.csv
@@ -587,7 +542,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_prevax
-    - stage_2_events_split_by_covariate_level_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_no_prevax.csv
@@ -607,7 +561,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_vax
-    - stage_2_events_split_by_covariate_level_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_no_vax.csv
@@ -627,7 +580,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_unvax
-    - stage_2_events_split_by_covariate_level_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_no_unvax.csv
@@ -647,7 +599,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_prevax
-    - stage_2_events_split_by_covariate_level_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_otherdm_prevax.csv
@@ -667,7 +618,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_vax
-    - stage_2_events_split_by_covariate_level_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_otherdm_vax.csv
@@ -687,7 +637,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_unvax
-    - stage_2_events_split_by_covariate_level_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_otherdm_unvax.csv
@@ -707,7 +656,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_prevax
-    - stage_2_events_split_by_covariate_level_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_gestationaldm_prevax.csv
@@ -727,7 +675,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_vax
-    - stage_2_events_split_by_covariate_level_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_gestationaldm_vax.csv
@@ -747,7 +694,6 @@ actions:
     needs:
     - stage1_data_cleaning_all
     - stage1_end_date_table_unvax
-    - stage_2_events_split_by_covariate_level_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/analyses_not_run_gestationaldm_unvax.csv

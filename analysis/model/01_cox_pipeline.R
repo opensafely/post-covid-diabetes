@@ -79,16 +79,9 @@ rm(analyses_to_run_normal_timepoint)
 
 # Join in reduced covariates
 
-analyses_to_run <- analyses_to_run %>% left_join(non_zero_covar_names, by= c("event"="outcome_event","subgroup","reduced_timepoint"="time_period"))
 rm(non_zero_covar_names)
 
-#if(event_name %in% c("ate","vte") & cohort == "vaccinated"){
-#  analyses_to_run_hosp_alternative <- analyses_to_run %>% filter(subgroup == "covid_pheno_hospitalised")
-#  analyses_to_run_hosp_alternative$reduced_timepoint <- "alternative"
-#  analyses_to_run_hosp_alternative <- distinct(analyses_to_run_hosp_alternative)
-#  analyses_to_run <- rbind(analyses_to_run, analyses_to_run_hosp_alternative)
-#}
-
+analyses_to_run$covariates <- NA
 
 # Source remainder of relevant files --------------------------------------------------------
 

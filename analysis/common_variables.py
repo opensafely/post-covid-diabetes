@@ -97,6 +97,8 @@ def generate_common_variables(index_date_variable,end_date_variable):
         "tmp_exp_date_covid19_confirmed_sgss","tmp_exp_date_covid19_confirmed_snomed","tmp_exp_date_covid19_confirmed_hes","tmp_exp_date_covid19_confirmed_death"
     ),
 
+# REGISTERED VARIABLES ------------------------------------------------------
+
 # DEFINE OUTCOMES ------------------------------------------------------
 
     ## DIABETES OUTCOMES -------------------
@@ -177,7 +179,7 @@ def generate_common_variables(index_date_variable,end_date_variable):
         return_expectations={
             "date": {"earliest": "2018-01-01", "latest" : "today"},
             "rate": "uniform",
-            "incidence": 0.7,
+            "incidence": 0.9,
         },
     ),
     # HES APC
@@ -190,7 +192,7 @@ def generate_common_variables(index_date_variable,end_date_variable):
         return_expectations={
             "date": {"earliest": "2018-01-01", "latest" : "today"},
             "rate": "uniform",
-            "incidence": 0.7,
+            "incidence": 0.9,
         },
     ),
     # Combined

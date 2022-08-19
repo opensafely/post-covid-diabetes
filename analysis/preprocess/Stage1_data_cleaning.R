@@ -264,8 +264,7 @@ stage1 <- function(cohort_name, group){
     cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[6,1]) - nrow(input), "Criteria 4 (Inclusion): Known deprivation")
     
     #Inclusion criteria 5: Registered in an English GP with TPP software for at least 6 months prior to the study start date
-    # NOTE: Dealt with in Study definition
-    #input <- input # This criteria is met in study definition 
+    input <- subset(input, input$has_follow_up_previous_6months == TRUE)
     cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[7,1]) - nrow(input), "Criteria 5 (Inclusion): Registered in an English GP with TPP software for at least 6 months prior to the study start date")
     
     #Inclusion criteria 6: Known region

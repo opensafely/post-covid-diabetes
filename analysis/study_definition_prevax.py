@@ -70,8 +70,6 @@ study = StudyDefinition(
             NOT has_died
             AND
             registered        
-            AND
-            has_follow_up_previous_6months
             """,
         
         has_died = patients.died_from_any_cause(
@@ -83,14 +81,8 @@ study = StudyDefinition(
         "registered_at_start",
         registered_at_start = patients.registered_as_of("index_date_prevax"),
         ),
-        
-        has_follow_up_previous_6months = patients.registered_with_one_practice_between(
-        start_date = "index_date_prevax - 6 months",
-        end_date = "index_date_prevax",
-        return_expectations = {"incidence": 0.95},
-        ),
     ),
-# Define sex 
+    # Define sex 
     # NB: this is required for JCVI variables hence is defined here
     cov_cat_sex = patients.with_value_from_file(
         f_path = 'output/index_dates.csv',
@@ -165,6 +157,27 @@ study = StudyDefinition(
                     "incidence": 1.0
                 },
             ),
+
+    has_follow_up_previous_6months=patients.registered_with_one_practice_between(
+        start_date="index_date_prevax - 6 months",
+        end_date="index_date_prevax",
+        return_expectations={"incidence": 0.95},
+    ),
+
+    registered_as_of_6months_before_delta=patients.registered_as_of(
+        "2020-12-15",
+        return_expectations={"incidence": 0.95},
+    ),
+
+    registered_as_of_pandemic_start=patients.registered_as_of(
+        "2020-01-01",
+        return_expectations={"incidence": 0.95},
+    ),
+
+    registered_as_of_6months_before_pandemic_start=patients.registered_as_of(
+        "2020-07-17",
+        return_expectations={"incidence": 0.95},
+    ),
             
     # Define vaccine eligibility variables
 

@@ -67,7 +67,7 @@ study = StudyDefinition(
     # NB: all inclusions and exclusions are performed in stage 1
     population = patients.all(
     ),
-    
+
     # Define sex 
     # NB: this is required for JCVI variables hence is defined here
     cov_cat_sex = patients.with_value_from_file(
@@ -143,39 +143,6 @@ study = StudyDefinition(
                     "incidence": 1.0
                 },
             ),
-
-    # has_follow_up_previous_6months=patients.registered_with_one_practice_between(
-    #     start_date="index_date_prevax - 6 months",
-    #     end_date="index_date_prevax",
-    #     return_expectations={"incidence": 0.95},
-    # ),
-
-    # registered_as_of_6months_before_delta=patients.registered_with_one_practice_between(
-    #     start_date="2020-12-15",
-    #     end_date="2021-06-01",
-    #     return_expectations={"incidence": 0.95},
-    # ),
-
-    # registered_as_of_pandemic_start=patients.registered_with_one_practice_between(
-    #     start_date="2020-01-01",
-    #     end_date="2020-01-01",
-    #     return_expectations={"incidence": 0.95},
-    # ),
-
-    # registered_as_of_6months_before_pandemic_start=patients.registered_with_one_practice_between(
-    #     start_date="2019-07-17",
-    #     end_date="2020-01-01",
-    #     return_expectations={"incidence": 0.95},
-    # ),
-
-    # dereg_date=patients.date_deregistered_from_all_supported_practices(
-    #     on_or_after="2020-01-01", date_format = 'YYYY-MM-DD',
-    #                     return_expectations={
-    #                 "date": {"earliest": "2020-01-01", "latest": "today"},
-    #                 "rate": "uniform",
-    #                 "incidence": 0.01
-    #             },
-    # ),
             
     # Define vaccine eligibility variables
 

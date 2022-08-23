@@ -62,23 +62,8 @@ study = StudyDefinition(
     },
 
     # Define the study population 
-    # NB: not all inclusions and exclusions are written into study definition
-    population = patients.satisfying(
-        """
-            NOT has_died
-            AND
-            registered        
-            """,
-        
-        has_died = patients.died_from_any_cause(
-        on_or_before = "index_date_unvax",
-        returning="binary_flag",
-        ),
-        
-        registered = patients.satisfying(
-        "registered_at_start",
-        registered_at_start = patients.registered_as_of("index_date_unvax"),
-        ),
+    # NB: all inclusions and exclusions are performed in stage 1
+    population = patients.all(
     ),
 
   # Define sex 
@@ -157,38 +142,38 @@ study = StudyDefinition(
                 },
             ),
 
-    has_follow_up_previous_6months=patients.registered_with_one_practice_between(
-        start_date="index_date_unvax - 6 months",
-        end_date="index_date_unvax",
-        return_expectations={"incidence": 0.95},
-    ),
+    # has_follow_up_previous_6months=patients.registered_with_one_practice_between(
+    #     start_date="index_date_unvax - 6 months",
+    #     end_date="index_date_unvax",
+    #     return_expectations={"incidence": 0.95},
+    # ),
 
-    registered_as_of_6months_before_delta=patients.registered_with_one_practice_between(
-        start_date="2020-12-15",
-        end_date="2021-06-01",
-        return_expectations={"incidence": 0.95},
-    ),
+    # registered_as_of_6months_before_delta=patients.registered_with_one_practice_between(
+    #     start_date="2020-12-15",
+    #     end_date="2021-06-01",
+    #     return_expectations={"incidence": 0.95},
+    # ),
 
-    registered_as_of_pandemic_start=patients.registered_with_one_practice_between(
-        start_date="2020-01-01",
-        end_date="2020-01-01",
-        return_expectations={"incidence": 0.95},
-    ),
+    # registered_as_of_pandemic_start=patients.registered_with_one_practice_between(
+    #     start_date="2020-01-01",
+    #     end_date="2020-01-01",
+    #     return_expectations={"incidence": 0.95},
+    # ),
 
-    registered_as_of_6months_before_pandemic_start=patients.registered_with_one_practice_between(
-        start_date="2019-07-17",
-        end_date="2020-01-01",
-        return_expectations={"incidence": 0.95},
-    ),
+    # registered_as_of_6months_before_pandemic_start=patients.registered_with_one_practice_between(
+    #     start_date="2019-07-17",
+    #     end_date="2020-01-01",
+    #     return_expectations={"incidence": 0.95},
+    # ),
 
-    dereg_date=patients.date_deregistered_from_all_supported_practices(
-        on_or_after="2020-01-01", date_format = 'YYYY-MM-DD',
-                        return_expectations={
-                    "date": {"earliest": "2020-01-01", "latest": "today"},
-                    "rate": "uniform",
-                    "incidence": 0.01
-                },
-    ),
+    # dereg_date=patients.date_deregistered_from_all_supported_practices(
+    #     on_or_after="2020-01-01", date_format = 'YYYY-MM-DD',
+    #                     return_expectations={
+    #                 "date": {"earliest": "2020-01-01", "latest": "today"},
+    #                 "rate": "uniform",
+    #                 "incidence": 0.01
+    #             },
+    # ),
 
     # Define vaccine eligibility variables
 

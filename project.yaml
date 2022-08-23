@@ -2,7 +2,7 @@ version: '3.0'
 
 expectations:
 
-  population_size: 1000
+  population_size: 200000
 
 actions:
 
@@ -259,11 +259,11 @@ actions:
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t1dm_prevax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t1dm_prevax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t1dm_prevax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t1dm_prevax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t1dm_prevax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t1dm_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t1dm_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t1dm_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t1dm_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t1dm_prevax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t1dm_*_prevax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t1dm_*_prevax_*_time_periods.csv
@@ -278,11 +278,11 @@ actions:
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t1dm_vax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t1dm_vax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t1dm_vax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t1dm_vax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t1dm_vax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t1dm_vax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t1dm_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t1dm_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t1dm_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t1dm_vax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t1dm_*_vax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t1dm_*_vax_*_time_periods.csv
@@ -297,11 +297,11 @@ actions:
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t1dm_unvax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t1dm_unvax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t1dm_unvax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t1dm_unvax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t1dm_unvax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t1dm_unvax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t1dm_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t1dm_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t1dm_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t1dm_unvax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t1dm_*_unvax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t1dm_*_unvax_*_time_periods.csv
@@ -316,11 +316,11 @@ actions:
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_prevax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_prevax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_prevax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_prevax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_prevax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_prevax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_*_prevax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_*_prevax_*_time_periods.csv
@@ -335,11 +335,11 @@ actions:
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_vax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_vax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_vax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_vax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_vax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_vax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_vax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_*_vax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_*_vax_*_time_periods.csv
@@ -354,11 +354,11 @@ actions:
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_unvax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_unvax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_unvax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_unvax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_unvax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_unvax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_unvax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_*_unvax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_*_unvax_*_time_periods.csv
@@ -373,11 +373,11 @@ actions:
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_prevax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_prevax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_prevax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_prevax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_prevax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pd_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_pd_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_pd_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_pd_prevax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_*_prevax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_pd_*_prevax_*_time_periods.csv
@@ -392,11 +392,11 @@ actions:
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_vax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_vax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_vax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_vax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_vax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pd_vax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_pd_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_pd_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_pd_vax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_*_vax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_pd_*_vax_*_time_periods.csv
@@ -411,11 +411,11 @@ actions:
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_unvax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_unvax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_unvax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_unvax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_unvax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pd_unvax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_pd_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_pd_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_pd_unvax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_*_unvax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_pd_*_unvax_*_time_periods.csv
@@ -430,11 +430,11 @@ actions:
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_no_prevax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_prevax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_prevax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_no_prevax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_no_prevax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pd_no_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_pd_no_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_pd_no_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_no_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_pd_no_prevax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_no_*_prevax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_pd_no_*_prevax_*_time_periods.csv
@@ -449,11 +449,11 @@ actions:
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_no_vax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_vax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_vax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_no_vax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_no_vax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pd_no_vax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_pd_no_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_pd_no_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_no_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_pd_no_vax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_no_*_vax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_pd_no_*_vax_*_time_periods.csv
@@ -468,11 +468,11 @@ actions:
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_pd_no_unvax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_unvax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_pd_no_unvax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_no_unvax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_pd_no_unvax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pd_no_unvax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_pd_no_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_pd_no_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_pd_no_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_pd_no_unvax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pd_no_*_unvax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_pd_no_*_unvax_*_time_periods.csv
@@ -487,11 +487,11 @@ actions:
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_prevax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_prevax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_prevax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_prevax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_prevax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_obes_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_obes_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_obes_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_obes_prevax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_*_prevax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_obes_*_prevax_*_time_periods.csv
@@ -506,11 +506,11 @@ actions:
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_vax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_vax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_vax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_vax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_vax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_obes_vax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_obes_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_obes_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_obes_vax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_*_vax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_obes_*_vax_*_time_periods.csv
@@ -525,11 +525,11 @@ actions:
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_unvax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_unvax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_unvax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_unvax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_unvax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_obes_unvax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_obes_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_obes_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_obes_unvax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_*_unvax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_obes_*_unvax_*_time_periods.csv
@@ -544,11 +544,11 @@ actions:
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_no_prevax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_prevax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_prevax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_no_prevax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_no_prevax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_obes_no_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_obes_no_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_obes_no_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_no_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_obes_no_prevax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_no_*_prevax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_obes_no_*_prevax_*_time_periods.csv
@@ -563,11 +563,11 @@ actions:
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_no_vax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_vax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_vax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_no_vax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_no_vax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_obes_no_vax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_obes_no_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_obes_no_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_no_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_obes_no_vax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_no_*_vax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_obes_no_*_vax_*_time_periods.csv
@@ -582,11 +582,11 @@ actions:
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_t2dm_obes_no_unvax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_unvax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_t2dm_obes_no_unvax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_no_unvax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_t2dm_obes_no_unvax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_obes_no_unvax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_obes_no_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_obes_no_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_t2dm_obes_no_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_t2dm_obes_no_unvax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_t2dm_obes_no_*_unvax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_t2dm_obes_no_*_unvax_*_time_periods.csv
@@ -601,11 +601,11 @@ actions:
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_otherdm_prevax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_otherdm_prevax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_otherdm_prevax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_otherdm_prevax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_otherdm_prevax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_otherdm_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_otherdm_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_otherdm_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_otherdm_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_otherdm_prevax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_otherdm_*_prevax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_otherdm_*_prevax_*_time_periods.csv
@@ -620,11 +620,11 @@ actions:
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_otherdm_vax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_otherdm_vax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_otherdm_vax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_otherdm_vax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_otherdm_vax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_otherdm_vax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_otherdm_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_otherdm_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_otherdm_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_otherdm_vax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_otherdm_*_vax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_otherdm_*_vax_*_time_periods.csv
@@ -639,11 +639,11 @@ actions:
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_otherdm_unvax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_otherdm_unvax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_otherdm_unvax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_otherdm_unvax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_otherdm_unvax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_otherdm_unvax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_otherdm_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_otherdm_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_otherdm_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_otherdm_unvax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_otherdm_*_unvax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_otherdm_*_unvax_*_time_periods.csv
@@ -658,11 +658,11 @@ actions:
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_gestationaldm_prevax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_gestationaldm_prevax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_gestationaldm_prevax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_gestationaldm_prevax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_gestationaldm_prevax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_gestationaldm_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_gestationaldm_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_gestationaldm_prevax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_gestationaldm_prevax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_gestationaldm_prevax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_gestationaldm_*_prevax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_gestationaldm_*_prevax_*_time_periods.csv
@@ -677,11 +677,11 @@ actions:
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_gestationaldm_vax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_gestationaldm_vax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_gestationaldm_vax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_gestationaldm_vax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_gestationaldm_vax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_gestationaldm_vax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_gestationaldm_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_gestationaldm_vax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_gestationaldm_vax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_gestationaldm_vax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_gestationaldm_*_vax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_gestationaldm_*_vax_*_time_periods.csv
@@ -696,11 +696,11 @@ actions:
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
-        analyses_not_run: output/review/model/analyses_not_run_gestationaldm_unvax.csv
-        compiled_hrs_csv: output/review/model/suppressed_compiled_HR_results_gestationaldm_unvax.csv
-        compiled_hrs_csv_to_release: output/review/model/suppressed_compiled_HR_results_gestationaldm_unvax_to_release.csv
-        compiled_event_counts_NOT_for_release_csv: output/review/model/suppressed_compiled_event_counts_NOT_for_release_gestationaldm_unvax.csv
-        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/compiled_event_counts_NOT_for_release_gestationaldm_unvax.csv
+        analyses_not_run: output/review/model/*/analyses_not_run_gestationaldm_unvax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_gestationaldm_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_gestationaldm_unvax_to_release.csv
+        compiled_event_counts_NOT_for_release_csv: output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_gestationaldm_unvax.csv
+        compiled_event_counts_NOT_for_release_csv_non_supressed: output/review/model/*/compiled_event_counts_NOT_for_release_gestationaldm_unvax.csv
         describe_data_surv: output/not-for-review/describe_data_surv_gestationaldm_*_unvax_*_time_periods.txt
       highly_sensitive:
         dataset: output/input_gestationaldm_*_unvax_*_time_periods.csv

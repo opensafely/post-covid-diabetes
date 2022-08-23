@@ -89,11 +89,11 @@ apply_model_function <- function(outcome, cohort){
       arguments = c(outcome,cohort),
       needs = list("stage1_data_cleaning_all", glue("stage1_end_date_table_{cohort}")),
       moderately_sensitive = list(
-        analyses_not_run = glue("output/review/model/analyses_not_run_{outcome}_{cohort}.csv"),
-        compiled_hrs_csv = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}.csv"),
-        compiled_hrs_csv_to_release = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}_to_release.csv"),
-        compiled_event_counts_NOT_for_release_csv = glue("output/review/model/suppressed_compiled_event_counts_NOT_for_release_{outcome}_{cohort}.csv"),
-        compiled_event_counts_NOT_for_release_csv_non_supressed = glue("output/review/model/compiled_event_counts_NOT_for_release_{outcome}_{cohort}.csv"),
+        analyses_not_run = glue("output/review/model/*/analyses_not_run_{outcome}_{cohort}.csv"),
+        compiled_hrs_csv = glue("output/review/model/*/suppressed_compiled_HR_results_{outcome}_{cohort}.csv"),
+        compiled_hrs_csv_to_release = glue("output/review/model/*/suppressed_compiled_HR_results_{outcome}_{cohort}_to_release.csv"),
+        compiled_event_counts_NOT_for_release_csv = glue("output/review/model/*/suppressed_compiled_event_counts_NOT_for_release_{outcome}_{cohort}.csv"),
+        compiled_event_counts_NOT_for_release_csv_non_supressed = glue("output/review/model/*/compiled_event_counts_NOT_for_release_{outcome}_{cohort}.csv"),
         describe_data_surv = glue("output/not-for-review/describe_data_surv_{outcome}_*_{cohort}_*_time_periods.txt")
       ),
       highly_sensitive = list(

@@ -356,8 +356,24 @@ fit_get_data_surv <- function(event,subgroup, stratify_by_subgroup, stratify_by,
     # Save events counts if less than 50 events as this script will not re-run with reduced time periods
     
     if(ind_any_zeroeventperiod==FALSE | less_than_50_events==TRUE){
-      write.csv(tbl_event_count, paste0(output_dir,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"), row.names = T)
-      print(paste0("Event counts saved: ", output_dir,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"))
+      
+      if(cohort == "prevax"){
+        
+        write.csv(tbl_event_count, paste0(output_dir_prevax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"), row.names = T)
+        print(paste0("Event counts saved: ", output_dir_prevax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"))
+
+      } else if (cohort == "vax"){
+        
+        write.csv(tbl_event_count, paste0(output_dir_vax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"), row.names = T)
+        print(paste0("Event counts saved: ", output_dir_vax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"))
+        
+      } else if (cohort == "unvax"){
+        
+        write.csv(tbl_event_count, paste0(output_dir_unvax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"), row.names = T)
+        print(paste0("Event counts saved: ", output_dir_unvax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"))
+        
+      }
+      
     }
     
     

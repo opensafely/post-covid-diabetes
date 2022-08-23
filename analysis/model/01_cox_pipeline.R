@@ -44,7 +44,13 @@ if(length(args)==0){
 fs::dir_create(here::here("output", "not-for-review"))
 fs::dir_create(here::here("output", "review", "model"))
 fs::dir_create(here::here("output", "review", "model","fit-individual-covariates"))
+fs::dir_create(here::here("output", "review", "model","prevax"))
+fs::dir_create(here::here("output", "review", "model","vax"))
+fs::dir_create(here::here("output", "review", "model","unvax"))
 output_dir <- "output/review/model"
+output_dir_prevax <- "output/review/model/prevax"
+output_dir_vax <- "output/review/model/vax"
+output_dir_unvax <- "output/review/model/unvax"
 scripts_dir <- "analysis/model"
 
 # Source relevant files --------------------------------------------------------
@@ -98,8 +104,22 @@ if(nrow(analyses_to_run>0)){
              cuts_days_since_expo,cuts_days_since_expo_reduced,mdl))
 }
 
-#Save csv of anlayses not run
-write.csv(analyses_not_run, paste0(output_dir,"/analyses_not_run_" , event_name ,"_",cohort,".csv"), row.names = T)
+if(cohort == "prevax"){
+  
+  #Save csv of analyses not run
+  write.csv(analyses_not_run, paste0(output_dir_prevax,"/analyses_not_run_" , event_name ,"_",cohort,".csv"), row.names = T)
+
+} else if (cohort == "vax"){
+  
+  #Save csv of analyses not run
+  write.csv(analyses_not_run, paste0(output_dir_vax,"/analyses_not_run_" , event_name ,"_",cohort,".csv"), row.names = T)
+  
+} else if (cohort == "unvax"){
+  
+  #Save csv of analyses not run
+  write.csv(analyses_not_run, paste0(output_dir_unvax,"/analyses_not_run_" , event_name ,"_",cohort,".csv"), row.names = T)
+  
+}
 
 if(nrow(analyses_to_run)==0){
   sink(paste0("output/not-for-review/describe_data_surv_",event_name,"__",cohort,"__time_periods.txt"))

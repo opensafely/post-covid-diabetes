@@ -92,18 +92,19 @@ agebreaks_strata <- c(0, 40, 60, 80, 111)
 agelabels_strata <- c("18_39", "40_59", "60_79", "80_110")
 
 if(cohort == "prevax"){
-  #These are the study start and end dates for the Delta era
+  
+  #These are the study start and end dates for the prevax cohort
   cohort_start_date <- as.Date("2020-01-01")
   cohort_end_date <- as.Date("2021-06-18")
   
   #Used to split time since COVID exposure; when there are time periods with no events then
-  #a reduced number of time periods is used (need 197 instead of 196 as time periods are split using [ , ) 
+  #a reduced number of time periods is used 
   
-  #cuts_days_since_expo <- c(28, 197) 
   cuts_days_since_expo <- c(7, 14, 28, 56, 84, 197, 365, 535) 
   cuts_days_since_expo_reduced <- c(28, 197, 535) 
   
 } else if (cohort == "vax" | cohort == "unvax"){
+  
   #These are the study start and end dates for the Delta era
   cohort_start_date <- as.Date("2021-06-01")
   cohort_end_date <- as.Date("2021-12-14")
@@ -111,7 +112,6 @@ if(cohort == "prevax"){
   #Used to split time since COVID exposure; when there are time periods with no events then
   #a reduced number of time periods is used (need 197 instead of 196 as time periods are split using [ , ) 
   
-  #cuts_days_since_expo <- c(28, 197) 
   cuts_days_since_expo <- c(7, 14, 28, 56, 84, 197) 
   cuts_days_since_expo_reduced <- c(28,197) 
 }

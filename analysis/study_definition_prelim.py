@@ -42,9 +42,10 @@ study = StudyDefinition(
     },
 
     # Define the study population 
+     
     # NB: all inclusions and exclusions are performed in stage 1
     population = patients.all(
-    ),
+    ), 
 
 # Define death date
 
@@ -84,7 +85,7 @@ study = StudyDefinition(
             date_format="YYYY-MM-DD",
             return_expectations={
                 "date": {"earliest": study_dates["pandemic_start"], "latest": "today"},
-                "incidence": 0.8
+                "incidence": 0.7
             },
         ),
         vax_date_covid_2=patients.with_tpp_vaccination_record(
@@ -95,7 +96,7 @@ study = StudyDefinition(
             date_format="YYYY-MM-DD",
             return_expectations={
                 "date": {"earliest": study_dates["pandemic_start"], "latest" : "today"}, # dates can only be 'index_date','today', or specified date
-                "incidence": 0.7
+                "incidence": 0.6
             },
         ),
 
@@ -228,7 +229,6 @@ study = StudyDefinition(
             "category": {"ratios": {"M": 0.49, "F": 0.51}},
             }
         ),
-
     # Define vaccine eligibility variables
 
         **jcvi_variables,

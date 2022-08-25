@@ -19,8 +19,11 @@ from cohortextractor import (
 ## Variables for deriving JCVI groups
 from grouping_variables import (
   
-    study_dates
+    study_dates,
+    jcvi_variables,
+  
 )
+
 
 ## Codelists from codelist.py (which pulls them from the codelist folder)
 from codelists import *
@@ -63,87 +66,102 @@ study = StudyDefinition(
         "incidence": 0.5,
     },
    
-    # Define the study population 
-    # NB: all inclusions and exclusions are performed in stage 1
-    population = patients.all(
-    ),
+    # # Define the study population 
+    population = patients.all(),
+
     
     # Define sex 
     cov_cat_sex = patients.with_value_from_file(
         f_path = 'output/index_dates.csv',
         returning = 'cov_cat_sex',
-        returning_type = 'str',  
+        returning_type = 'str'
         ),
 
-    # Define fixed covariates other than sex
+    # # eligibility date
+    # vax_date_eligible = patients.with_value_from_file(
+    #     f_path = 'output/index_dates.csv',
+    #     returning = 'vax_date_eligible',
+    #     returning_type = 'date',
+    # ),
+# Bring COVID-19 Vaccinations vars from index_dates file
 
-        ## 2019 consultation rate
-        cov_num_consulation_rate=patients.with_gp_consultations(
-                between=["2019-01-01", "2019-12-31"],
-                returning="number_of_matches_in_period",
-                return_expectations={
-                    "int": {"distribution": "poisson", "mean": 5},
-                },
-            ),
-    
-        ## Healthcare worker    
-        cov_bin_healthcare_worker=patients.with_healthcare_worker_flag_on_covid_vaccine_record(
-            returning='binary_flag', 
-            return_expectations={"incidence": 0.01},
-        ),
+    ## Any covid vaccination, identified by target disease
+    vax_date_covid_1 = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'vax_date_covid_1',
+        returning_type = 'date'          
+    ),
+    vax_date_covid_2 = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'vax_date_covid_2',
+        returning_type = 'date'   
+    ),
+    vax_date_covid_3 = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'vax_date_covid_3',
+        returning_type = 'date'
+    ),
 
-# Define quality assurances
-
-        ## Prostate cancer
-            ### Primary care
-        prostate_cancer_snomed=patients.with_these_clinical_events(
-                prostate_cancer_snomed_clinical,
-                returning='binary_flag',
-                return_expectations={
-                    "incidence": 0.03,
-                },
-            ),
-            ### HES APC
-        prostate_cancer_hes=patients.admitted_to_hospital(
-                with_these_diagnoses=prostate_cancer_icd10,
-                returning='binary_flag',
-                return_expectations={
-                    "incidence": 0.03,
-                },
-            ),
-            ### ONS
-        prostate_cancer_death=patients.with_these_codes_on_death_certificate(
-                prostate_cancer_icd10,
-                returning='binary_flag',
-                return_expectations={
-                    "incidence": 0.02
-                },
-            ),
-            ### Combined
-        qa_bin_prostate_cancer=patients.maximum_of(
-                "prostate_cancer_snomed", "prostate_cancer_hes", "prostate_cancer_death"
-            ),
-
-        ## Pregnancy
-        qa_bin_pregnancy=patients.with_these_clinical_events(
-                pregnancy_snomed_clinical,
-                returning='binary_flag',
-                return_expectations={
-                    "incidence": 0.03,
-                },
-            ),
+       
+    ## Pfizer BioNTech
+    ## NB: may be patient's first COVID vaccine dose or their second if mixed types are given
         
-        ## Year of birth
-        qa_num_birth_year=patients.date_of_birth(
-                date_format="YYYY",
-                return_expectations={
-                    "date": {"earliest": "1900-01-01", "latest": "today"},
-                    "rate": "uniform",
-                    "incidence": 1.0
-                },
-            ),
+    vax_date_Pfizer_1 = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'vax_date_Pfizer_1',
+        returning_type = 'date'
+    ), 
+    vax_date_Pfizer_2 = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'vax_date_Pfizer_2',
+        returning_type = 'date'
+    ),
+    vax_date_Pfizer_3 = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'vax_date_Pfizer_3',
+        returning_type = 'date'
+    ),
+    
+    ## Oxford AZ 
+    ## NB: may be patient's first COVID vaccine dose or their second if mixed types are given
+    vax_date_AstraZeneca_1 = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'vax_date_AstraZeneca_1',
+        returning_type = 'date'
+    ),
+    vax_date_AstraZeneca_2 = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'vax_date_AstraZeneca_2',
+        returning_type = 'date'
+    ),
+    vax_date_AstraZeneca_3 = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'vax_date_AstraZeneca_3',
+        returning_type = 'date'
+    ),
+    
+    ## Moderna
+    ## NB: may be patient's first COVID vaccine dose or their second if mixed types are given
+    vax_date_Moderna_1 = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'vax_date_Moderna_1',
+        returning_type = 'date'
+    ),            
+    vax_date_Moderna_2 = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'vax_date_Moderna_2',
+        returning_type = 'date'
+    ),
+    vax_date_Moderna_3 = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'vax_date_Moderna_3',
+        returning_type = 'date'
+    ),
+    # Define vaccine eligibility variables
 
+        **jcvi_variables, 
     # Define common variables (e.g., exposures, outcomes, covariates) that require dynamic dates
 
         **dynamic_variables
+
 )

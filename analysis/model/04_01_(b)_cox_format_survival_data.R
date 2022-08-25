@@ -253,17 +253,17 @@ fit_get_data_surv <- function(event,subgroup, stratify_by_subgroup, stratify_by,
       
       if(cohort == "prevax"){
         
-        write.csv(episode_info, paste0(output_dir_prevax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"), row.names = T)
+        write.csv(episode_info, paste0(output_dir_prevax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"), row.names = F)
         print(paste0("Event counts saved: ", output_dir_prevax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"))
 
       } else if (cohort == "vax"){
         
-        write.csv(episode_info, paste0(output_dir_vax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"), row.names = T)
+        write.csv(episode_info, paste0(output_dir_vax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"), row.names = F)
         print(paste0("Event counts saved: ", output_dir_vax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"))
         
       } else if (cohort == "unvax"){
         
-        write.csv(episode_info, paste0(output_dir_unvax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"), row.names = T)
+        write.csv(episode_info, paste0(output_dir_unvax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"), row.names = F)
         print(paste0("Event counts saved: ", output_dir_unvax,"/tbl_event_count_" ,event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"))
         
       }

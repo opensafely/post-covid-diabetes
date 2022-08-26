@@ -236,7 +236,7 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
       #anova_fit_cox_model=anova_fit_cox_model%>%select("covariate","P")
       #results=results%>%left_join(anova_fit_cox_model,by="covariate")
       
-      results$results_fitted <- ifelse(all(results$estimate < 200 & results$std.error <10 & results$robust.se <10),"fitted_successfully","fitted_unsuccessfully")
+      results$results_fitted <- ifelse(all(results$estimate < 200 & results$se_ln_hr <10 & results$robust_se_ln_hr <10),"fitted_successfully","fitted_unsuccessfully")
       
       df <- as.data.frame(matrix(ncol = ncol(results),nrow = 2))
       colnames(df) <- colnames(results)

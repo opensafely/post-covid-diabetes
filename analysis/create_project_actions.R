@@ -257,7 +257,7 @@ actions_list <- splice(
   action(
     name = "stage1_data_cleaning_all",
     run = "r:latest analysis/preprocess/Stage1_data_cleaning.R all",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
     moderately_sensitive = list(
       refactoring = glue("output/not-for-review/meta_data_factors_*.csv"),
       QA_rules = glue("output/review/descriptives/QA_summary_*.csv"),
@@ -273,7 +273,7 @@ actions_list <- splice(
   action(
     name = "stage1_end_date_table_prevax",
     run = "r:latest analysis/preprocess/create_follow_up_end_date.R prevax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_all"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_all","vax_eligibility_inputs"),
     highly_sensitive = list(
       end_date_table = glue("output/follow_up_end_dates_prevax_*.rds")
     )
@@ -283,7 +283,7 @@ actions_list <- splice(
   action(
     name = "stage1_end_date_table_vax",
     run = "r:latest analysis/preprocess/create_follow_up_end_date.R vax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_all"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_all","vax_eligibility_inputs"),
     highly_sensitive = list(
       end_date_table = glue("output/follow_up_end_dates_vax_*.rds")
     )
@@ -293,7 +293,7 @@ actions_list <- splice(
   action(
     name = "stage1_end_date_table_unvax",
     run = "r:latest analysis/preprocess/create_follow_up_end_date.R unvax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_all"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_all","vax_eligibility_inputs"),
     highly_sensitive = list(
       end_date_table = glue("output/follow_up_end_dates_unvax_*.rds")
     )

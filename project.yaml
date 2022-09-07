@@ -119,6 +119,7 @@ actions:
     - preprocess_data_prevax
     - preprocess_data_vax
     - preprocess_data_unvax
+    - vax_eligibility_inputs
     outputs:
       moderately_sensitive:
         refactoring: output/not-for-review/meta_data_factors_*.csv
@@ -135,6 +136,7 @@ actions:
     - preprocess_data_vax
     - preprocess_data_unvax
     - stage1_data_cleaning_all
+    - vax_eligibility_inputs
     outputs:
       highly_sensitive:
         end_date_table: output/follow_up_end_dates_prevax_*.rds
@@ -146,6 +148,7 @@ actions:
     - preprocess_data_vax
     - preprocess_data_unvax
     - stage1_data_cleaning_all
+    - vax_eligibility_inputs
     outputs:
       highly_sensitive:
         end_date_table: output/follow_up_end_dates_vax_*.rds
@@ -157,6 +160,7 @@ actions:
     - preprocess_data_vax
     - preprocess_data_unvax
     - stage1_data_cleaning_all
+    - vax_eligibility_inputs
     outputs:
       highly_sensitive:
         end_date_table: output/follow_up_end_dates_unvax_*.rds

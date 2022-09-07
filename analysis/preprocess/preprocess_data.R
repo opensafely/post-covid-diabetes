@@ -150,16 +150,18 @@ print(paste0(nrow(df), " rows in df after diabetes algo"))
 # Restrict columns and save analysis dataset ---------------------------------
 
 df1 <- df%>% select(patient_id,"death_date",starts_with("index_date_"),
+                    has_follow_up_previous_6months,
+                    dereg_date,
                     starts_with("end_date_"),
                     contains("sub_"), # Subgroups
                     contains("exp_"), # Exposures
                     contains("out_"), # Outcomes
                     contains("cov_"), # Covariates
-                    contains("qa_"), # Quality assurance
-                    #contains("step"), # diabetes steps
+                    contains("qa_"), #quality assurance
+                    contains("step"), # diabetes steps
                     contains("vax_date_eligible"), # Vaccination eligibility
                     contains("vax_date_"), # Vaccination dates and vax type 
-                    #contains("vax_cat_")# Vaccination products
+                    contains("vax_cat_")# Vaccination products
 )
 
 

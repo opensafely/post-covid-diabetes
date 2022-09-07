@@ -113,11 +113,13 @@ table_2_subgroups_output <- function(cohort_name, group){
     
     index = which(active_analyses$outcome_variable == i)
     analyses_to_run$stratify_by_subgroup <- ifelse(startsWith(analyses_to_run$subgroup,"prior_history"),active_analyses$prior_history_var[index],analyses_to_run$stratify_by_subgroup)
+    analyses_to_run$stratify_by_subgroup <- ifelse(startsWith(analyses_to_run$subgroup,"aer_"),sub("aer_","",analyses_to_run$subgroup),analyses_to_run$stratify_by_subgroup)
     analyses_to_run$stratify_by_subgroup <- ifelse(is.na(analyses_to_run$stratify_by_subgroup),analyses_to_run$subgroup,analyses_to_run$stratify_by_subgroup)
     
     # Add in relevant subgroup levels to specify which stratum to run for
     analyses_to_run$strata <- NA
     analyses_to_run$strata <- ifelse(analyses_to_run$subgroup=="covid_history","TRUE",analyses_to_run$strata)
+    analyses_to_run$strata <- ifelse(startsWith(analyses_to_run$subgroup,"aer_"),sub("aer_","",analyses_to_run$subgroup),analyses_to_run$strata)
     
     for(k in c("covid_pheno_","agegp_","sex_","ethnicity_","prior_history_")){
       analyses_to_run$strata <- ifelse(startsWith(analyses_to_run$subgroup,k),gsub(k,"",analyses_to_run$subgroup),analyses_to_run$strata)

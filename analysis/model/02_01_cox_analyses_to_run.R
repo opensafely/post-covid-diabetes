@@ -44,6 +44,7 @@ for(i in c("ethnicity","sex")){
   analyses_to_run$stratify_by_subgroup <- ifelse(startsWith(analyses_to_run$subgroup,i),i,analyses_to_run$stratify_by_subgroup)
 }
 analyses_to_run$stratify_by_subgroup <- ifelse(startsWith(analyses_to_run$subgroup,"prior_history"),active_analyses$prior_history_var,analyses_to_run$stratify_by_subgroup)
+analyses_to_run$stratify_by_subgroup <- ifelse(startsWith(analyses_to_run$subgroup,"aer_"),sub("aer_","",analyses_to_run$subgroup),analyses_to_run$stratify_by_subgroup)
 analyses_to_run$stratify_by_subgroup <- ifelse(is.na(analyses_to_run$stratify_by_subgroup),analyses_to_run$subgroup,analyses_to_run$stratify_by_subgroup)
 
 
@@ -51,6 +52,7 @@ analyses_to_run$stratify_by_subgroup <- ifelse(is.na(analyses_to_run$stratify_by
 analyses_to_run$strata <- NA
 analyses_to_run$strata <- ifelse(analyses_to_run$subgroup=="main","main",analyses_to_run$strata)
 analyses_to_run$strata <- ifelse(analyses_to_run$subgroup=="covid_history","TRUE",analyses_to_run$strata)
+analyses_to_run$strata <- ifelse(startsWith(analyses_to_run$subgroup,"aer_"),sub("aer_","",analyses_to_run$subgroup),analyses_to_run$strata)
 
 for(i in c("covid_pheno_","agegp_","sex_","ethnicity_","prior_history_")){
   analyses_to_run$strata <- ifelse(startsWith(analyses_to_run$subgroup,i),gsub(i,"",analyses_to_run$subgroup),analyses_to_run$strata)
@@ -70,6 +72,7 @@ analyses_to_run <- analyses_to_run %>%
     startsWith(subgroup, "main") ~ "main",
     startsWith(subgroup, "prior_history") ~ "prior_history",
     startsWith(subgroup, "sex") ~ "sex",
+    startsWith(subgroup, "aer_") ~ "aer",
     TRUE ~ as.character(subgroup)))
 
 # END

@@ -80,9 +80,9 @@ if(length(results_done)>0){
   }
   
 }else{
-  df_hr <- as.data.frame(matrix(ncol = 16))
+  df_hr <- as.data.frame(matrix(ncol = 15))
   colnames(df_hr) <- c("term", "estimate", "conf_low", "conf_high", "std_error_ln_hr", "robust_se_ln_hr", "covariates_removed",
-                       "cat_covars_collapsed","results_fitted", "model","subgroup", "event", "cohort", "time_period", "total_covid19_cases","data_sampled")
+                       "cat_covars_collapsed","results_fitted", "model","subgroup", "event", "cohort", "time_period","data_sampled")
   
   if(cohort == "prevax"){
     
@@ -298,7 +298,7 @@ if(length(results_done)>0){
   supressed_df_hr <- supressed_df_hr[order(supressed_df_hr$redacted_results),]
   
   supressed_df_hr=supressed_df_hr%>%select(event,cohort,subgroup,model,time_points,term,estimate,conf_low,conf_high,se_ln_hr,robust_se_ln_hr,
-                                           events_total, median_follow_up, N_sample_size, results_fitted,covariates_removed,cat_covars_collapsed,redacted_results,data_sampled,total_covid19_cases)
+                                           events_total, median_follow_up, N_sample_size, results_fitted,covariates_removed,cat_covars_collapsed,redacted_results,data_sampled)
   
   if(cohort == "prevax"){
     
@@ -335,9 +335,9 @@ if(length(results_done)>0){
   }
   
 }else{
-  supressed_combined_hr_event_counts <- as.data.frame(matrix(ncol = 19))
+  supressed_combined_hr_event_counts <- as.data.frame(matrix(ncol = 18))
   colnames(supressed_combined_hr_event_counts) <- c("event","cohort","subgroup","model","time_points","term","estimate","conf_low","conf_high","se_ln_hr","robust_se_ln_hr",
-                                                    "events_total", "median_follow_up","results_fitted","covariates_removed","cat_covars_collapsed","redacted_results","cox_weight","total_covid19_cases")
+                                                    "events_total", "median_follow_up","results_fitted","covariates_removed","cat_covars_collapsed","redacted_results","cox_weight")
   
   if(cohort == "prevax"){
     

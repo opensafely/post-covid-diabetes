@@ -48,7 +48,7 @@ get_timepoint <- function(event,subgroup,stratify_by_subgroup,stratify_by,input,
   # Filter for age group of interest -------------------------------------------
   
   # If a age group subgroup analysis then use the age subgroup otherwise analyse for all ages
-  if(startsWith(subgroup,"agegp")){
+  if(startsWith(subgroup,"agegp") | startsWith(subgroup,"aer")){
     agebreaks=agebreaks_strata
     agelabels=agelabels_strata
   }else{
@@ -68,6 +68,14 @@ get_timepoint <- function(event,subgroup,stratify_by_subgroup,stratify_by,input,
     survival_data=survival_data %>% filter(agegroup== stratify_by)
   }
   
+  if(startsWith(subgroup,"aer_")){
+    aer_subgroup <- sub("aer_","",subgroup)
+    aer_subgroup <- sub("_","",aer_subgroup)
+    aer_sex <- sub("(\\D+).*", "\\1", aer_subgroup)
+    aer_age <-  sub(".*?(\\d+.*)", "\\1", aer_subgroup)
+    
+    survival_data=survival_data %>% filter(sex == aer_sex & agegroup== aer_age)
+  }
   # Detect if a column is of date type, if so impose study start/end dates
   # only really interested in event_date and expo_date being within follow-up at this point as all other date variable 
   #have been checked in inclusion/exclusion & QA

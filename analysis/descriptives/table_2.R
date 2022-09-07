@@ -68,7 +68,7 @@ table_2_subgroups_output <- function(cohort_name, group){
                                   colnames(survival_data)[grepl("out_",colnames(survival_data))],
                                   colnames(survival_data)[grepl("follow_up",colnames(survival_data))],
                                   colnames(survival_data)[grepl("_expo_",colnames(survival_data))],
-                                  active_analyses$prior_history_var[active_analyses$prior_history_var !=""])]
+                                  unique(active_analyses$prior_history_var[active_analyses$prior_history_var !=""]))]
   
   setnames(survival_data, 
            old = c("cov_cat_sex", 

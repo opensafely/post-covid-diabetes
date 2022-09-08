@@ -334,22 +334,38 @@ stage2 <- function(cohort_name, covid_history, group) {
   # Save table 1
   write.csv(table1_suppressed, file = file.path("output/review/descriptives", paste0("Table1_",cohort_name, "_",covid_history,"_",group, ".csv")) , row.names=F)
   
+  print(paste0("Table 1 ran and saved succesfully for ", cohort_name, " ", group, " ", covid_history))
+  
 }
 
 # Run function using specified commandArgs
+# Only generate Table 1 for the main Diabetes analyses for the paper
+# Probably won't include subgroup Table 1's.
 
-for(group in outcome_groups){
   if(cohort_name == "all"){
-    stage2("prevax", "with_covid_history", group)
-    stage2("prevax", "without_covid_history", group)
-    stage2("vax", "with_covid_history", group)
-    stage2("vax", "without_covid_history", group)
-    stage2("unvax", "with_covid_history", group)
-    stage2("unvax", "without_covid_history", group)
+    stage2("prevax", "with_covid_history", "diabetes")
+    stage2("prevax", "without_covid_history", "diabetes")
+    stage2("vax", "with_covid_history", "diabetes")
+    stage2("vax", "without_covid_history", "diabetes")
+    stage2("unvax", "with_covid_history", "diabetes")
+    stage2("unvax", "without_covid_history", "diabetes")
   }else{
-    stage2(cohort_name, "with_covid_history", group)
-    stage2(cohort_name, "without_covid_history", group)
+    stage2(cohort_name, "with_covid_history", "diabetes")
+    stage2(cohort_name, "without_covid_history", "diabetes")
   }
-  
-}
+
+# for(group in outcome_groups){
+#   if(cohort_name == "all"){
+#     stage2("prevax", "with_covid_history", group)
+#     stage2("prevax", "without_covid_history", group)
+#     stage2("vax", "with_covid_history", group)
+#     stage2("vax", "without_covid_history", group)
+#     stage2("unvax", "with_covid_history", group)
+#     stage2("unvax", "without_covid_history", group)
+#   }else{
+#     stage2(cohort_name, "with_covid_history", group)
+#     stage2(cohort_name, "without_covid_history", group)
+#   }
+#   
+# }
 

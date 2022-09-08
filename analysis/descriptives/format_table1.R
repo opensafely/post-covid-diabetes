@@ -33,6 +33,8 @@ active_analyses <- read_rds("lib/active_analyses.rds")
 active_analyses <- active_analyses %>% filter(active == TRUE)
 outcome_groups <- unique(active_analyses$outcome_group)
 
+# only run table 1 for diabetes outcome group - comment this line out if table 1 is needed for all subgroups.
+outcome_groups <- "diabetes"
 # READ IN AND FORMAT THE TABLE 1 FOR EACH OUTCOME GROUP
 
 for(group in outcome_groups){

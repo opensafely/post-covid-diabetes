@@ -50,7 +50,7 @@ follow_up_end_dates <- function(cohort_name, group){
   
   input <- input[,c("patient_id","death_date","index_date","sub_cat_covid19_hospital",active_analyses$outcome_variable,
                     colnames(input)[grepl("exp_",colnames(input))], 
-                    colnames(input)[grepl("vax_date_covid_",colnames(input))])] 
+                    colnames(input)[grepl("vax_date_",colnames(input))])] 
   
   input$cohort_end_date<- cohort_end_date
   

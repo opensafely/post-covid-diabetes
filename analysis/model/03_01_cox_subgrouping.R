@@ -5,7 +5,7 @@
 ## =============================================================================
 source(file.path(scripts_dir,"04_01_(a)_cox_fit_model.R"))
 
-get_vacc_res <- function(event,subgroup,stratify_by_subgroup,stratify_by,time_point,input,covar_names,reduced_covar_names,cuts_days_since_expo,cuts_days_since_expo_reduced,mdl){
+get_vacc_res <- function(event,subgroup,stratify_by_subgroup,stratify_by,time_point,input,covar_names,cuts_days_since_expo,cuts_days_since_expo_reduced,mdl){
   print(paste0("Working on subgroup: ", subgroup, " ", cohort))
   print(paste0("Using ",time_point," time point"))
   
@@ -24,9 +24,9 @@ get_vacc_res <- function(event,subgroup,stratify_by_subgroup,stratify_by,time_po
   }else{
     survival_data <- input %>% dplyr::select(all_of(cohort_cols))
   }
-
+  
   for(i in c("hospitalised","non_hospitalised")){
-    if(stratify_by == i & !is.na(stratify_by)){
+    if(stratify_by == i){
       survival_data$follow_up_end <- NULL
       setnames(survival_data, 
                old = c(c(paste0(i,"_follow_up_end")),
@@ -49,7 +49,7 @@ get_vacc_res <- function(event,subgroup,stratify_by_subgroup,stratify_by,time_po
   # Filter for age group of interest -------------------------------------------
   
   # If a age group subgroup analysis then use the age subgroup otherwise analyse for all ages
-  if(startsWith(subgroup,"agegp")){
+  if(startsWith(subgroup,"agegp") | startsWith(subgroup,"aer")){
     agebreaks=agebreaks_strata
     agelabels=agelabels_strata
   }else{
@@ -69,18 +69,23 @@ get_vacc_res <- function(event,subgroup,stratify_by_subgroup,stratify_by,time_po
     survival_data=survival_data %>% filter(agegroup== stratify_by)
   }
   
+  # Age/sex subgroups for AER
+  
+  if(startsWith(subgroup,"aer_")){
+    aer_subgroup <- sub("aer_","",subgroup)
+    aer_subgroup <- sub("_","",aer_subgroup)
+    aer_sex <- sub("(\\D+).*", "\\1", aer_subgroup)
+    aer_age <-  sub(".*?(\\d+.*)", "\\1", aer_subgroup)
+    
+    survival_data=survival_data %>% filter(sex == aer_sex & agegroup== aer_age)
+  }
+  
   # Detect if a column is of date type, if so impose study start/end dates
   # only really interested in event_date and expo_date being within follow-up at this point as all other date variable 
   #have been checked in inclusion/exclusion & QA
   
   survival_data <- survival_data %>% mutate(event_date = replace(event_date, which(event_date>follow_up_end | event_date<follow_up_start), NA))
   survival_data <- survival_data %>% mutate(expo_date = replace(expo_date, which(expo_date>follow_up_end | expo_date<follow_up_start), NA))
-  
-  # Update COVID phenotypes after setting COVID exposure dates to NA that lie
-  # outside follow up
-  survival_data$expo_pheno=as.character(survival_data$expo_pheno)
-  survival_data=survival_data%>%rowwise()%>%mutate(expo_pheno =ifelse(is.na(expo_date), "no_infection",expo_pheno))
-  
   
   # 1.Adjust follow up end date for COVID phenotype dataset to censor at COVID exposure for the
   # phenotype that is not of interest
@@ -95,22 +100,21 @@ get_vacc_res <- function(event,subgroup,stratify_by_subgroup,stratify_by,time_po
     survival_data <- survival_data %>% mutate(expo_date = replace(expo_date, which(!is.na(date_expo_censor) & (expo_date >= date_expo_censor)), NA) )%>%
       mutate(event_date = replace(event_date, which(!is.na(date_expo_censor) & (event_date >= date_expo_censor)), NA)) %>%
       filter((follow_up_start != date_expo_censor)|is.na(date_expo_censor))
+    
+    setDT(survival_data)[follow_up_end == date_expo_censor, follow_up_end := follow_up_end-1]
   }
   
   
   survival_data=survival_data%>%filter(follow_up_end>=follow_up_start)
   
-  total_covid_cases=nrow(survival_data %>% filter(!is.na(expo_date)))
-  
   # add statement for reduced time cutoffs
   if(time_point == "reduced"){
-    res_vacc <- fit_model_reducedcovariates(event,subgroup,stratify_by_subgroup,stratify_by,mdl, survival_data,input,cuts_days_since_expo=cuts_days_since_expo_reduced,cuts_days_since_expo_reduced,covar_names,reduced_covar_names,total_covid_cases,time_point)
+    res_vacc <- fit_model_reducedcovariates(event,subgroup,stratify_by_subgroup,stratify_by,mdl, survival_data,input,cuts_days_since_expo=cuts_days_since_expo_reduced,cuts_days_since_expo_reduced,covar_names,time_point)
   }else if(time_point == "normal"){
-    res_vacc <- fit_model_reducedcovariates(event,subgroup,stratify_by_subgroup,stratify_by,mdl, survival_data,input,cuts_days_since_expo, cuts_days_since_expo_reduced,covar_names,reduced_covar_names,total_covid_cases,time_point)
+    res_vacc <- fit_model_reducedcovariates(event,subgroup,stratify_by_subgroup,stratify_by,mdl, survival_data,input,cuts_days_since_expo, cuts_days_since_expo_reduced,covar_names,time_point)
   }
-
+  
   print(paste0("Finished working on subgroup: ", subgroup, ", ",mdl,", ", cohort))
   return(res_vacc)
 }
-  
-    
+

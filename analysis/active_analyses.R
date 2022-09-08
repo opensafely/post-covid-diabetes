@@ -30,6 +30,14 @@ df <- data.frame(active = logical(),
                  ethnicity_Missing = character(),
                  prior_history_TRUE = character(),
                  prior_history_FALSE = character(),
+                 aer_Female_18_39 = character(),
+                 aer_Female_40_59 = character(),
+                 aer_Female_60_79 = character(),
+                 aer_Female_80_110 = character(),
+                 aer_Male_18_39 = character(),
+                 aer_Male_40_59 = character(),
+                 aer_Male_60_79 = character(),
+                 aer_Male_80_110 = character(),
                  prior_history_var = character(),
                  outcome_group = character(),
                  venn = character(),
@@ -60,7 +68,7 @@ for (i in 1:length(outcomes)) {
                        "cov_cat_sex;cov_num_age;cov_cat_ethnicity;cov_cat_deprivation;cov_cat_region;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_num_tc_hdl_ratio;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational",
                        rep("all",2),
                        rep(TRUE,4),
-                       rep(FALSE,14),
+                       rep(FALSE,22),
                        "",
                        "diabetes",
                        outcome_venn[i])
@@ -84,7 +92,7 @@ df <- df %>% mutate(outcome_group = case_when(outcome == "type 2 diabetes - pre 
 
 # turn on subgroups for main t2dm analyses
 
-df[2,c(10:21)] <- TRUE
+df[2,c(11:22, 25:32)] <- TRUE
 
 # turn on t2dm
 

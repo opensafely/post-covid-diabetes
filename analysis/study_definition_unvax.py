@@ -27,63 +27,60 @@ import study_definition_helper_functions as helpers
 from common_variables import generate_common_variables
 (
     dynamic_variables
-) = generate_common_variables(index_date_variable="vax_date_eligible + 84 day")
+) = generate_common_variables(index_date_variable="index_date_unvax", end_date_variable="end_date_unvax")
 
 ## Variables for deriving JCVI groups
 from grouping_variables import (
     jcvi_variables, 
     start_date,
     end_date,
+    study_dates
 )
 
 study = StudyDefinition(
 
     # Specify index date for study
-    index_date = "2021-06-01",
-
+     # Read in index date for study from the output of prelim.R file 
+    index_date_unvax = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv', 
+        returning = 'index_unvax', 
+        returning_type = 'date', 
+        date_format = 'YYYY-MM-DD',     
+    ),
+    end_date_unvax = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'end_unvax',
+        returning_type = 'date', 
+        date_format = 'YYYY-MM-DD',
+    ),
+  
     # Configure the expectations framework
     default_expectations={
-        "date": {"earliest": "1900-01-01", "latest": "today"},
+        "date": {"earliest": study_dates["earliest_expec"], "latest": "today"},
         "rate": "uniform",
         "incidence": 0.5,
     },
 
     # Define the study population 
     # NB: not all inclusions and exclusions are written into study definition
-    population = patients.satisfying(
-        """
-            NOT has_died
-            AND
-            registered        
-            AND
-            has_follow_up_previous_6months
-            """,
-        
-        has_died = patients.died_from_any_cause(
-        on_or_before = "index_date",
-        returning="binary_flag",
+    population = patients.all(),
+
+
+  # Define sex 
+    # NB: this is required for JCVI variables hence is defined here
+    cov_cat_sex = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'cov_cat_sex',
+        returning_type = 'str',  
         ),
-        
-        registered = patients.satisfying(
-        "registered_at_start",
-        registered_at_start = patients.registered_as_of("index_date"),
-        ),
-        
-        has_follow_up_previous_6months = patients.registered_with_one_practice_between(
-        start_date = "index_date - 6 months",
-        end_date = "index_date",
-        return_expectations = {"incidence": 0.95},
-        ),
+    
+     ## Any covid vaccination, identified by target disease
+    vax_date_covid_1 = patients.with_value_from_file(
+        f_path = 'output/index_dates.csv',
+        returning = 'vax_date_covid_1',
+        returning_type = 'date'          
     ),
 
-    # Define sex 
-    # NB: this is required for JCVI variables hence is defined here
-        cov_cat_sex = patients.sex(
-            return_expectations = {
-            "rate": "universal",
-            "category": {"ratios": {"M": 0.49, "F": 0.51}},
-            }
-        ),
 
     # Define vaccine eligibility variables
 

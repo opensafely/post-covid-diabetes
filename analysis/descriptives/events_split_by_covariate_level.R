@@ -14,8 +14,7 @@ args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
   # use for interactive testing
-  cohort_name <- "vaccinated"
-  #cohort_name = "electively_unvaccinated"
+  cohort_name <- "vax"
 }else{
   cohort_name <- args[[1]]
 }
@@ -26,17 +25,25 @@ fs::dir_create(here::here("output", "review", "descriptives"))
 output_dir <- "output/not-for-review"
 scripts_dir <- "analysis/model"
 
+# DATES 
 
-#delta period
-cohort_start = as.Date("2021-06-01", format="%Y-%m-%d")
-cohort_end = as.Date("2021-12-14", format="%Y-%m-%d")
+cohort_start_date_prevax <- as.Date("2020-01-01")
+cohort_end_date_prevax <- as.Date("2021-06-18")
+
+cohort_start_date_delta <- as.Date("2021-06-01")
+cohort_end_date_delta <- as.Date("2021-12-14")
 
 agebreaks <- c(0, 40, 60, 80, 111)
 agelabels <- c("18_39", "40_59", "60_79", "80_110")
 
-time_periods_normal <- c(7, 14, 28, 56, 84, 197) 
-time_periods_reduced <- c(28,197)
-time_periods_alternative <- c(1,8,43,197)
+# TIME PERIODS 
+
+time_periods_normal_prevax <- c(7, 14, 28, 56, 84, 197, 365, 535) 
+time_periods_reduced_prevax <- c(28, 197, 535) 
+
+time_periods_normal_delta <- c(7, 14, 28, 56, 84, 197) 
+time_periods_reduced_delta  <- c(28,197)
+# time_periods_alternative <- c(1,8,43,197)
 
 event_by_covariate_level <- function(cohort_name, group,time_periods,save_name){
   
@@ -77,7 +84,7 @@ event_by_covariate_level <- function(cohort_name, group,time_periods,save_name){
     
     ##Set which cohorts are required
     if(analyses_to_run$cohort=="all"){
-      cohort_to_run=c("vaccinated", "electively_unvaccinated")
+      cohort_to_run=c("prevax", "vax", "unvax")
     }else{
       analyses_to_run=active_analyses$cohort
     }  
@@ -380,23 +387,28 @@ select_covariates_for_cox <- function(results, save_name,time_periods_names, act
   
 }
 
-
-
 # Run function using specified commandArgs
 
 active_analyses <- read_rds("lib/active_analyses.rds")
 active_analyses <- active_analyses %>% filter(active==TRUE)
 group <- unique(active_analyses$outcome_group)
 
-
 for(i in group){
-if(cohort_name == "both"){
-  event_by_covariate_level("vaccinated",i, time_periods_normal,"normal")
-  event_by_covariate_level("vaccinated",i, time_periods_reduced,"reduced")
-  event_by_covariate_level("electively_unvaccinated",i, time_periods_normal,"normal")
-  event_by_covariate_level("electively_unvaccinated",i, time_periods_reduced,"reduced")
-}else{
-  event_by_covariate_level(cohort_name,i, time_periods_normal,"normal")
-  event_by_covariate_level(cohort_name,i, time_periods_reduced,"reduced")
+if(cohort_name == "all"){
+  event_by_covariate_level("prevax",i, time_periods_normal_prevax,"normal")
+  event_by_covariate_level("prevax",i, time_periods_reduced_prevax,"reduced")
+  event_by_covariate_level("vax",i, time_periods_normal_delta,"normal")
+  event_by_covariate_level("vax",i, time_periods_reduced_delta,"reduced")
+  event_by_covariate_level("unvax",i, time_periods_normal_delta,"normal")
+  event_by_covariate_level("unvax",i, time_periods_reduced_delta,"reduced")
+}else if(cohort_name == "prevax"){
+  event_by_covariate_level("prevax",i, time_periods_normal_prevax,"normal")
+  event_by_covariate_level("prevax",i, time_periods_reduced_prevax,"reduced")
+}else if(cohort_name == "vax"){
+  event_by_covariate_level("vax",i, time_periods_normal_delta,"normal")
+  event_by_covariate_level("vax",i, time_periods_reduced_delta,"reduced")
+}else if(cohort_name == "unvax"){
+  event_by_covariate_level("unvax",i, time_periods_normal_delta,"normal")
+  event_by_covariate_level("unvax",i, time_periods_reduced_delta,"reduced")
 }
 }

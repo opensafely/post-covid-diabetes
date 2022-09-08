@@ -32,8 +32,8 @@ library(matrixStats)
 args = commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
-  event_name="t1dm"
-  cohort="vaccinated"
+  event_name="t2dm"
+  cohort="prevax"
 }else{
   event_name  = args[[1]]
   cohort = args[[2]]
@@ -44,7 +44,13 @@ if(length(args)==0){
 fs::dir_create(here::here("output", "not-for-review"))
 fs::dir_create(here::here("output", "review", "model"))
 fs::dir_create(here::here("output", "review", "model","fit-individual-covariates"))
+fs::dir_create(here::here("output", "review", "model","prevax"))
+fs::dir_create(here::here("output", "review", "model","vax"))
+fs::dir_create(here::here("output", "review", "model","unvax"))
 output_dir <- "output/review/model"
+output_dir_prevax <- "output/review/model/prevax"
+output_dir_vax <- "output/review/model/vax"
+output_dir_unvax <- "output/review/model/unvax"
 scripts_dir <- "analysis/model"
 
 # Source relevant files --------------------------------------------------------
@@ -77,18 +83,9 @@ analyses_to_run <- rbind(analyses_to_run, analyses_to_run_normal_timepoint)
 
 rm(analyses_to_run_normal_timepoint)
 
-# Join in reduced covariates
-
-analyses_to_run <- analyses_to_run %>% left_join(non_zero_covar_names, by= c("event"="outcome_event","subgroup","reduced_timepoint"="time_period"))
-rm(non_zero_covar_names)
-
-#if(event_name %in% c("ate","vte") & cohort == "vaccinated"){
-#  analyses_to_run_hosp_alternative <- analyses_to_run %>% filter(subgroup == "covid_pheno_hospitalised")
-#  analyses_to_run_hosp_alternative$reduced_timepoint <- "alternative"
-#  analyses_to_run_hosp_alternative <- distinct(analyses_to_run_hosp_alternative)
-#  analyses_to_run <- rbind(analyses_to_run, analyses_to_run_hosp_alternative)
-#}
-
+#Remove hospitalised analysis with normal timepoints as this will be run in stata and we don't need the saved data sets
+#from this.
+analyses_to_run <- analyses_to_run %>% filter(subgroup != "covid_pheno_hospitalised" | reduced_timepoint != "normal")
 
 # Source remainder of relevant files --------------------------------------------------------
 
@@ -105,12 +102,25 @@ if(nrow(analyses_to_run>0)){
              stratify_by=analyses_to_run$strata,           
              time_point=analyses_to_run$reduced_timepoint,       
              input,covar_names,
-             reduced_covar_names=analyses_to_run$covariates,
              cuts_days_since_expo,cuts_days_since_expo_reduced,mdl))
 }
 
-#Save csv of anlayses not run
-write.csv(analyses_not_run, paste0(output_dir,"/analyses_not_run_" , event_name ,"_",cohort,".csv"), row.names = T)
+if(cohort == "prevax"){
+  
+  #Save csv of analyses not run
+  write.csv(analyses_not_run, paste0(output_dir_prevax,"/analyses_not_run_" , event_name ,"_",cohort,".csv"), row.names = T)
+
+} else if (cohort == "vax"){
+  
+  #Save csv of analyses not run
+  write.csv(analyses_not_run, paste0(output_dir_vax,"/analyses_not_run_" , event_name ,"_",cohort,".csv"), row.names = T)
+  
+} else if (cohort == "unvax"){
+  
+  #Save csv of analyses not run
+  write.csv(analyses_not_run, paste0(output_dir_unvax,"/analyses_not_run_" , event_name ,"_",cohort,".csv"), row.names = T)
+  
+}
 
 if(nrow(analyses_to_run)==0){
   sink(paste0("output/not-for-review/describe_data_surv_",event_name,"__",cohort,"__time_periods.txt"))

@@ -91,16 +91,30 @@ agelabels_all <- c("all")
 agebreaks_strata <- c(0, 40, 60, 80, 111)
 agelabels_strata <- c("18_39", "40_59", "60_79", "80_110")
 
-#These are the study start and end dates for the Delta era
-cohort_start_date <- as.Date("2021-06-01")
-cohort_end_date <- as.Date("2021-12-14")
-
-#Used to split time since COVID exposure; when there are time periods with no events then
-#a reduced number of time periods is used (need 197 instead of 196 as time periods are split using [ , ) 
-
-#cuts_days_since_expo <- c(28, 197) 
-cuts_days_since_expo <- c(7, 14, 28, 56, 84, 197) 
-cuts_days_since_expo_reduced <- c(28,197) 
+if(cohort == "prevax"){
+  
+  #These are the study start and end dates for the prevax cohort
+  cohort_start_date <- as.Date("2020-01-01")
+  cohort_end_date <- as.Date("2021-06-18")
+  
+  #Used to split time since COVID exposure; when there are time periods with no events then
+  #a reduced number of time periods is used 
+  
+  cuts_days_since_expo <- c(7, 14, 28, 56, 84, 197, 365, 535) 
+  cuts_days_since_expo_reduced <- c(28, 197, 535) 
+  
+} else if (cohort == "vax" | cohort == "unvax"){
+  
+  #These are the study start and end dates for the Delta era
+  cohort_start_date <- as.Date("2021-06-01")
+  cohort_end_date <- as.Date("2021-12-14")
+  
+  #Used to split time since COVID exposure; when there are time periods with no events then
+  #a reduced number of time periods is used (need 197 instead of 196 as time periods are split using [ , ) 
+  
+  cuts_days_since_expo <- c(7, 14, 28, 56, 84, 197) 
+  cuts_days_since_expo_reduced <- c(28,197) 
+}
 
 #Rename input variable names (by renaming here it means that these scripts can be used for other datasets without
 ## having to keep updating all the variable names throughout the following scripts)

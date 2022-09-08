@@ -24,6 +24,18 @@ get_timepoint <- function(event,subgroup,stratify_by_subgroup,stratify_by,input,
     survival_data <- input %>% dplyr::select(all_of(cohort_cols))
   }
   
+  for(i in c("hospitalised","non_hospitalised")){
+    if(stratify_by == i){
+      survival_data$follow_up_end <- NULL
+      setnames(survival_data, 
+               old = c(c(paste0(i,"_follow_up_end")),
+                       c(paste0(i,"_censor_date"))),
+               
+               new = c("follow_up_end",
+                       "date_expo_censor"))
+    }
+  }
+  
   # Stratify to the relevant subgroup if either sex/ethnicity/prior history subgroup
   # COVID pheno subgroup is filtered later in this script
   
@@ -36,7 +48,7 @@ get_timepoint <- function(event,subgroup,stratify_by_subgroup,stratify_by,input,
   # Filter for age group of interest -------------------------------------------
   
   # If a age group subgroup analysis then use the age subgroup otherwise analyse for all ages
-  if(startsWith(subgroup,"agegp")){
+  if(startsWith(subgroup,"agegp") | startsWith(subgroup,"aer")){
     agebreaks=agebreaks_strata
     agelabels=agelabels_strata
   }else{
@@ -56,27 +68,20 @@ get_timepoint <- function(event,subgroup,stratify_by_subgroup,stratify_by,input,
     survival_data=survival_data %>% filter(agegroup== stratify_by)
   }
   
+  if(startsWith(subgroup,"aer_")){
+    aer_subgroup <- sub("aer_","",subgroup)
+    aer_subgroup <- sub("_","",aer_subgroup)
+    aer_sex <- sub("(\\D+).*", "\\1", aer_subgroup)
+    aer_age <-  sub(".*?(\\d+.*)", "\\1", aer_subgroup)
+    
+    survival_data=survival_data %>% filter(sex == aer_sex & agegroup== aer_age)
+  }
   # Detect if a column is of date type, if so impose study start/end dates
   # only really interested in event_date and expo_date being within follow-up at this point as all other date variable 
   #have been checked in inclusion/exclusion & QA
   
   survival_data <- survival_data %>% mutate(event_date = replace(event_date, which(event_date>follow_up_end | event_date<follow_up_start), NA))
   survival_data <- survival_data %>% mutate(expo_date = replace(expo_date, which(expo_date>follow_up_end | expo_date<follow_up_start), NA))
-  
-  # Update COVID phenotypes after setting COVID exposure dates to NA that lie
-  # outside follow up
-  survival_data$expo_pheno=as.character(survival_data$expo_pheno)
-  survival_data=survival_data%>%rowwise()%>%mutate(expo_pheno =ifelse(is.na(expo_date), "no_infection",expo_pheno))
-
-  
-  # Get COVID pheno specific dataset if necessary
-  # Adds in variable date_expo_censor which is the COVID exposure date for the phenotype  not of interest
-  # We want to be able to include follow up time prior to exposure for the pheno no of interest which uses date_expo_censor
-  # to find this time period
-  
-  if(startsWith(subgroup,"covid_pheno")){
-    survival_data <- get_pheno_specific_dataset(survival_data, pheno_of_interest=stratify_by)
-  }
   
   # 1.Adjust follow up end date for COVID phenotype dataset to censor at COVID exposure for the
   # phenotype that is not of interest
@@ -88,13 +93,11 @@ get_timepoint <- function(event,subgroup,stratify_by_subgroup,stratify_by,input,
   # 4.We want to keep people who's exposure censor date is after follow up start or who do not have an exposure data
   
   if(startsWith(subgroup,"covid_pheno_")){
-    survival_data$follow_up_end <- apply(survival_data[,c("follow_up_end", "date_expo_censor")],1, min,na.rm=TRUE)
-    survival_data$follow_up_end <- as.Date(survival_data$follow_up_end)
-    
-    #survival_data <- survival_data %>% rowwise() %>% mutate(follow_up_end=min(follow_up_end, date_expo_censor,na.rm = TRUE))
-    survival_data <- survival_data %>% filter((follow_up_start != date_expo_censor)|is.na(date_expo_censor))
+    survival_data <- survival_data %>% mutate(expo_date = replace(expo_date, which(!is.na(date_expo_censor) & (expo_date >= date_expo_censor)), NA) )%>%
+      mutate(event_date = replace(event_date, which(!is.na(date_expo_censor) & (event_date >= date_expo_censor)), NA)) %>%
+      filter((follow_up_start != date_expo_censor)|is.na(date_expo_censor))
   }
-    
+  
   survival_data=survival_data%>%filter(follow_up_end>=follow_up_start)
   
   

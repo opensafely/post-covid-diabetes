@@ -7,21 +7,39 @@
 library(dplyr)
 library(readr)
 library(data.table)
+library(jsonlite)
+
+#clear memory
+rm(list=ls())
 
 args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
   # use for interactive testing
-  cohort_name <- "vaccinated"
+  cohort_name <- "all"
+  group <- "diabetes"
 } else {
   cohort_name <- args[[1]]
 }
 
-#These are the study start and end dates for the Delta era
-cohort_start_date <- as.Date("2021-06-01")
-cohort_end_date <- as.Date("2021-12-14")
+#json file containing vax study dates
+study_dates <- fromJSON("output/study_dates.json")
+
+if (cohort_name %in% c("vax","unvax"))
+{
+  #These are the study start and end dates for the Delta era
+  cohort_start_date <- as.Date(study_dates$delta_date)
+  cohort_end_date <- as.Date(study_dates$omicron_date)
+}else if (cohort_name == "prevax") {
+  cohort_start_date <- as.Date(study_dates$pandemic_start)
+  cohort_end_date <- as.Date(study_dates$all_eligible)
+  
+}
+
 
 follow_up_end_dates <- function(cohort_name, group){
+  # Load relevant data
+  input <- read_rds(paste0("output/input_",cohort_name,"_stage1_",group,".rds"))
   
   ## Read in active analyses table and filter to relevant outcomes
   
@@ -30,12 +48,9 @@ follow_up_end_dates <- function(cohort_name, group){
     filter(active == "TRUE" & outcome_group == group) %>% 
     select(outcome_variable, outcome_group)
   
-  # Load relevant data
-  input <- read_rds(paste0("output/input_",cohort_name,"_stage1_",group,".rds"))
-  
   input <- input[,c("patient_id","death_date","index_date","sub_cat_covid19_hospital",active_analyses$outcome_variable,
                     colnames(input)[grepl("exp_",colnames(input))], 
-                    colnames(input)[grepl("vax_date_covid_",colnames(input))])] 
+                    colnames(input)[grepl("vax_date_",colnames(input))])] 
   
   input$cohort_end_date<- cohort_end_date
   
@@ -50,14 +65,22 @@ follow_up_end_dates <- function(cohort_name, group){
     # Calculate follow up end dates based on cohort
     # follow_up_end_unexposed is required in Table 2 script and follow_up_end is 
     # the general follow up end date for each patient
-    if(cohort_name=="vaccinated"){
+    if(cohort_name=="prevax"){
+      
+      input$follow_up_end_unexposed <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "expo_date", "death_date", "cohort_end_date")],1, min,na.rm=TRUE)
+      input$follow_up_end <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "death_date", "cohort_end_date")],1, min,na.rm=TRUE)
+      
+      input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
+      input$follow_up_end <- as.Date(input$follow_up_end)
+      
+    }else if(cohort_name=="vax"){
       input$follow_up_end_unexposed <- apply(input[,c("event_date", "expo_date", "death_date", "cohort_end_date")],1, min,na.rm=TRUE)
       input$follow_up_end <- apply(input[,c("event_date", "death_date", "cohort_end_date")],1, min, na.rm=TRUE)
       
       input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
       input$follow_up_end <- as.Date(input$follow_up_end)
       
-    }else if(cohort_name=="electively_unvaccinated"){
+    }else if(cohort_name=="unvax"){
       input$follow_up_end_unexposed <- apply(input[,c("vax_date_covid_1","event_date", "expo_date", "death_date","cohort_end_date")],1, min,na.rm=TRUE)
       input$follow_up_end <- apply(input[,c("vax_date_covid_1","event_date", "death_date","cohort_end_date")],1, min, na.rm=TRUE)
       
@@ -70,7 +93,7 @@ follow_up_end_dates <- function(cohort_name, group){
     # in the phenotype analyses. This is needed to re-calculate follow-up end for pheno anlayses
     
     input <- input %>% mutate(event_date = replace(event_date, which(event_date>follow_up_end | event_date<index_date), NA))
-    input <- input %>% mutate(expo_date = replace(expo_date, which(expo_date>follow_up_end | expo_date<index_date), NA))
+    input <- input %>% mutate(expo_date =  replace(expo_date, which(expo_date>follow_up_end | expo_date<index_date), NA))
     
     # Update COVID phenotypes after setting COVID exposure dates to NA that lie
     # outside follow up
@@ -133,9 +156,10 @@ active_analyses <- active_analyses %>% filter(active==TRUE)
 group <- unique(active_analyses$outcome_group)
 
 for(i in group){
-  if (cohort_name == "both") {
-    follow_up_end_dates("electively_unvaccinated", i)
-    follow_up_end_dates("vaccinated", i)
+  if (cohort_name == "all") {
+    follow_up_end_dates("prevax", i)
+    follow_up_end_dates("vax", i)
+    follow_up_end_dates("unvax", i)
   } else{
     follow_up_end_dates(cohort_name, i)
   }

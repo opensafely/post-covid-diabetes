@@ -11,6 +11,11 @@ from cohortextractor import (
     codelist_from_csv,
 )
 
+#study dates
+from grouping_variables import (
+    study_dates,
+    days)
+    
 ## Codelists from codelist.py (which pulls them from the codelist folder)
 from codelists import *
 
@@ -20,11 +25,80 @@ from datetime import date
 ## Study definition helper
 import study_definition_helper_functions as helpers
 
+# Define pandemic_start
+pandemic_start = study_dates["pandemic_start"]
 # Define common variables function
 
-def generate_common_variables(index_date_variable):
+def generate_common_variables(index_date_variable,end_date_variable):
 
     dynamic_variables = dict(
+
+# DEFINE QUALITY ASSURANCES ------------------------------------------------------
+
+## Prostate cancer
+        ### Primary care
+        prostate_cancer_snomed=patients.with_these_clinical_events(
+            prostate_cancer_snomed_clinical,
+            returning='binary_flag',
+            return_expectations={
+                "incidence": 0.03,
+            },
+        ),
+        ### HES APC
+        prostate_cancer_hes=patients.admitted_to_hospital(
+            with_these_diagnoses=prostate_cancer_icd10,
+            returning='binary_flag',
+            return_expectations={
+                "incidence": 0.03,
+            },
+        ),
+        ### ONS
+        prostate_cancer_death=patients.with_these_codes_on_death_certificate(
+            prostate_cancer_icd10,
+            returning='binary_flag',
+            return_expectations={
+                "incidence": 0.02
+            },
+        ),
+        ### Combined
+        qa_bin_prostate_cancer=patients.maximum_of(
+            "prostate_cancer_snomed", "prostate_cancer_hes", "prostate_cancer_death"
+        ),
+
+    ## Pregnancy
+        qa_bin_pregnancy=patients.with_these_clinical_events(
+            pregnancy_snomed_clinical,
+            returning='binary_flag',
+            return_expectations={
+                "incidence": 0.03,
+            },
+        ),
+    
+    ## Year of birth
+        qa_num_birth_year=patients.date_of_birth(
+            date_format="YYYY",
+            return_expectations={
+                "date": {"earliest": study_dates["earliest_expec"], "latest": "today"},
+                "rate": "uniform",
+            },
+        ),
+        # Define fixed covariates other than sex
+# NB: sex is required to determine vaccine eligibility covariates so is defined in study_definition_electively_unvaccinated.py
+
+    ## 2019 consultation rate
+        cov_num_consulation_rate=patients.with_gp_consultations(
+            between=[days(study_dates["pandemic_start"],-365), days(study_dates["pandemic_start"],-1)],
+            returning="number_of_matches_in_period",
+            return_expectations={
+                "int": {"distribution": "poisson", "mean": 5},
+            },
+        ),
+
+    ## Healthcare worker    
+    cov_bin_healthcare_worker=patients.with_healthcare_worker_flag_on_covid_vaccine_record(
+        returning='binary_flag', 
+        return_expectations={"incidence": 0.01},
+    ),
 
 # DEFINE EXPOSURES ------------------------------------------------------
 
@@ -35,9 +109,9 @@ def generate_common_variables(index_date_variable):
         returning="date",
         find_first_match_in_period=True,
         date_format="YYYY-MM-DD",
-        on_or_after=f"{index_date_variable}",
+        between=[f"{index_date_variable}",f"{end_date_variable}"],
         return_expectations={
-            "date": {"earliest": "index_date", "latest" : "today"},
+            "date": {"earliest": study_dates["pandemic_start"], "latest" : "today"},
             "rate": "uniform",
             "incidence": 0.1,
         },
@@ -50,11 +124,11 @@ def generate_common_variables(index_date_variable):
             covid_primary_care_sequalae,
         ),
         returning="date",
-        on_or_after=f"{index_date_variable}",
+        between=[f"{index_date_variable}",f"{end_date_variable}"],
         date_format="YYYY-MM-DD",
         find_first_match_in_period=True,
         return_expectations={
-            "date": {"earliest": "index_date", "latest" : "today"},
+            "date": {"earliest": study_dates["pandemic_start"], "latest" : "today"},
             "rate": "uniform",
             "incidence": 0.1,
         },
@@ -63,11 +137,11 @@ def generate_common_variables(index_date_variable):
     tmp_exp_date_covid19_confirmed_hes=patients.admitted_to_hospital(
         with_these_diagnoses=covid_codes,
         returning="date_admitted",
-        on_or_after=f"{index_date_variable}",
+        between=[f"{index_date_variable}",f"{end_date_variable}"],
         date_format="YYYY-MM-DD",
         find_first_match_in_period=True,
         return_expectations={
-            "date": {"earliest": "index_date", "latest" : "today"},
+            "date": {"earliest": study_dates["pandemic_start"], "latest" : "today"},
             "rate": "uniform",
             "incidence": 0.1,
         },
@@ -76,11 +150,11 @@ def generate_common_variables(index_date_variable):
     tmp_exp_date_covid19_confirmed_death=patients.with_these_codes_on_death_certificate(
         covid_codes,
         returning="date_of_death",
-        on_or_after=f"{index_date_variable}",
+        between=[f"{index_date_variable}",f"{end_date_variable}"],
         match_only_underlying_cause=True,
         date_format="YYYY-MM-DD",
         return_expectations={
-            "date": {"earliest": "index_date", "latest" : "today"},
+            "date": {"earliest": study_dates["pandemic_start"], "latest" : "today"},
             "rate": "uniform",
             "incidence": 0.1
         },
@@ -88,6 +162,50 @@ def generate_common_variables(index_date_variable):
     ## Generate variable to identify first date of confirmed COVID
     exp_date_covid19_confirmed=patients.minimum_of(
         "tmp_exp_date_covid19_confirmed_sgss","tmp_exp_date_covid19_confirmed_snomed","tmp_exp_date_covid19_confirmed_hes","tmp_exp_date_covid19_confirmed_death"
+    ),
+
+# POPULATION SELECTION VARIABLES ------------------------------------------------------
+
+    has_follow_up_previous_6months=patients.registered_with_one_practice_between(
+        start_date=f"{index_date_variable} - 6 months",
+        end_date=f"{index_date_variable}",
+        return_expectations={"incidence": 0.95},
+    ),
+
+    has_died = patients.died_from_any_cause(
+        on_or_before = f"{index_date_variable}",
+        returning="binary_flag",
+        return_expectations={"incidence": 0.01}
+    ),
+        
+    registered_at_start = patients.registered_as_of(f"{index_date_variable}",
+    ),
+        
+    registered_as_of_6months_before_delta=patients.registered_with_one_practice_between(
+        start_date="2020-12-15",
+        end_date="2021-06-01",
+        return_expectations={"incidence": 0.95},
+    ),
+
+    registered_as_of_pandemic_start=patients.registered_with_one_practice_between(
+        start_date="2020-01-01",
+        end_date="2020-01-01",
+        return_expectations={"incidence": 0.95},
+    ),
+
+    registered_as_of_6months_before_pandemic_start=patients.registered_with_one_practice_between(
+        start_date="2019-07-17",
+        end_date="2020-01-01",
+        return_expectations={"incidence": 0.95},
+    ),
+
+    dereg_date=patients.date_deregistered_from_all_supported_practices(
+        on_or_after="2020-01-01", date_format = 'YYYY-MM-DD',
+                        return_expectations={
+                    "date": {"earliest": "2020-01-01", "latest": "today"},
+                    "rate": "uniform",
+                    "incidence": 0.01
+                },
     ),
 
 # DEFINE OUTCOMES ------------------------------------------------------
@@ -170,7 +288,7 @@ def generate_common_variables(index_date_variable):
         return_expectations={
             "date": {"earliest": "2018-01-01", "latest" : "today"},
             "rate": "uniform",
-            "incidence": 0.7,
+            "incidence": 0.9,
         },
     ),
     # HES APC
@@ -183,7 +301,7 @@ def generate_common_variables(index_date_variable):
         return_expectations={
             "date": {"earliest": "2018-01-01", "latest" : "today"},
             "rate": "uniform",
-            "incidence": 0.7,
+            "incidence": 0.9,
         },
     ),
     # Combined
@@ -1055,11 +1173,11 @@ def generate_common_variables(index_date_variable):
     tmp_cov_num_hdl_cholesterol=patients.max_recorded_value(
         hdl_cholesterol_snomed,
         on_most_recent_day_of_measurement=True, 
-        between=["2015-01-01", f"{index_date_variable}"],
+        between=[f"{index_date_variable}- 5years", f"{index_date_variable} -1 day"],
         date_format="YYYY-MM-DD",
         return_expectations={
             "float": {"distribution": "normal", "mean": 2.0, "stddev": 1.5},
-            "date": {"earliest": "2015-01-01", "latest": "2022-02-01"},
+            "date": {"earliest": study_dates["earliest_expec"] , "latest": "today"},
             "incidence": 0.80,
         },
     ),
@@ -1116,7 +1234,7 @@ def generate_common_variables(index_date_variable):
         date_format="YYYY-MM-DD",
         find_first_match_in_period=True,
         return_expectations={
-            "date": {"earliest": "index_date", "latest" : "today"},
+            "date": {"earliest": study_dates["pandemic_start"], "latest" : "today"},
             "rate": "uniform",
             "incidence": 0.5,
         },

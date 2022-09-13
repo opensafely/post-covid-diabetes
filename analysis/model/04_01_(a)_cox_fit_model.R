@@ -165,8 +165,8 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
         surv_formula <- paste(surv_formula, "strat(region_name)", sep="+")
       }
       
-      #If subgroup is not sex then add sex into formula
-      if (!startsWith(subgroup,"sex") & !startsWith(subgroup,"aer") & (!"sex" %in% covariates_excl_region_sex_age)){
+      #If subgroup is not sex then add sex into formula - also do not add sex if event name is gestational dm (analyses performed in women only)
+      if ((startsWith(subgroup,"sex"))==F & (!"sex" %in% covariates_excl_region_sex_age) & (event_name != "gestationaldm")){
         surv_formula <- paste(surv_formula, "sex", sep="+")
       }
       

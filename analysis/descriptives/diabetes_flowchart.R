@@ -117,9 +117,14 @@ diabetes_flow_function <- function(cohort_name, group) {
     ceiling(plyr::round_any(x/to, 1/100000000))*to
   }
   
+  roundmid_any <- function(x, to=1){
+    # like ceiling_any, but centers on (integer) midpoint of the rounding points
+    ceiling(x/to)*to - (floor(to/2)*(x!=0))
+  }
+  
   values_df_t <- values_df_t %>%
     mutate_all(~ as.numeric(.)) %>%
-    mutate_all(~ ceiling_any(., to=7)) %>%
+    mutate_all(~ roundmid_any(., to=7)) %>%
     mutate_all(~ replace(., .==0, 7))
   
   write.csv(values_df_t, file = paste0("output/review/figure-data/diabetes_flow_values_",cohort_name,"_",group,".csv"), row.names = FALSE) # save

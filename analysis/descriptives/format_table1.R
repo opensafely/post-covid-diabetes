@@ -17,14 +17,29 @@ fs::dir_create(here::here("output", "review", "descriptives"))
 ###############################################
 
 clean_table_1 <- function(df) {
+  total_n <- df[df$Covariate_level == "All", "Whole_population"]
   df <- df %>% 
     mutate_at(c("Whole_population","COVID_exposed","COVID_hospitalised", "COVID_non_hospitalised"), as.numeric) %>%
     mutate(COVID_risk_per_100k = (COVID_exposed/Whole_population)*100000) %>%
-    mutate_if(is.numeric, round, 0) %>%
+    # add percentages
+    mutate(perc = (Whole_population / total_n) * 100) %>%
+    mutate(perc = round(perc, digits = 1)) %>%
+    mutate_at(c("Whole_population", "COVID_exposed", "COVID_hospitalised", "COVID_non_hospitalised", "COVID_risk_per_100k"), round, 0) %>%
+    mutate(Whole_population = paste0(format(Whole_population, big.mark = ",", scientific = FALSE), " (", perc, ")")) %>%
+    mutate(COVID_exposed = str_trim(format(COVID_exposed, big.mark = ",", scientific = FALSE)),
+           COVID_risk_per_100k = str_trim(format(COVID_risk_per_100k, big.mark = ",", scientific = FALSE))) %>%
     mutate("Number diagnosed with COVID-19 (risk per 100,000)" = paste0(COVID_exposed, " (", COVID_risk_per_100k, ")"),
            "Covariate Level" = Covariate_level,
            "Whole Population" = Whole_population) %>%
-    dplyr::select("Covariate", "Covariate Level", "Whole Population", "Number diagnosed with COVID-19 (risk per 100,000)")
+    dplyr::select("Covariate", "Covariate Level", "Whole Population", "Number diagnosed with COVID-19 (risk per 100,000)") %>%
+    mutate(across(where(is.character), str_trim)) %>%
+    # Tidy mumeric vars
+    mutate(`Number diagnosed with COVID-19 (risk per 100,000)` = ifelse(`Covariate Level` == "Mean",
+                                                                        gsub(r"{\s*\([^\)]+\)}","",as.character(`Number diagnosed with COVID-19 (risk per 100,000)`)),
+                                                                        as.character(`Number diagnosed with COVID-19 (risk per 100,000)`)),
+           `Whole Population` = ifelse(`Covariate Level` == "Mean",
+                                       gsub(r"{\s*\([^\)]+\)}","",as.character(`Whole Population`)),
+                                       as.character(`Whole Population`)))
 }
 
 # GET OUTCOME GROUPS
@@ -40,23 +55,35 @@ outcome_groups <- "diabetes"
 for(group in outcome_groups){
   table1_prevax <- read.csv(paste0("output/review/descriptives/Table1_prevax_without_covid_history_",group,".csv"))
   table1_vax <- read.csv(paste0("output/review/descriptives/Table1_vax_without_covid_history_",group,".csv"))
+  table1_vax <- table1_vax[ order(match(table1_vax$Covariate_level, table1_prevax$Covariate_level)), ]
   table1_unvax <- read.csv(paste0("output/review/descriptives/Table1_unvax_without_covid_history_",group,".csv"))
   
   table1_prevax_format <- clean_table_1(table1_prevax)
   table1_vax_format <- clean_table_1(table1_vax)
   table1_unvax_format <- clean_table_1(table1_unvax)
-
+  
   # CONSTRUCT MAIN TABLE 1
   
   colnames(table1_prevax_format)[3:4] <- paste(colnames(table1_prevax_format)[3:4], "prevax", sep = "_")
   colnames(table1_vax_format)[3:4] <- paste(colnames(table1_vax_format)[3:4], "vax", sep = "_")
   colnames(table1_unvax_format)[3:4] <- paste(colnames(table1_unvax_format)[3:4], "unvax", sep = "_")
   
-  table1_merged <- full_join(table1_vax_format, table1_unvax_format)
-  table1_merged <- full_join(table1_merged, table1_prevax_format)
+  table1_merged <- full_join(table1_prevax_format, table1_vax_format)
+  table1_merged <- full_join(table1_merged, table1_unvax_format)
+  
+  # RENAME COLUMN NAMES 
+  
+  table1_merged <- table1_merged %>%
+    dplyr::rename("Prevaccinated Population" = "Whole Population_prevax",
+                  "Prevaccinated N Diagnosed with COVID-19 (risk per 100,000)" = "Number diagnosed with COVID-19 (risk per 100,000)_prevax",
+                  "Vaccinated Population" = "Whole Population_vax",
+                  "Vaccinated N Diagnosed with COVID-19 (risk per 100,000)" = "Number diagnosed with COVID-19 (risk per 100,000)_vax",
+                  "Unvaccinated Population" = "Whole Population_unvax",
+                  "Unvaccinated N Diagnosed with COVID-19 (risk per 100,000)" = "Number diagnosed with COVID-19 (risk per 100,000)_unvax")
+  
+  
   
   # SAVE TABLE 1
   
-  write.csv(table1_merged, paste0("output/review/descriptives/Table1_Formatted_To_Release_",group,"_.csv"), row.names = FALSE)
+  write.csv(table1_merged, paste0("output/review/descriptives/Table1_Formatted_To_Release_",group,".csv"), row.names = FALSE)
 }
-  

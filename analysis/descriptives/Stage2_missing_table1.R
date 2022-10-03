@@ -30,6 +30,7 @@ library(dplyr)
 library(data.table)
 library(tidyverse)
 library(lubridate)
+library(stringr)
 
 # Specify command arguments ----------------------------------------------------
 
@@ -180,6 +181,8 @@ stage2 <- function(cohort_name, covid_history, group) {
   # Populate table 1 
   covar_names <- active_analyses %>% filter(outcome_group==group)
   covar_names<-str_split(active_analyses$covariates, ";")[[1]]
+  # ADD NUM BMI BECAUSE IT ISNT LISTED IN ACVTIVE ANALYSES AS A COVARIATE
+  covar_names <- append(covar_names, "cov_num_bmi")
   
   #categorical_cov <- colnames(input)[grep("cov_cat", colnames(input))]
   categorical_cov <- covar_names[grep("cov_cat", covar_names)]
@@ -187,8 +190,8 @@ stage2 <- function(cohort_name, covid_history, group) {
                             
   #numerical_cov <- colnames(input)[grep("cov_num", colnames(input))]
   numerical_cov <- covar_names[grep("cov_num", covar_names)]
-  numerical_cov <- numerical_cov[!numerical_cov=="cov_num_age"]
-  
+  # numerical_cov <- numerical_cov[!numerical_cov=="cov_num_age"]
+
   #binary_cov <- colnames(input)[grep("cov_bin", colnames(input))]
   binary_cov <- covar_names[grep("cov_bin", covar_names)]
   binary_cov_table <- crossing(covar_names[grep("cov_bin", covar_names)], c("TRUE","FALSE"))
@@ -207,7 +210,7 @@ stage2 <- function(cohort_name, covid_history, group) {
   
   table1 <- as.data.frame(summary(table1,maxsum=50))
   
-  table1 <- rename(table1, Covariate_level = Freq, Covariate = Var2)
+  table1 <- dplyr::rename(table1, Covariate_level = Freq, Covariate = Var2)
   
   #table1 <- table1 %>% 
   #  filter(!str_detect(Covariate_level, "^FALSE"))
@@ -220,7 +223,9 @@ stage2 <- function(cohort_name, covid_history, group) {
   table1$Covariate_level <-  sub('\\:.*', '', table1$Covariate_level) # Remove everything after :
   
   table1 <- table1 %>%
+    filter(!(Covariate == "cov_num_age" & !Covariate_level=="Mean   ")) %>%
     filter(!(Covariate == "cov_num_consulation_rate" & !Covariate_level=="Mean   ")) %>%
+    filter(!(Covariate == "cov_num_bmi" & !Covariate_level=="Mean   ")) %>%
     filter(!(Covariate == "cov_num_tc_hdl_ratio" & !Covariate_level=="Mean   "))
   
   table1_count_all <- as.data.frame(matrix(nrow = 1, ncol = 2))
@@ -248,7 +253,7 @@ stage2 <- function(cohort_name, covid_history, group) {
     cat_pop <- cat_pop %>% mutate_if(is.character,as.factor)
     cat_summary <- as.data.frame(summary(cat_pop,maxsum=50))
     cat_summary[,population] <- cat_summary$Freq
-    cat_summary <- rename(cat_summary, Covariate_level = Freq, Covariate = Var2)
+    cat_summary <- dplyr::rename(cat_summary, Covariate_level = Freq, Covariate = Var2)
     cat_summary <- cat_summary %>% 
       dplyr::select("Covariate","Covariate_level",population)
     
@@ -257,7 +262,7 @@ stage2 <- function(cohort_name, covid_history, group) {
     num_pop <- df %>% dplyr::select(numerical_cov)
     num_summary <- as.data.frame(summary(num_pop))
     num_summary[,population] <- num_summary$Freq
-    num_summary <- rename(num_summary, Covariate_level = Freq, Covariate = Var2)
+    num_summary <- dplyr::rename(num_summary, Covariate_level = Freq, Covariate = Var2)
     num_summary <- num_summary %>% dplyr::select("Covariate","Covariate_level",population)
     num_summary <- num_summary %>% filter(startsWith(num_summary$Covariate_level, "Mean")==T)
     
@@ -267,7 +272,7 @@ stage2 <- function(cohort_name, covid_history, group) {
     bin_pop <- bin_pop %>% mutate_if(is.logical,as.factor)
     bin_summary <- as.data.frame(summary(bin_pop))
     bin_summary[,population] <- bin_summary$Freq
-    bin_summary <- rename(bin_summary, Covariate_level = Freq, Covariate = Var2)
+    bin_summary <- dplyr::rename(bin_summary, Covariate_level = Freq, Covariate = Var2)
     #bin_summary <- bin_summary %>% filter(str_detect(Covariate_level, "^TRUE"))
     bin_summary <- bin_summary%>% dplyr::select("Covariate","Covariate_level",population)
     bin_summary$Covariate_level <- gsub("\\s","",bin_summary$Covariate_level) #Remove spaces
@@ -290,6 +295,16 @@ stage2 <- function(cohort_name, covid_history, group) {
     table1 <- left_join(table1,pop_summary, by=c("Covariate","Covariate_level"))
     
   }
+  
+  # PRINT MEAN AND SD FOR NUMERIC VARS
+  
+  print(summary(input[numeric_var_names]))
+  print(sd(input$cov_num_age))
+  print(sd(input$cov_num_consulation_rate))
+  print(sd(input$cov_num_bmi))
+  print(sd(input$cov_num_tc_hdl_ratio))
+  
+  # print(s)
   
   # Tidy table 1
   
@@ -330,6 +345,10 @@ stage2 <- function(cohort_name, covid_history, group) {
   }
   #table1_suppressed[which(startsWith(table1_suppressed$Covariate_level, "Mean")),] <- table1[startsWith(table1$Covariate_level, "Mean"),]
   table1_suppressed <- table1_suppressed %>% filter(!str_detect(Covariate_level, "^FALSE"))
+  
+  # CAPITALISE COV COLUMN FOR AESTHETICS
+  
+  table1_suppressed$Covariate <- str_to_sentence(table1_suppressed$Covariate)
   
   # Save table 1
   write.csv(table1_suppressed, file = file.path("output/review/descriptives", paste0("Table1_",cohort_name, "_",covid_history,"_",group, ".csv")) , row.names=F)

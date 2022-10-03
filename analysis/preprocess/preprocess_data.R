@@ -67,7 +67,6 @@ message ("Cohort ",cohort_name, " description written successfully!")
 
 df$cov_bin_obesity <- ifelse(df$cov_bin_obesity == TRUE | 
                                df$cov_cat_bmi_groups=="Obese",TRUE,FALSE)
-df[,c("cov_num_bmi")] <- NULL
 
 # QC for consultation variable--------------------------------------------------
 #max to 365 (average of one per day)

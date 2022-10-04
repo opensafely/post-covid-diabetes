@@ -373,6 +373,12 @@ stage1 <- function(cohort_name, group){
       dplyr::rename(out_date_t2dm_obes_no = out_date_t2dm)
     cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),"Calculate manually", "Diabetes specific criteria: Remove those with diabetes prior to study start date AND restrict to those with NO obesity")
     
+  } else if (group == "diabetes_recovery"){
+
+    input <- input %>% 
+      # change name of t2dm variable to avoid duplicated cox actions
+      dplyr::rename(out_date_t2dm_rec = out_date_t2dm)
+
   } else if (group == "diabetes_gestational"){
     # Exclude men from gestational diabetes analysis
     input <- input %>% 

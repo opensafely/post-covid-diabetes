@@ -374,8 +374,12 @@ stage1 <- function(cohort_name, group){
     cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),"Calculate manually", "Diabetes specific criteria: Remove those with diabetes prior to study start date AND restrict to those with NO obesity")
     
   } else if (group == "diabetes_recovery"){
-
+  # Have this as the same population as "diabetes" above. 
+    # Exclude individuals with a recorded diagnosis of diabetes prior to index date
     input <- input %>% 
+      filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+      filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+      filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
       # change name of t2dm variable to avoid duplicated cox actions
       dplyr::rename(out_date_t2dm_rec = out_date_t2dm)
 

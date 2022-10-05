@@ -311,15 +311,15 @@ actions_list <- splice(
     )
   ),
   
-  #comment("Format Table 1"),
-  action(
-    name = "format_table1",
-    run = "r:latest analysis/descriptives/format_table1.R",
-    needs = list("stage2_missing_table1_all"),
-    moderately_sensitive = list(
-      formatted_tables = glue("output/review/descriptives/Table1_Formatted_To_Release_*.csv")
-    )
-  ),
+  # #comment("Format Table 1"),
+  # action(
+  #   name = "format_table1",
+  #   run = "r:latest analysis/descriptives/format_table1.R",
+  #   needs = list("stage2_missing_table1_all"),
+  #   moderately_sensitive = list(
+  #     formatted_tables = glue("output/review/descriptives/Table1_Formatted_To_Release_*.csv")
+  #   )
+  # ),
 
 
   #comment("Stage 3 - Diabetes flow - prevax"),  

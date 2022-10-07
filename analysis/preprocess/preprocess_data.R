@@ -4,6 +4,7 @@ library(magrittr)
 library(dplyr)
 library(tidyverse)
 library(lubridate)
+library(readr)
 
 # Specify command arguments ----------------------------------------------------
 args <- commandArgs(trailingOnly=TRUE)
@@ -167,6 +168,8 @@ df1 <- df%>% select(patient_id,"death_date",starts_with("index_date_"),
 df1[,colnames(df)[grepl("tmp_",colnames(df))]] <- NULL
 
 saveRDS(df1, file = paste0("output/input_",cohort_name,".rds"))
+# Save as CSV as well 
+readr::write_csv(df1, paste0("output/input_", cohort_name,".csv"))
 
 message(paste0("Input data saved successfully with N = ", nrow(df1), " rows"))
 

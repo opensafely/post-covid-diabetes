@@ -221,6 +221,7 @@ actions_list <- splice(
     ),
     highly_sensitive = list(
       cohort = glue("output/input_prevax.rds"),
+      cohort_csv = glue("output/input_prevax.csv"),
       venn = glue("output/venn_prevax.rds")
     )
   ), 
@@ -235,6 +236,7 @@ actions_list <- splice(
     ),
     highly_sensitive = list(
       cohort = glue("output/input_vax.rds"),
+      cohort_csv = glue("output/input_vax.csv"),
       venn = glue("output/venn_vax.rds")
     )
   ), 
@@ -249,10 +251,21 @@ actions_list <- splice(
     ),
     highly_sensitive = list(
       cohort = glue("output/input_unvax.rds"),
+      cohort_csv = glue("output/input_unvax.csv"),
       venn = glue("output/venn_unvax.rds")
     )
   ), 
 
+  #comment("Generate dummy data for study_definition - diabetes analysis"),
+  action(
+    name = "generate_study_population_diabetes_analyis",
+    run = "cohortextractor:latest generate_cohort --study-definition study_definition_diabetes_analysis --output-format feather",
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
+    highly_sensitive = list(
+      cohort = glue("output/input_diabetes_analysis.feather")
+    )
+  ),
+  
   #comment("Stage 1 - Data cleaning - all cohorts"),
   action(
     name = "stage1_data_cleaning_all",

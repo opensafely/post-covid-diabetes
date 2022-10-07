@@ -87,6 +87,46 @@ population = patients.all(),
             "date": {"earliest": "2021-02-01", "latest": "2021-05-31"},
             "incidence": 0.30,
         },
+    ),
+
+# Define death date
+
+    ## Primary care
+    primary_care_death_date=patients.with_death_recorded_in_primary_care(
+            on_or_after="2020-01-01",
+            returning="date_of_death",
+            date_format="YYYY-MM-DD",
+            return_expectations={
+                "date": {"earliest": "2020-01-01", "latest" : "today"},
+                "rate": "uniform",
+                "incidence": 0.01,
+            },
+        ),
+    ## ONS
+    ons_died_from_any_cause_date=patients.died_from_any_cause(
+            on_or_after="2020-01-01",
+            returning="date_of_death",
+            date_format="YYYY-MM-DD",
+            return_expectations={
+                "date": {"earliest": "2020-01-01", "latest" : "today"},
+                "rate": "uniform",
+                "incidence": 0.01,
+            },
+        ),
+    ## Combined
+    death_date=patients.minimum_of(
+            "primary_care_death_date", "ons_died_from_any_cause_date"
+        ),
+
+# DEREG
+
+    dereg_date=patients.date_deregistered_from_all_supported_practices(
+        on_or_after="2020-01-01", date_format = 'YYYY-MM-DD',
+                        return_expectations={
+                    "date": {"earliest": "2020-01-01", "latest": "today"},
+                    "rate": "uniform",
+                    "incidence": 0.01
+                },
     )
     
 )

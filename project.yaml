@@ -116,18 +116,6 @@ actions:
         cohort_csv: output/input_unvax.csv
         venn: output/venn_unvax.rds
 
-  generate_study_population_diabetes_analyis:
-    run: cohortextractor:latest generate_cohort --study-definition study_definition_diabetes_analysis
-      --output-format feather
-    needs:
-    - preprocess_data_prevax
-    - preprocess_data_vax
-    - preprocess_data_unvax
-    - vax_eligibility_inputs
-    outputs:
-      highly_sensitive:
-        cohort: output/input_diabetes_analysis.feather
-
   stage1_data_cleaning_all:
     run: r:latest analysis/preprocess/Stage1_data_cleaning.R all
     needs:
@@ -143,6 +131,7 @@ actions:
         histograms: output/not-for-review/numeric_histograms_*.svg
       highly_sensitive:
         cohort: output/input_*.rds
+        cohort_csv: output/input_*.csv
 
   stage1_end_date_table_prevax:
     run: r:latest analysis/preprocess/create_follow_up_end_date.R prevax
@@ -179,6 +168,66 @@ actions:
     outputs:
       highly_sensitive:
         end_date_table: output/follow_up_end_dates_unvax_*.rds
+
+  generate_study_population_prevax_diabetes_analyis:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_prevax_diabetes_analysis
+      --output-format feather
+    needs:
+    - stage1_data_cleaning_all
+    outputs:
+      highly_sensitive:
+        cohort: output/input_prevax_diabetes_analysis.feather
+
+  generate_study_population_vax_diabetes_analyis:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_vax_diabetes_analysis
+      --output-format feather
+    needs:
+    - stage1_data_cleaning_all
+    outputs:
+      highly_sensitive:
+        cohort: output/input_vax_diabetes_analysis.feather
+
+  generate_study_population_unvax_diabetes_analyis:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_unvax_diabetes_analysis
+      --output-format feather
+    needs:
+    - stage1_data_cleaning_all
+    outputs:
+      highly_sensitive:
+        cohort: output/input_unvax_diabetes_analysis.feather
+
+  diabetes_post_hoc_prevax:
+    run: r:latest analysis/descriptives/diabetes-follow-up-analysis.R prevax
+    needs:
+    - generate_study_population_prevax_diabetes_analyis
+    - generate_study_population_vax_diabetes_analyis
+    - generate_study_population_unvax_diabetes_analyis
+    - vax_eligibility_inputs
+    outputs:
+      moderately_sensitive:
+        res_table: output/review/descriptives/diabetes_posthoc_analysis_res_prevax.csv
+
+  diabetes_post_hoc_vax:
+    run: r:latest analysis/descriptives/diabetes-follow-up-analysis.R vax
+    needs:
+    - generate_study_population_prevax_diabetes_analyis
+    - generate_study_population_vax_diabetes_analyis
+    - generate_study_population_unvax_diabetes_analyis
+    - vax_eligibility_inputs
+    outputs:
+      moderately_sensitive:
+        res_table: output/review/descriptives/diabetes_posthoc_analysis_res_vax.csv
+
+  diabetes_post_hoc_unvax:
+    run: r:latest analysis/descriptives/diabetes-follow-up-analysis.R unvax
+    needs:
+    - generate_study_population_prevax_diabetes_analyis
+    - generate_study_population_vax_diabetes_analyis
+    - generate_study_population_unvax_diabetes_analyis
+    - vax_eligibility_inputs
+    outputs:
+      moderately_sensitive:
+        res_table: output/review/descriptives/diabetes_posthoc_analysis_res_unvax.csv
 
   stage2_missing_table1_all:
     run: r:latest analysis/descriptives/Stage2_missing_table1.R all

@@ -256,16 +256,6 @@ actions_list <- splice(
     )
   ), 
 
-  #comment("Generate dummy data for study_definition - diabetes analysis"),
-  action(
-    name = "generate_study_population_diabetes_analyis",
-    run = "cohortextractor:latest generate_cohort --study-definition study_definition_diabetes_analysis --output-format feather",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
-    highly_sensitive = list(
-      cohort = glue("output/input_diabetes_analysis.feather")
-    )
-  ),
-  
   #comment("Stage 1 - Data cleaning - all cohorts"),
   action(
     name = "stage1_data_cleaning_all",
@@ -278,7 +268,8 @@ actions_list <- splice(
       histograms = glue("output/not-for-review/numeric_histograms_*.svg")
     ),
     highly_sensitive = list(
-      cohort = glue("output/input_*.rds")
+      cohort = glue("output/input_*.rds"),
+      cohort_csv = glue("output/input_*.csv")
     )
   ),
   
@@ -311,6 +302,66 @@ actions_list <- splice(
       end_date_table = glue("output/follow_up_end_dates_unvax_*.rds")
     )
   ),
+  
+  #comment("Generate dummy data for study_definition - PREVAX diabetes analysis"),
+  action(
+    name = "generate_study_population_prevax_diabetes_analyis",
+    run = "cohortextractor:latest generate_cohort --study-definition study_definition_prevax_diabetes_analysis --output-format feather",
+    needs = list("stage1_data_cleaning_all"),
+    highly_sensitive = list(
+      cohort = glue("output/input_prevax_diabetes_analysis.feather")
+    )
+  ),
+  
+  #comment("Generate dummy data for study_definition - VAX diabetes analysis"),
+  action(
+    name = "generate_study_population_vax_diabetes_analyis",
+    run = "cohortextractor:latest generate_cohort --study-definition study_definition_vax_diabetes_analysis --output-format feather",
+    needs = list("stage1_data_cleaning_all"),
+    highly_sensitive = list(
+      cohort = glue("output/input_vax_diabetes_analysis.feather")
+    )
+  ),
+  
+  #comment("Generate dummy data for study_definition - UNVAX diabetes analysis"),
+  action(
+    name = "generate_study_population_unvax_diabetes_analyis",
+    run = "cohortextractor:latest generate_cohort --study-definition study_definition_unvax_diabetes_analysis --output-format feather",
+    needs = list("stage1_data_cleaning_all"),
+    highly_sensitive = list(
+      cohort = glue("output/input_unvax_diabetes_analysis.feather")
+    )
+  ),
+  
+  #comment("Diabetes additional analysis - prevax"),
+  action(
+    name = "diabetes_post_hoc_prevax",
+    run = "r:latest analysis/descriptives/diabetes-follow-up-analysis.R prevax",
+    needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs"),
+    moderately_sensitive = list(
+      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_prevax.csv")
+    )
+  ),
+  
+  #comment("Diabetes additional analysis - vax"),
+  action(
+    name = "diabetes_post_hoc_vax",
+    run = "r:latest analysis/descriptives/diabetes-follow-up-analysis.R vax",
+    needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs"),
+    moderately_sensitive = list(
+      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_vax.csv")
+    )
+  ), 
+  
+  #comment("Diabetes additional analysis - unvax"),
+  action(
+    name = "diabetes_post_hoc_unvax",
+    run = "r:latest analysis/descriptives/diabetes-follow-up-analysis.R unvax",
+    needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs"),
+    moderately_sensitive = list(
+      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_unvax.csv")
+    )
+  ), 
   
   #comment("Stage 2 - Missing - Table 1 - all cohorts"),
   action(

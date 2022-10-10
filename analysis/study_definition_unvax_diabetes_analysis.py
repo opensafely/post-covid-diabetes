@@ -19,28 +19,36 @@ from codelists import *
 ## Datetime functions
 from datetime import date
 
-## Variables for deriving JCVI groups
-from grouping_variables import (
-    jcvi_variables, 
-    study_dates,
-    start_date,
-    end_date,
-    pandemic_start
-)
-import json
 study = StudyDefinition(
 
 population = patients.all(),
 
-# Get t2dm from preprocess output
+# Get COVID-19 data (date and whether hospitalised or not) from stage 1 dataset
+
+    sub_cat_covid19_hospital = patients.with_value_from_file(
+        f_path = 'output/input_unvax_stage1_diabetes.csv', 
+        returning = 'sub_cat_covid19_hospital', 
+        returning_type = 'str', 
+    ),
+
+    exp_date_covid19_confirmed = patients.with_value_from_file(
+        f_path = 'output/input_unvax_stage1_diabetes.csv', 
+        returning = 'exp_date_covid19_confirmed', 
+        returning_type = 'date', 
+        date_format = 'YYYY-MM-DD',
+    ), 
+
+# Get t2dm diagnosis date from stage 1 dataset
+
     out_date_t2dm = patients.with_value_from_file(
-        f_path = 'output/input_prevax.csv', 
+        f_path = 'output/input_unvax_stage1_diabetes.csv', 
         returning = 'out_date_t2dm', 
         returning_type = 'date', 
         date_format = 'YYYY-MM-DD',
     ),
 
 # Maximum HbA1c measure 4 months after Type 2 Diabetes diagnosis
+
     out_num_max_hba1c_mmol_4mnths=patients.max_recorded_value(
         hba1c_new_codes,
         on_most_recent_day_of_measurement=True, 
@@ -92,6 +100,7 @@ population = patients.all(),
 # Define death date
 
     ## Primary care
+
     primary_care_death_date=patients.with_death_recorded_in_primary_care(
             on_or_after="2020-01-01",
             returning="date_of_death",
@@ -103,6 +112,7 @@ population = patients.all(),
             },
         ),
     ## ONS
+
     ons_died_from_any_cause_date=patients.died_from_any_cause(
             on_or_after="2020-01-01",
             returning="date_of_death",
@@ -114,6 +124,7 @@ population = patients.all(),
             },
         ),
     ## Combined
+    
     death_date=patients.minimum_of(
             "primary_care_death_date", "ons_died_from_any_cause_date"
         ),

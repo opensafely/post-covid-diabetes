@@ -221,7 +221,6 @@ actions_list <- splice(
     ),
     highly_sensitive = list(
       cohort = glue("output/input_prevax.rds"),
-      cohort_csv = glue("output/input_prevax.csv"),
       venn = glue("output/venn_prevax.rds")
     )
   ), 
@@ -236,7 +235,6 @@ actions_list <- splice(
     ),
     highly_sensitive = list(
       cohort = glue("output/input_vax.rds"),
-      cohort_csv = glue("output/input_vax.csv"),
       venn = glue("output/venn_vax.rds")
     )
   ), 
@@ -251,7 +249,6 @@ actions_list <- splice(
     ),
     highly_sensitive = list(
       cohort = glue("output/input_unvax.rds"),
-      cohort_csv = glue("output/input_unvax.csv"),
       venn = glue("output/venn_unvax.rds")
     )
   ), 

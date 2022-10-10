@@ -81,7 +81,6 @@ actions:
         describe: output/not-for-review/describe_input_prevax_*.txt
       highly_sensitive:
         cohort: output/input_prevax.rds
-        cohort_csv: output/input_prevax.csv
         venn: output/venn_prevax.rds
 
   preprocess_data_vax:
@@ -97,7 +96,6 @@ actions:
         describe: output/not-for-review/describe_input_vax_*.txt
       highly_sensitive:
         cohort: output/input_vax.rds
-        cohort_csv: output/input_vax.csv
         venn: output/venn_vax.rds
 
   preprocess_data_unvax:
@@ -113,7 +111,6 @@ actions:
         describe: output/not-for-review/describe_input_unvax_*.txt
       highly_sensitive:
         cohort: output/input_unvax.rds
-        cohort_csv: output/input_unvax.csv
         venn: output/venn_unvax.rds
 
   stage1_data_cleaning_all:

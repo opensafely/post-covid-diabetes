@@ -89,7 +89,7 @@ table_2_subgroups_output <- function(cohort_name, group){
     if(analyses_to_run$cohort=="all"){
       cohort_to_run=c("prevax", "vax", "unvax")
     }else{
-      analyses_to_run=active_analyses$cohort
+      cohort_to_run=active_analyses$cohort
     }  
     
     # Transpose active_analyses to single column so can filter to analysis models to run

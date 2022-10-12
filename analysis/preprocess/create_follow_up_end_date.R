@@ -131,6 +131,13 @@ follow_up_end_dates <- function(cohort_name, group){
     input$hospitalised_follow_up_end <- as.Date(input$hospitalised_follow_up_end)
     input$non_hospitalised_follow_up_end <- as.Date(input$non_hospitalised_follow_up_end)
     
+    if(cohort_name=="prevax" & group == "diabetes_recovery_pre"){
+      
+      # N.B. using dplyr if_else to preserve date formatting.
+      input$follow_up_end <- dplyr::if_else(input$expo_date >= "2020-06-16", input$expo_date, input$follow_up_end)
+      input$follow_up_end_unexposed <- dplyr::if_else(input$expo_date >= "2020-06-16", input$expo_date, input$follow_up_end_unexposed)
+      
+    } 
     
     setnames(input,
              old = c("event_date",

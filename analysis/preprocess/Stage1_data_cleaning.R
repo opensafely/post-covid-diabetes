@@ -382,7 +382,52 @@ stage1 <- function(cohort_name, group){
       filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
       # change name of t2dm variable to avoid duplicated cox actions
       dplyr::rename(out_date_t2dm_rec = out_date_t2dm)
+    
+  } else if (group == "diabetes_recovery_pre"){
+    # Have this as the same population as "diabetes" above. 
+    # Exclude individuals with a recorded diagnosis of diabetes prior to index date
+    input <- input %>% 
+      filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+      filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+      filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
+      # change name of t2dm variable to avoid duplicated cox actions
+      dplyr::rename(out_date_t2dm_rec_pre = out_date_t2dm)
+      
+      # # DATE OF HOSPITALISATION TO BEFORE 16 JUNE
+      # 
+      # mutate(keep_pre = ifelse(sub_cat_covid19_hospital == "hospitalised" & exp_date_covid19_confirmed < "2020-06-16", TRUE, FALSE)) %>%
+      # mutate(remove_pre = ifelse(sub_cat_covid19_hospital == "hospitalised" & keep_pre == FALSE, TRUE, FALSE)) %>%
+      # 
+      # # Remove any people with hospitalised COVID on or after 16th June from the study population 
+      # table(input$remove_pre)
+      # 
+      # filter(remove_pre == FALSE) %>%
+      # dplyr::select(-c(keep_pre, remove_pre))
+      # 
+      # # This study population should now include no people that were hospitalized with COVID-19 on or after 16th June 2020.
+      
+  } else if (group == "diabetes_recovery_post"){
+    # Exclude individuals with a recorded diagnosis of diabetes prior to index date
+    input <- input %>% 
+      filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+      filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+      filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
+      # change name of t2dm variable to avoid duplicated cox actions
+      dplyr::rename(out_date_t2dm_rec_post = out_date_t2dm) %>%
+      
+      # DATE OF HOSPITALISATION TO ON/AFTER 16 JUNE
+      
+      mutate(keep_post = ifelse(sub_cat_covid19_hospital == "hospitalised" & exp_date_covid19_confirmed >= "2020-06-16", TRUE, FALSE)) %>%
+      mutate(remove_post = ifelse(sub_cat_covid19_hospital == "hospitalised" & keep_post == FALSE, TRUE, FALSE)) %>%
+      
+      # Remove any people with hospitalised COVID before 16th June from the study population 
+      table(input$remove_post)
+    
+      filter(remove_post == FALSE) %>%
+      dplyr::select(-c(keep_post, remove_post))
 
+      # This study population should now include no people that were hospitalized with COVID-19 before 16th June 2020.
+      
   } else if (group == "diabetes_gestational"){
     # Exclude men from gestational diabetes analysis
     input <- input %>% 

@@ -348,7 +348,14 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
 # Run function using specified commandArgs and active analyses for group
 
 active_analyses <- read_rds("lib/active_analyses.rds")
-active_analyses <- active_analyses %>% filter(active==TRUE)
+if (cohort_name == "prevax") {
+  active_analyses <- active_analyses %>% filter(active==TRUE & (cohort == "prevax" | cohort == "all") )
+} else if (cohort_name == "vax") {
+  active_analyses <- active_analyses %>% filter(active==TRUE & (cohort == "vax" | cohort == "all") )
+} else if (cohort_name == "unvax") {
+  active_analyses <- active_analyses %>% filter(active==TRUE & (cohort == "unvax" | cohort == "all") )
+}
+
 group <- unique(active_analyses$outcome_group)
 
 

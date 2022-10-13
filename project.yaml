@@ -202,7 +202,7 @@ actions:
     - vax_eligibility_inputs
     outputs:
       moderately_sensitive:
-        res_table: output/review/descriptives/diabetes_posthoc_analysis_res_prevax.csv
+        res_table: output/review/descriptives/diabetes_posthoc_analysis_res_*_prevax.csv
 
   diabetes_post_hoc_vax:
     run: r:latest analysis/descriptives/diabetes-follow-up-analysis.R vax
@@ -213,7 +213,7 @@ actions:
     - vax_eligibility_inputs
     outputs:
       moderately_sensitive:
-        res_table: output/review/descriptives/diabetes_posthoc_analysis_res_vax.csv
+        res_table: output/review/descriptives/diabetes_posthoc_analysis_res_*_vax.csv
 
   diabetes_post_hoc_unvax:
     run: r:latest analysis/descriptives/diabetes-follow-up-analysis.R unvax
@@ -224,7 +224,7 @@ actions:
     - vax_eligibility_inputs
     outputs:
       moderately_sensitive:
-        res_table: output/review/descriptives/diabetes_posthoc_analysis_res_unvax.csv
+        res_table: output/review/descriptives/diabetes_posthoc_analysis_res_*_unvax.csv
 
   stage2_missing_table1_all:
     run: r:latest analysis/descriptives/Stage2_missing_table1.R all

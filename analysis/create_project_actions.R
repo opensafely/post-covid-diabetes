@@ -344,7 +344,7 @@ actions_list <- splice(
     run = "r:latest analysis/descriptives/diabetes-follow-up-analysis.R prevax",
     needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs"),
     moderately_sensitive = list(
-      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_prevax.csv")
+      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_prevax.csv")
     )
   ),
   
@@ -354,7 +354,7 @@ actions_list <- splice(
     run = "r:latest analysis/descriptives/diabetes-follow-up-analysis.R vax",
     needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs"),
     moderately_sensitive = list(
-      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_vax.csv")
+      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_vax.csv")
     )
   ), 
   
@@ -364,7 +364,7 @@ actions_list <- splice(
     run = "r:latest analysis/descriptives/diabetes-follow-up-analysis.R unvax",
     needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs"),
     moderately_sensitive = list(
-      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_unvax.csv")
+      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_unvax.csv")
     )
   ), 
   

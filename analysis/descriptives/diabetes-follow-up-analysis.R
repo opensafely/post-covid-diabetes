@@ -149,7 +149,7 @@ results$N_non_hosp_COVID_still_treated <- paste0(results$N_non_hosp_COVID_still_
 
 # SAVE
 
-readr::write_csv(results, paste0("output/review/descriptives/diabetes_posthoc_analysis_res_4mnths",cohort_name,".csv"))
+readr::write_csv(results, paste0("output/review/descriptives/diabetes_posthoc_analysis_res_4mnths_",cohort_name,".csv"))
 
 # REPEAT ABOVE BUT FOR 12 MONTHS INSTEAD OF 4 MONTHS FOR PREVAX ONLY ------------------------------
 
@@ -250,7 +250,7 @@ if (cohort_name == "prevax"){
   
   # SAVE
   
-  readr::write_csv(results, paste0("output/review/descriptives/diabetes_posthoc_analysis_res_12mnths",cohort_name,".csv"))
+  readr::write_csv(results, paste0("output/review/descriptives/diabetes_posthoc_analysis_res_12mnths_",cohort_name,".csv"))
   
 }
 

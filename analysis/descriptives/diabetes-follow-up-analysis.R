@@ -99,6 +99,14 @@ input_4 <- input_4 %>%
 # summarise df
 summary(input_4)
 
+# GET RESULTS FOR COVID HOSP / NON-HOSP
+
+input_hosp_4 <- input_4 %>%
+  dplyr::filter(sub_cat_covid19_hospital == "hospitalised")
+
+input_nonhosp_4 <- input_4 %>%
+  dplyr::filter(sub_cat_covid19_hospital == "non_hospitalised")
+
 # COMPLETE RESULTS TABLE for output
 # Make a results df
 # A table with the following columns (as per protocol): 
@@ -108,14 +116,36 @@ summary(input_4)
 # (iv) N that were included in the 4-month follow-up analysis and 
 # (v) N of those that were followed up and still being prescribed medication or had elevated HbA1c.  
 
-results <- setNames(data.frame(matrix(ncol = 5, nrow = 0)), c("N_t2dm_any", "N_t2dm_hosp", "N_t2dm_non_hosp", "N_included_4mth", "N_still_treated"))
+results <- setNames(data.frame(matrix(ncol = 9, nrow = 0)), c("N_t2dm_any", "N_t2dm_hosp", "N_t2dm_non_hosp",
+                                                              "N_any_COVID_included_4mth", "N_any_COVID_still_treated",
+                                                              "N_hosp_COVID_included_4mth", "N_hosp_COVID_still_treated",
+                                                              "N_non_hosp_COVID_included_4mth", "N_non_hosp_COVID_still_treated"))
 
 results[1,1] <- nrow(input_4)
 results[1,2] <- sum(input_4$sub_cat_covid19_hospital=="hospitalised")
 results[1,3] <- sum(input_4$sub_cat_covid19_hospital=="non_hospitalised")
 results[1,4] <- sum(input_4$follow_4mth==TRUE)
 results[1,5] <- sum(input_4$N_follow_prescribe==TRUE)
+results[1,6] <- sum(input_hosp_4$follow_4mth==TRUE)
+results[1,7] <- sum(input_hosp_4$N_follow_prescribe==TRUE)
+results[1,8] <- sum(input_nonhosp_4$follow_4mth==TRUE)
+results[1,9] <- sum(input_nonhosp_4$N_follow_prescribe==TRUE)
 results$cohort <- cohort_name
+
+# ADD PERCENTAGES ACCORDING TO PROTOCOL
+
+N_4 <- results$N_any_COVID_included_4mth
+N_4_h <- results$N_hosp_COVID_included_4mth
+N_4_nh <- results$N_non_hosp_COVID_included_4mth
+
+results$N_any_COVID_included_4mth <- paste0(results$N_any_COVID_included_4mth, " (",round((results$N_any_COVID_included_4mth / results$N_t2dm_any)*100, digits = 2) ,")")
+results$N_any_COVID_still_treated <- paste0(results$N_any_COVID_still_treated, " (",round((results$N_any_COVID_still_treated / N_4)*100, digits = 2) ,")")
+
+results$N_hosp_COVID_included_4mth <- paste0(results$N_hosp_COVID_included_4mth, " (",round((results$N_hosp_COVID_included_4mth / results$N_t2dm_hosp)*100, digits = 2) ,")")
+results$N_hosp_COVID_still_treated <- paste0(results$N_hosp_COVID_still_treated, " (",round((results$N_hosp_COVID_still_treated / N_4_h)*100, digits = 2) ,")")
+
+results$N_non_hosp_COVID_included_4mth <- paste0(results$N_non_hosp_COVID_included_4mth, " (",round((results$N_non_hosp_COVID_included_4mth / results$N_t2dm_non_hosp)*100, digits = 2) ,")")
+results$N_non_hosp_COVID_still_treated <- paste0(results$N_non_hosp_COVID_still_treated, " (",round((results$N_non_hosp_COVID_still_treated / N_4_nh)*100, digits = 2) ,")")
 
 # SAVE
 
@@ -164,11 +194,19 @@ if (cohort_name == "prevax"){
     rowwise() %>%
     mutate(total_prescriptions = sum(out_count_insulin_snomed_12mnths, out_count_antidiabetic_drugs_snomed_12mnths, out_count_nonmetform_drugs_snomed_12mnths)) %>%
     ungroup() %>%
-    mutate(N_follow_prescribe = ifelse(follow_12mth == TRUE & (out_num_max_hba1c_mmol_4mnths >= 47.5), TRUE,
+    mutate(N_follow_prescribe = ifelse(follow_12mth == TRUE & (out_num_max_hba1c_mmol_12mnths >= 47.5), TRUE,
                                        ifelse(follow_12mth == TRUE & (total_prescriptions >= 2), TRUE, FALSE)))
   
   # summarise df
   summary(input_12)
+  
+  # GET RESULTS FOR COVID HOSP / NON-HOSP
+  
+  input_hosp_12 <- input_12 %>%
+    dplyr::filter(sub_cat_covid19_hospital == "hospitalised")
+  
+  input_nonhosp_12 <- input_12 %>%
+    dplyr::filter(sub_cat_covid19_hospital == "non_hospitalised")
   
   # COMPLETE RESULTS TABLE for output
   # Make a results df
@@ -176,21 +214,43 @@ if (cohort_name == "prevax"){
   # (i) N type 2 diabetes cases following any COVID-19 infection
   # (ii) hosp COVID-19 infection
   # (iii) non-hosp COVID-19 infection
-  # (iv) N that were included in the 12-month follow-up analysis and 
+  # (iv) N that were included in the 4-month follow-up analysis and 
   # (v) N of those that were followed up and still being prescribed medication or had elevated HbA1c.  
   
-  results <- setNames(data.frame(matrix(ncol = 5, nrow = 0)), c("N_t2dm_any", "N_t2dm_hosp", "N_t2dm_non_hosp", "N_included_4mth", "N_still_treated"))
+  results <- setNames(data.frame(matrix(ncol = 9, nrow = 0)), c("N_t2dm_any", "N_t2dm_hosp", "N_t2dm_non_hosp",
+                                                                "N_any_COVID_included_12mth", "N_any_COVID_still_treated",
+                                                                "N_hosp_COVID_included_12mth", "N_hosp_COVID_still_treated",
+                                                                "N_non_hosp_COVID_included_12mth", "N_non_hosp_COVID_still_treated"))
   
   results[1,1] <- nrow(input_12)
   results[1,2] <- sum(input_12$sub_cat_covid19_hospital=="hospitalised")
   results[1,3] <- sum(input_12$sub_cat_covid19_hospital=="non_hospitalised")
   results[1,4] <- sum(input_12$follow_12mth==TRUE)
   results[1,5] <- sum(input_12$N_follow_prescribe==TRUE)
+  results[1,6] <- sum(input_hosp_12$follow_12mth==TRUE)
+  results[1,7] <- sum(input_hosp_12$N_follow_prescribe==TRUE)
+  results[1,8] <- sum(input_nonhosp_12$follow_12mth==TRUE)
+  results[1,9] <- sum(input_nonhosp_12$N_follow_prescribe==TRUE)
   results$cohort <- cohort_name
+  
+  # ADD PERCENTAGES ACCORDING TO PROTOCOL
+  
+  N_12 <- results$N_any_COVID_included_12mth
+  N_12_h <- results$N_hosp_COVID_included_12mth
+  N_12_nh <- results$N_non_hosp_COVID_included_12mth
+  
+  results$N_any_COVID_included_12mth <- paste0(results$N_any_COVID_included_12mth, " (",round((results$N_any_COVID_included_12mth / results$N_t2dm_any)*100, digits = 2) ,")")
+  results$N_any_COVID_still_treated <- paste0(results$N_any_COVID_still_treated, " (",round((results$N_any_COVID_still_treated / N_12)*100, digits = 2) ,")")
+  
+  results$N_hosp_COVID_included_12mth <- paste0(results$N_hosp_COVID_included_12mth, " (",round((results$N_hosp_COVID_included_12mth / results$N_t2dm_hosp)*100, digits = 2) ,")")
+  results$N_hosp_COVID_still_treated <- paste0(results$N_hosp_COVID_still_treated, " (",round((results$N_hosp_COVID_still_treated / N_12_h)*100, digits = 2) ,")")
+  
+  results$N_non_hosp_COVID_included_12mth <- paste0(results$N_non_hosp_COVID_included_12mth, " (",round((results$N_non_hosp_COVID_included_12mth / results$N_t2dm_non_hosp)*100, digits = 2) ,")")
+  results$N_non_hosp_COVID_still_treated <- paste0(results$N_non_hosp_COVID_still_treated, " (",round((results$N_non_hosp_COVID_still_treated / N_12_nh)*100, digits = 2) ,")")
   
   # SAVE
   
-  readr::write_csv(results, paste0("output/review/descriptives/diabetes_posthoc_analysis_res_12mnths",cohort_name,".csv"))  
+  readr::write_csv(results, paste0("output/review/descriptives/diabetes_posthoc_analysis_res_12mnths",cohort_name,".csv"))
   
 }
 

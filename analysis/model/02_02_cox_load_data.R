@@ -58,6 +58,14 @@ if(event_name == "out_date_ami" | event_name == "out_date_stroke_isch" | event_n
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_recovery.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_recovery.rds"))
   
+} else if (event_name == "t2dm_rec_pre"){
+  input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_recovery.rds"))
+  end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_recovery_pre.rds"))
+  
+} else if (event_name == "t2dm_rec_post"){
+  input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_recovery.rds"))
+  end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_recovery_post.rds"))
+  
 } else if (event_name == "gestationaldm"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_gestational.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_gestational.rds"))

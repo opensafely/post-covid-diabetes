@@ -131,6 +131,8 @@ follow_up_end_dates <- function(cohort_name, group){
     input$hospitalised_follow_up_end <- as.Date(input$hospitalised_follow_up_end)
     input$non_hospitalised_follow_up_end <- as.Date(input$non_hospitalised_follow_up_end)
     
+    # CENSOR PRE RECOVERY ANALYSIS #
+    
     if(cohort_name=="prevax" & group == "diabetes_recovery_pre"){
       
       # N.B. using dplyr if_else to preserve date formatting.

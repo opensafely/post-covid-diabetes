@@ -18,8 +18,16 @@ defaults_list <- list(
 
 active_analyses <- read_rds("lib/active_analyses.rds")
 active_analyses_table <- subset(active_analyses, active_analyses$active =="TRUE")
-outcomes_model <- active_analyses_table$outcome_variable %>% str_replace("out_date_", "")
-cohort_to_run <- c("prevax", "vax", "unvax")
+
+active_analyses_table_all <- active_analyses_table %>% dplyr::filter(cohort == "all")
+outcomes_model_all <- active_analyses_table_all$outcome_variable %>% str_replace("out_date_", "")
+
+active_analyses_table_prevax <- active_analyses_table %>% dplyr::filter(cohort == "prevax")
+outcomes_model_prevax <- active_analyses_table_prevax$outcome_variable %>% str_replace("out_date_", "")
+
+cohort_to_run_all <- c("prevax", "vax", "unvax")
+cohort_to_run_prevax <- "prevax"
+
 analyses <- c("main", "subgroups")
 
 # create action functions ----
@@ -420,7 +428,7 @@ actions_list <- splice(
   #comment("Stage 4 - Create input for table2"),
   splice(
     # over outcomes
-    unlist(lapply(cohort_to_run, function(x) table2(cohort = x)), recursive = FALSE)
+    unlist(lapply(cohort_to_run_all, function(x) table2(cohort = x)), recursive = FALSE)
   ),
   
   #comment("Stage 4 - Venn diagrams - all cohorts"),
@@ -433,12 +441,19 @@ actions_list <- splice(
       )
   ),
 
-  #comment("Stage 5 - Apply models"),
+  #comment("Stage 5 - Apply models - outcomes ran on all cohorts"),
   splice(
     # over outcomes
-    unlist(lapply(outcomes_model, function(x) splice(unlist(lapply(cohort_to_run, function(y) apply_model_function(outcome = x, cohort = y)), recursive = FALSE))
-      ),recursive = FALSE))
-  )
+    unlist(lapply(outcomes_model_all, function(x) splice(unlist(lapply(cohort_to_run_all, function(y) apply_model_function(outcome = x, cohort = y)), recursive = FALSE))
+      ),recursive = FALSE)
+    ),
+  
+  #comment("Stage 5 - Apply models - outcomes ran on prevax only"),
+  splice(
+    # over outcomes
+    unlist(lapply(outcomes_model_prevax, function(x) splice(unlist(lapply(cohort_to_run_prevax, function(y) apply_model_function(outcome = x, cohort = y)), recursive = FALSE))
+    ),recursive = FALSE))
+)
 
 ## combine everything ----
 project_list <- splice(

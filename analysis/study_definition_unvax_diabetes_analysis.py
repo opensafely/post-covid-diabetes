@@ -64,7 +64,7 @@ population = patients.all(),
 
 # First and Second Prescriptions after 4 Months
 
-    out_count_insulin_snomed=patients.with_these_medications(
+    out_count_insulin_snomed_4mnths=patients.with_these_medications(
         insulin_snomed_clinical,
         on_or_after="out_date_t2dm + 4 months",
         returning="number_of_matches_in_period",
@@ -75,7 +75,7 @@ population = patients.all(),
         },
     ),
 
-    out_count_antidiabetic_drugs_snomed=patients.with_these_medications(
+    out_count_antidiabetic_drugs_snomed_4mnths=patients.with_these_medications(
         antidiabetic_drugs_snomed_clinical,
         on_or_after="out_date_t2dm + 4 months",
         returning="number_of_matches_in_period",
@@ -86,7 +86,7 @@ population = patients.all(),
         },
     ),
 
-    out_count_nonmetform_drugs_snomed=patients.with_these_clinical_events(
+    out_count_nonmetform_drugs_snomed_4mnths=patients.with_these_clinical_events(
         non_metformin_dmd,
         on_or_after="out_date_t2dm + 4 months",
         returning="number_of_matches_in_period",

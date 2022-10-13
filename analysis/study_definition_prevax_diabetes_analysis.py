@@ -62,9 +62,24 @@ population = patients.all(),
     ),
     out_num_max_hba1c_mmol_4mnths_date=patients.date_of("out_num_max_hba1c_mmol_4mnths", date_format="YYYY-MM-DD"),
 
+# Maximum HbA1c measure 12 months after Type 2 Diabetes diagnosis
+
+    out_num_max_hba1c_mmol_12mnths=patients.max_recorded_value(
+        hba1c_new_codes,
+        on_most_recent_day_of_measurement=True, 
+        on_or_after="out_date_t2dm + 12 months",
+        date_format="YYYY-MM-DD",
+        return_expectations={
+            "float": {"distribution": "normal", "mean": 30.0, "stddev": 15},
+            "date": {"earliest": "1980-02-01", "latest": "2021-05-31"},
+            "incidence": 0.95,
+        },
+    ),
+    out_num_max_hba1c_mmol_12mnths_date=patients.date_of("out_num_max_hba1c_mmol_12mnths", date_format="YYYY-MM-DD"),
+
 # First and Second Prescriptions after 4 Months
 
-    out_count_insulin_snomed=patients.with_these_medications(
+    out_count_insulin_snomed_4mnths=patients.with_these_medications(
         insulin_snomed_clinical,
         on_or_after="out_date_t2dm + 4 months",
         returning="number_of_matches_in_period",
@@ -75,7 +90,7 @@ population = patients.all(),
         },
     ),
 
-    out_count_antidiabetic_drugs_snomed=patients.with_these_medications(
+    out_count_antidiabetic_drugs_snomed_4mnths=patients.with_these_medications(
         antidiabetic_drugs_snomed_clinical,
         on_or_after="out_date_t2dm + 4 months",
         returning="number_of_matches_in_period",
@@ -86,9 +101,43 @@ population = patients.all(),
         },
     ),
 
-    out_count_nonmetform_drugs_snomed=patients.with_these_clinical_events(
+    out_count_nonmetform_drugs_snomed_4mnths=patients.with_these_clinical_events(
         non_metformin_dmd,
         on_or_after="out_date_t2dm + 4 months",
+        returning="number_of_matches_in_period",
+        return_expectations={
+            "int": {"distribution": "normal", "mean": 3, "stddev": 2},
+            "date": {"earliest": "2021-02-01", "latest": "2021-05-31"},
+            "incidence": 0.30,
+        },
+    ),
+# First and Second Prescriptions after 12 Months
+
+    out_count_insulin_snomed_12mnths=patients.with_these_medications(
+        insulin_snomed_clinical,
+        on_or_after="out_date_t2dm + 12 months",
+        returning="number_of_matches_in_period",
+        return_expectations={
+            "int": {"distribution": "normal", "mean": 3, "stddev": 2},
+            "date": {"earliest": "2021-02-01", "latest": "2021-05-31"},
+            "incidence": 0.30,
+        },
+    ),
+
+    out_count_antidiabetic_drugs_snomed_12mnths=patients.with_these_medications(
+        antidiabetic_drugs_snomed_clinical,
+        on_or_after="out_date_t2dm + 12 months",
+        returning="number_of_matches_in_period",
+        return_expectations={
+            "int": {"distribution": "normal", "mean": 3, "stddev": 2},
+            "date": {"earliest": "2021-02-01", "latest": "2021-05-31"},
+            "incidence": 0.30,
+        },
+    ),
+
+    out_count_nonmetform_drugs_snomed_12mnths=patients.with_these_clinical_events(
+        non_metformin_dmd,
+        on_or_after="out_date_t2dm + 12 months",
         returning="number_of_matches_in_period",
         return_expectations={
             "int": {"distribution": "normal", "mean": 3, "stddev": 2},

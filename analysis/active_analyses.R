@@ -102,7 +102,9 @@ df <- df %>% mutate(outcome_group = case_when(outcome == "type 2 diabetes - pre 
 # change diabetes recovery to prevax cohort only
 
 df <- df %>% mutate(cohort = case_when(outcome == "type 2 diabetes - recovery" ~ "prevax",
-                                              TRUE ~ as.character(cohort)))
+                                              TRUE ~ as.character(cohort)),
+                    cohort = case_when(outcome == "type 2 diabetes - recovery_post" ~ "prevax",
+                                       TRUE ~ as.character(cohort)))
 
 # turn on subgroups for main t2dm analyses
 

@@ -50,8 +50,8 @@ df <- data.frame(active = logical(),
 outcomes <- c("type 1 diabetes",
               "type 2 diabetes",
               "type 2 diabetes - recovery",
-              "type 2 diabetes - recovery_pre",
-              "type 2 diabetes - recovery_post",
+              "type 2 diabetes - pre_recovery",
+              "type 2 diabetes - post_recovery",
               "type 2 diabetes - pre diabetes",
               "type 2 diabetes - no pre diabetes",
               "type 2 diabetes - obesity",
@@ -61,7 +61,7 @@ outcomes <- c("type 1 diabetes",
 
 outcome_group <- "diabetes"
 
-outcomes_short <- c("t1dm","t2dm", "t2dm_rec", "t2dm_rec_pre", "t2dm_rec_post", "t2dm_pd","t2dm_pd_no", "t2dm_obes","t2dm_obes_no", "otherdm","gestationaldm")
+outcomes_short <- c("t1dm","t2dm", "t2dm_rec", "t2dm_pre_rec", "t2dm_post_rec", "t2dm_pd","t2dm_pd_no", "t2dm_obes","t2dm_obes_no", "otherdm","gestationaldm")
 outcome_venn <- c(TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)
 
 for (i in 1:length(outcomes)) {
@@ -88,9 +88,9 @@ df <- df %>% mutate(outcome_group = case_when(outcome == "type 2 diabetes - pre 
                                               TRUE ~ as.character(outcome_group)),
                     outcome_group = case_when(outcome == "type 2 diabetes - recovery" ~ "diabetes_recovery",
                                               TRUE ~ as.character(outcome_group)),
-                    outcome_group = case_when(outcome == "type 2 diabetes - recovery_pre" ~ "diabetes_recovery_pre",
+                    outcome_group = case_when(outcome == "type 2 diabetes - pre_recovery" ~ "diabetes_pre_recovery",
                                               TRUE ~ as.character(outcome_group)),
-                    outcome_group = case_when(outcome == "type 2 diabetes - recovery_post" ~ "diabetes_recovery_post",
+                    outcome_group = case_when(outcome == "type 2 diabetes - post_recovery" ~ "diabetes_post_recovery",
                                               TRUE ~ as.character(outcome_group)),
                     outcome_group = case_when(outcome == "type 2 diabetes - no pre diabetes" ~ "diabetes_no_prediabetes",
                                               TRUE ~ as.character(outcome_group)),
@@ -103,7 +103,7 @@ df <- df %>% mutate(outcome_group = case_when(outcome == "type 2 diabetes - pre 
 
 df <- df %>% mutate(cohort = case_when(outcome == "type 2 diabetes - recovery" ~ "prevax",
                                               TRUE ~ as.character(cohort)),
-                    cohort = case_when(outcome == "type 2 diabetes - recovery_post" ~ "prevax",
+                    cohort = case_when(outcome == "type 2 diabetes - post_recovery" ~ "prevax",
                                        TRUE ~ as.character(cohort)))
 
 # turn on subgroups for main t2dm analyses

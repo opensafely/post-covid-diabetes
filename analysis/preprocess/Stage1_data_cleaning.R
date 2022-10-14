@@ -405,7 +405,7 @@ stage1 <- function(cohort_name, group){
       # DATE OF COVID TO ON/AFTER 16 JUNE 
       mutate(rec_post = ifelse(exp_date_covid19_confirmed < "2020-06-16", TRUE, FALSE)) %>%
       
-      filter(rec_post == FALSE) %>%
+      filter(rec_post == FALSE | sub_cat_covid19_hospital == "no_infection") %>%
       dplyr::select(-c(rec_post))
         
   } else if (group == "diabetes_gestational"){

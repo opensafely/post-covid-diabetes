@@ -26,13 +26,13 @@ population = patients.all(),
 # Get COVID-19 data (date and whether hospitalised or not) from stage 1 dataset
 
     sub_cat_covid19_hospital = patients.with_value_from_file(
-        f_path = 'output/input_vax_stage1_diabetes.csv', 
+        f_path = 'output/input_vax_stage1_diabetes.csv.gz', 
         returning = 'sub_cat_covid19_hospital', 
         returning_type = 'str', 
     ),
 
     exp_date_covid19_confirmed = patients.with_value_from_file(
-        f_path = 'output/input_vax_stage1_diabetes.csv', 
+        f_path = 'output/input_vax_stage1_diabetes.csv.gz', 
         returning = 'exp_date_covid19_confirmed', 
         returning_type = 'date', 
         date_format = 'YYYY-MM-DD',
@@ -41,7 +41,7 @@ population = patients.all(),
 # Get t2dm diagnosis date from stage 1 dataset
 
     out_date_t2dm = patients.with_value_from_file(
-        f_path = 'output/input_vax_stage1_diabetes.csv', 
+        f_path = 'output/input_vax_stage1_diabetes.csv.gz', 
         returning = 'out_date_t2dm', 
         returning_type = 'date', 
         date_format = 'YYYY-MM-DD',

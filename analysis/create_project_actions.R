@@ -274,7 +274,7 @@ actions_list <- splice(
     ),
     highly_sensitive = list(
       cohort = glue("output/input_*.rds"),
-      cohort_csv = glue("output/input_*.csv")
+      cohort_csv = glue("output/input_*.csv.gz")
     )
   ),
   

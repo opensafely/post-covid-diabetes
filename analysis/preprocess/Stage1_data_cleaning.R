@@ -454,7 +454,7 @@ stage1 <- function(cohort_name, group){
   saveRDS(input, file = file.path("output", paste0("input_",cohort_name, "_stage1_",group,".rds")))
   
   # Save as CSV as well 
-  readr::write_csv(input, paste0("output/input_",cohort_name, "_stage1_",group,".csv"))
+  readr::write_csv(input, paste0("output/input_",cohort_name, "_stage1_",group,".csv.gz"))
   
 }
 

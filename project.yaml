@@ -128,7 +128,7 @@ actions:
         histograms: output/not-for-review/numeric_histograms_*.svg
       highly_sensitive:
         cohort: output/input_*.rds
-        cohort_csv: output/input_*.csv
+        cohort_csv: output/input_*.csv.gz
 
   stage1_end_date_table_prevax:
     run: r:latest analysis/preprocess/create_follow_up_end_date.R prevax

@@ -453,9 +453,11 @@ stage1 <- function(cohort_name, group){
   
   saveRDS(input, file = file.path("output", paste0("input_",cohort_name, "_stage1_",group,".rds")))
   
-  # Save as CSV as well 
-  readr::write_csv(input, paste0("output/input_",cohort_name, "_stage1_",group,".csv.gz"))
+  # Save as CSV as well only for diabetes group to save time
   
+  if (group == "diabetes"){
+  readr::write_csv(input, paste0("output/input_",cohort_name, "_stage1_",group,".csv.gz"))
+  }
 }
 
 # Run function using outcome group

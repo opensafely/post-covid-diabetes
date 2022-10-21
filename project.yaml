@@ -113,8 +113,8 @@ actions:
         cohort: output/input_unvax.rds
         venn: output/venn_unvax.rds
 
-  stage1_data_cleaning_all:
-    run: r:latest analysis/preprocess/Stage1_data_cleaning.R all
+  stage1_data_cleaning_prevax:
+    run: r:latest analysis/preprocess/Stage1_data_cleaning.R prevax
     needs:
     - preprocess_data_prevax
     - preprocess_data_vax
@@ -122,12 +122,47 @@ actions:
     - vax_eligibility_inputs
     outputs:
       moderately_sensitive:
-        refactoring: output/not-for-review/meta_data_factors_*.csv
-        QA_rules: output/review/descriptives/QA_summary_*.csv
-        IE_criteria: output/review/descriptives/Cohort_flow_*.csv
-        histograms: output/not-for-review/numeric_histograms_*.svg
+        refactoring: output/not-for-review/meta_data_factors_prevax.csv
+        QA_rules: output/review/descriptives/QA_summary_prevax_*.csv
+        IE_criteria: output/review/descriptives/Cohort_flow_prevax_*.csv
+        histograms: output/not-for-review/numeric_histograms_prevax_*.svg
       highly_sensitive:
-        cohort: output/input_*.rds
+        cohort: output/input_prevax_*.rds
+        cohort_csv: output/input_prevax_*.csv.gz
+
+  stage1_data_cleaning_vax:
+    run: r:latest analysis/preprocess/Stage1_data_cleaning.R vax
+    needs:
+    - preprocess_data_prevax
+    - preprocess_data_vax
+    - preprocess_data_unvax
+    - vax_eligibility_inputs
+    outputs:
+      moderately_sensitive:
+        refactoring: output/not-for-review/meta_data_factors_vax.csv
+        QA_rules: output/review/descriptives/QA_summary_vax_*.csv
+        IE_criteria: output/review/descriptives/Cohort_flow_vax_*.csv
+        histograms: output/not-for-review/numeric_histograms_vax_*.svg
+      highly_sensitive:
+        cohort: output/input_vax_*.rds
+        cohort_csv: output/input_vax_*.csv.gz
+
+  stage1_data_cleaning_unvax:
+    run: r:latest analysis/preprocess/Stage1_data_cleaning.R unvax
+    needs:
+    - preprocess_data_prevax
+    - preprocess_data_vax
+    - preprocess_data_unvax
+    - vax_eligibility_inputs
+    outputs:
+      moderately_sensitive:
+        refactoring: output/not-for-review/meta_data_factors_unvax.csv
+        QA_rules: output/review/descriptives/QA_summary_unvax_*.csv
+        IE_criteria: output/review/descriptives/Cohort_flow_unvax_*.csv
+        histograms: output/not-for-review/numeric_histograms_unvax_*.svg
+      highly_sensitive:
+        cohort: output/input_unvax_*.rds
+        cohort_csv: output/input_unvax_*.csv.gz
 
   stage1_end_date_table_prevax:
     run: r:latest analysis/preprocess/create_follow_up_end_date.R prevax
@@ -135,7 +170,7 @@ actions:
     - preprocess_data_prevax
     - preprocess_data_vax
     - preprocess_data_unvax
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
     - vax_eligibility_inputs
     outputs:
       highly_sensitive:
@@ -147,7 +182,7 @@ actions:
     - preprocess_data_prevax
     - preprocess_data_vax
     - preprocess_data_unvax
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_vax
     - vax_eligibility_inputs
     outputs:
       highly_sensitive:
@@ -159,16 +194,81 @@ actions:
     - preprocess_data_prevax
     - preprocess_data_vax
     - preprocess_data_unvax
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_unvax
     - vax_eligibility_inputs
     outputs:
       highly_sensitive:
         end_date_table: output/follow_up_end_dates_unvax_*.rds
 
+  generate_study_population_prevax_diabetes_analyis:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_prevax_diabetes_analysis
+      --output-format feather
+    needs:
+    - vax_eligibility_inputs
+    - stage1_data_cleaning_prevax
+    outputs:
+      highly_sensitive:
+        cohort: output/input_prevax_diabetes_analysis.feather
+
+  generate_study_population_vax_diabetes_analyis:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_vax_diabetes_analysis
+      --output-format feather
+    needs:
+    - vax_eligibility_inputs
+    - stage1_data_cleaning_vax
+    outputs:
+      highly_sensitive:
+        cohort: output/input_vax_diabetes_analysis.feather
+
+  generate_study_population_unvax_diabetes_analyis:
+    run: cohortextractor:latest generate_cohort --study-definition study_definition_unvax_diabetes_analysis
+      --output-format feather
+    needs:
+    - vax_eligibility_inputs
+    - stage1_data_cleaning_unvax
+    outputs:
+      highly_sensitive:
+        cohort: output/input_unvax_diabetes_analysis.feather
+
+  diabetes_post_hoc_prevax:
+    run: r:latest analysis/descriptives/diabetes-follow-up-analysis.R prevax
+    needs:
+    - generate_study_population_prevax_diabetes_analyis
+    - generate_study_population_vax_diabetes_analyis
+    - generate_study_population_unvax_diabetes_analyis
+    - vax_eligibility_inputs
+    outputs:
+      moderately_sensitive:
+        res_table: output/review/descriptives/diabetes_posthoc_analysis_res_*_prevax.csv
+
+  diabetes_post_hoc_vax:
+    run: r:latest analysis/descriptives/diabetes-follow-up-analysis.R vax
+    needs:
+    - generate_study_population_prevax_diabetes_analyis
+    - generate_study_population_vax_diabetes_analyis
+    - generate_study_population_unvax_diabetes_analyis
+    - vax_eligibility_inputs
+    outputs:
+      moderately_sensitive:
+        res_table: output/review/descriptives/diabetes_posthoc_analysis_res_*_vax.csv
+
+  diabetes_post_hoc_unvax:
+    run: r:latest analysis/descriptives/diabetes-follow-up-analysis.R unvax
+    needs:
+    - generate_study_population_prevax_diabetes_analyis
+    - generate_study_population_vax_diabetes_analyis
+    - generate_study_population_unvax_diabetes_analyis
+    - vax_eligibility_inputs
+    outputs:
+      moderately_sensitive:
+        res_table: output/review/descriptives/diabetes_posthoc_analysis_res_*_unvax.csv
+
   stage2_missing_table1_all:
     run: r:latest analysis/descriptives/Stage2_missing_table1.R all
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     outputs:
       moderately_sensitive:
         Missing_RangeChecks: output/not-for-review/Check_missing_range_*.csv
@@ -178,7 +278,9 @@ actions:
   stage3_diabetes_flow_prevax:
     run: r:latest analysis/descriptives/diabetes_flowchart.R prevax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     outputs:
       moderately_sensitive:
         flow_df: output/review/figure-data/diabetes_flow_values_prevax_*.csv
@@ -186,7 +288,9 @@ actions:
   stage3_diabetes_flow_vax:
     run: r:latest analysis/descriptives/diabetes_flowchart.R vax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     outputs:
       moderately_sensitive:
         flow_df: output/review/figure-data/diabetes_flow_values_vax_*.csv
@@ -194,7 +298,9 @@ actions:
   stage3_diabetes_flow_unvax:
     run: r:latest analysis/descriptives/diabetes_flowchart.R unvax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     outputs:
       moderately_sensitive:
         flow_df: output/review/figure-data/diabetes_flow_values_unvax_*.csv
@@ -204,7 +310,9 @@ actions:
   stage4_table_2_prevax:
     run: r:latest analysis/descriptives/table_2.R prevax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
@@ -215,7 +323,9 @@ actions:
   stage4_table_2_vax:
     run: r:latest analysis/descriptives/table_2.R vax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
@@ -226,7 +336,9 @@ actions:
   stage4_table_2_unvax:
     run: r:latest analysis/descriptives/table_2.R unvax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
@@ -238,7 +350,9 @@ actions:
     - preprocess_data_prevax
     - preprocess_data_vax
     - preprocess_data_unvax
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
     - stage1_end_date_table_vax
     - stage1_end_date_table_unvax
@@ -251,7 +365,9 @@ actions:
   Analysis_cox_t1dm_prevax:
     run: r:latest analysis/model/01_cox_pipeline.R t1dm prevax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
@@ -270,7 +386,9 @@ actions:
   Analysis_cox_t1dm_vax:
     run: r:latest analysis/model/01_cox_pipeline.R t1dm vax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
@@ -289,7 +407,9 @@ actions:
   Analysis_cox_t1dm_unvax:
     run: r:latest analysis/model/01_cox_pipeline.R t1dm unvax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
@@ -308,7 +428,9 @@ actions:
   Analysis_cox_t2dm_prevax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm prevax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
@@ -327,7 +449,9 @@ actions:
   Analysis_cox_t2dm_vax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm vax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
@@ -346,7 +470,9 @@ actions:
   Analysis_cox_t2dm_unvax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm unvax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
@@ -360,12 +486,77 @@ actions:
         dataset: output/input_t2dm_*_unvax_*_time_periods.csv
         sampled_dataset: output/input_sampled_data_t2dm_*_unvax_*_time_periods.csv
 
+  ## Cox model for t2dm_pre_rec - prevax 
+
+  Analysis_cox_t2dm_pre_rec_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pre_rec prevax
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_prevax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pre_rec_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_pre_rec_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_pre_rec_prevax_to_release.csv
+        compiled_event_counts_csv: output/review/model/*/suppressed_compiled_event_counts_t2dm_pre_rec_prevax.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/*/compiled_event_counts_t2dm_pre_rec_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pre_rec_*_prevax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_pre_rec_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_pre_rec_*_prevax_*_time_periods.csv
+
+  ## Cox model for t2dm_pre_rec - vax 
+
+  Analysis_cox_t2dm_pre_rec_vax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pre_rec vax
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_vax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pre_rec_vax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_pre_rec_vax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_pre_rec_vax_to_release.csv
+        compiled_event_counts_csv: output/review/model/*/suppressed_compiled_event_counts_t2dm_pre_rec_vax.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/*/compiled_event_counts_t2dm_pre_rec_vax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pre_rec_*_vax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_pre_rec_*_vax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_pre_rec_*_vax_*_time_periods.csv
+
+  ## Cox model for t2dm_pre_rec - unvax 
+
+  Analysis_cox_t2dm_pre_rec_unvax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pre_rec unvax
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pre_rec_unvax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_pre_rec_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_pre_rec_unvax_to_release.csv
+        compiled_event_counts_csv: output/review/model/*/suppressed_compiled_event_counts_t2dm_pre_rec_unvax.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/*/compiled_event_counts_t2dm_pre_rec_unvax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_pre_rec_*_unvax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_pre_rec_*_unvax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_pre_rec_*_unvax_*_time_periods.csv
+
   ## Cox model for t2dm_pd - prevax 
 
   Analysis_cox_t2dm_pd_prevax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd prevax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
@@ -384,7 +575,9 @@ actions:
   Analysis_cox_t2dm_pd_vax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd vax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
@@ -403,7 +596,9 @@ actions:
   Analysis_cox_t2dm_pd_unvax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd unvax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
@@ -422,7 +617,9 @@ actions:
   Analysis_cox_t2dm_pd_no_prevax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no prevax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
@@ -441,7 +638,9 @@ actions:
   Analysis_cox_t2dm_pd_no_vax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no vax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
@@ -460,7 +659,9 @@ actions:
   Analysis_cox_t2dm_pd_no_unvax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no unvax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
@@ -479,7 +680,9 @@ actions:
   Analysis_cox_t2dm_obes_prevax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes prevax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
@@ -498,7 +701,9 @@ actions:
   Analysis_cox_t2dm_obes_vax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes vax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
@@ -517,7 +722,9 @@ actions:
   Analysis_cox_t2dm_obes_unvax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes unvax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
@@ -536,7 +743,9 @@ actions:
   Analysis_cox_t2dm_obes_no_prevax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes_no prevax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
@@ -555,7 +764,9 @@ actions:
   Analysis_cox_t2dm_obes_no_vax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes_no vax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
@@ -574,7 +785,9 @@ actions:
   Analysis_cox_t2dm_obes_no_unvax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes_no unvax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
@@ -593,7 +806,9 @@ actions:
   Analysis_cox_otherdm_prevax:
     run: r:latest analysis/model/01_cox_pipeline.R otherdm prevax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
@@ -612,7 +827,9 @@ actions:
   Analysis_cox_otherdm_vax:
     run: r:latest analysis/model/01_cox_pipeline.R otherdm vax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
@@ -631,7 +848,9 @@ actions:
   Analysis_cox_otherdm_unvax:
     run: r:latest analysis/model/01_cox_pipeline.R otherdm unvax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
@@ -650,7 +869,9 @@ actions:
   Analysis_cox_gestationaldm_prevax:
     run: r:latest analysis/model/01_cox_pipeline.R gestationaldm prevax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
@@ -669,7 +890,9 @@ actions:
   Analysis_cox_gestationaldm_vax:
     run: r:latest analysis/model/01_cox_pipeline.R gestationaldm vax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
     outputs:
       moderately_sensitive:
@@ -688,7 +911,9 @@ actions:
   Analysis_cox_gestationaldm_unvax:
     run: r:latest analysis/model/01_cox_pipeline.R gestationaldm unvax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
     outputs:
       moderately_sensitive:
@@ -707,7 +932,9 @@ actions:
   Analysis_cox_t2dm_rec_prevax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_rec prevax
     needs:
-    - stage1_data_cleaning_all
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
     outputs:
       moderately_sensitive:
@@ -720,4 +947,25 @@ actions:
       highly_sensitive:
         dataset: output/input_t2dm_rec_*_prevax_*_time_periods.csv
         sampled_dataset: output/input_sampled_data_t2dm_rec_*_prevax_*_time_periods.csv
+
+  ## Cox model for t2dm_post_rec - prevax 
+
+  Analysis_cox_t2dm_post_rec_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_post_rec prevax
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_prevax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_post_rec_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_post_rec_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_post_rec_prevax_to_release.csv
+        compiled_event_counts_csv: output/review/model/*/suppressed_compiled_event_counts_t2dm_post_rec_prevax.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/*/compiled_event_counts_t2dm_post_rec_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_post_rec_*_prevax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_post_rec_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_post_rec_*_prevax_*_time_periods.csv
 

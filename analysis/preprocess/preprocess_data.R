@@ -4,6 +4,7 @@ library(magrittr)
 library(dplyr)
 library(tidyverse)
 library(lubridate)
+library(readr)
 
 # Specify command arguments ----------------------------------------------------
 args <- commandArgs(trailingOnly=TRUE)

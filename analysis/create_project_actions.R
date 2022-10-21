@@ -95,7 +95,7 @@ apply_model_function <- function(outcome, cohort){
       name = glue("Analysis_cox_{outcome}_{cohort}"),
       run = "r:latest analysis/model/01_cox_pipeline.R",
       arguments = c(outcome,cohort),
-      needs = list("stage1_data_cleaning_all", glue("stage1_end_date_table_{cohort}")),
+      needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax", glue("stage1_end_date_table_{cohort}")),
       moderately_sensitive = list(
         analyses_not_run = glue("output/review/model/*/analyses_not_run_{outcome}_{cohort}.csv"),
         compiled_hrs_csv = glue("output/review/model/*/suppressed_compiled_HR_results_{outcome}_{cohort}.csv"),
@@ -120,7 +120,7 @@ apply_model_function_covariate_testing <- function(outcome, cohort){
       name = glue("Analysis_cox_{outcome}_{cohort}_covariate_testing"),
       run = "r:latest analysis/model/01_cox_pipeline.R",
       arguments = c(outcome,cohort,"test_all"),
-      needs = list("stage1_data_cleaning_all", glue("stage1_end_date_table_{cohort}")),
+      needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax", glue("stage1_end_date_table_{cohort}")),
       moderately_sensitive = list(
         analyses_not_run = glue("output/review/model/analyses_not_run_{outcome}_{cohort}_covariate_testing_test_all.csv"),
         compiled_hrs_csv = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}_covariate_testing_test_all.csv"),
@@ -139,7 +139,7 @@ table2 <- function(cohort){
       name = glue("stage4_table_2_{cohort}"),
       run = "r:latest analysis/descriptives/table_2.R",
       arguments = c(cohort),
-      needs = list("stage1_data_cleaning_all",glue("stage1_end_date_table_{cohort}")),
+      needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax",glue("stage1_end_date_table_{cohort}")),
       moderately_sensitive = list(
         input_table_2 = glue("output/review/descriptives/table2_{cohort}_*.csv")
       )
@@ -261,19 +261,54 @@ actions_list <- splice(
     )
   ), 
 
-  #comment("Stage 1 - Data cleaning - all cohorts"),
+  #comment("Stage 1 - Data cleaning - PREVAX cohort"),
   action(
-    name = "stage1_data_cleaning_all",
-    run = "r:latest analysis/preprocess/Stage1_data_cleaning.R all",
+    name = "stage1_data_cleaning_prevax",
+    run = "r:latest analysis/preprocess/Stage1_data_cleaning.R prevax",
     needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
     moderately_sensitive = list(
-      refactoring = glue("output/not-for-review/meta_data_factors_*.csv"),
-      QA_rules = glue("output/review/descriptives/QA_summary_*.csv"),
-      IE_criteria = glue("output/review/descriptives/Cohort_flow_*.csv"),
-      histograms = glue("output/not-for-review/numeric_histograms_*.svg")
+      refactoring = glue("output/not-for-review/meta_data_factors_prevax.csv"),
+      QA_rules = glue("output/review/descriptives/QA_summary_prevax_*.csv"),
+      IE_criteria = glue("output/review/descriptives/Cohort_flow_prevax_*.csv"),
+      histograms = glue("output/not-for-review/numeric_histograms_prevax_*.svg")
     ),
     highly_sensitive = list(
-      cohort = glue("output/input_*.rds")
+      cohort = glue("output/input_prevax_*.rds"),
+      cohort_csv = glue("output/input_prevax_*.csv.gz")
+    )
+  ),
+  
+  #comment("Stage 1 - Data cleaning - VAX cohort"),
+  action(
+    name = "stage1_data_cleaning_vax",
+    run = "r:latest analysis/preprocess/Stage1_data_cleaning.R vax",
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
+    moderately_sensitive = list(
+      refactoring = glue("output/not-for-review/meta_data_factors_vax.csv"),
+      QA_rules = glue("output/review/descriptives/QA_summary_vax_*.csv"),
+      IE_criteria = glue("output/review/descriptives/Cohort_flow_vax_*.csv"),
+      histograms = glue("output/not-for-review/numeric_histograms_vax_*.svg")
+    ),
+    highly_sensitive = list(
+      cohort = glue("output/input_vax_*.rds"),
+      cohort_csv = glue("output/input_vax_*.csv.gz")
+    )
+  ),
+  
+  #comment("Stage 1 - Data cleaning - UNVAX cohort"),
+  action(
+    name = "stage1_data_cleaning_unvax",
+    run = "r:latest analysis/preprocess/Stage1_data_cleaning.R unvax",
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
+    moderately_sensitive = list(
+      refactoring = glue("output/not-for-review/meta_data_factors_unvax.csv"),
+      QA_rules = glue("output/review/descriptives/QA_summary_unvax_*.csv"),
+      IE_criteria = glue("output/review/descriptives/Cohort_flow_unvax_*.csv"),
+      histograms = glue("output/not-for-review/numeric_histograms_unvax_*.svg")
+    ),
+    highly_sensitive = list(
+      cohort = glue("output/input_unvax_*.rds"),
+      cohort_csv = glue("output/input_unvax_*.csv.gz")
     )
   ),
   
@@ -281,7 +316,7 @@ actions_list <- splice(
   action(
     name = "stage1_end_date_table_prevax",
     run = "r:latest analysis/preprocess/create_follow_up_end_date.R prevax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_all","vax_eligibility_inputs"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_prevax","vax_eligibility_inputs"),
     highly_sensitive = list(
       end_date_table = glue("output/follow_up_end_dates_prevax_*.rds")
     )
@@ -291,7 +326,7 @@ actions_list <- splice(
   action(
     name = "stage1_end_date_table_vax",
     run = "r:latest analysis/preprocess/create_follow_up_end_date.R vax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_all","vax_eligibility_inputs"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_vax","vax_eligibility_inputs"),
     highly_sensitive = list(
       end_date_table = glue("output/follow_up_end_dates_vax_*.rds")
     )
@@ -301,17 +336,77 @@ actions_list <- splice(
   action(
     name = "stage1_end_date_table_unvax",
     run = "r:latest analysis/preprocess/create_follow_up_end_date.R unvax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_all","vax_eligibility_inputs"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_unvax","vax_eligibility_inputs"),
     highly_sensitive = list(
       end_date_table = glue("output/follow_up_end_dates_unvax_*.rds")
     )
   ),
   
+  #comment("Generate dummy data for study_definition - PREVAX diabetes analysis"),
+  action(
+    name = "generate_study_population_prevax_diabetes_analyis",
+    run = "cohortextractor:latest generate_cohort --study-definition study_definition_prevax_diabetes_analysis --output-format feather",
+    needs = list("vax_eligibility_inputs", "stage1_data_cleaning_prevax"),
+    highly_sensitive = list(
+      cohort = glue("output/input_prevax_diabetes_analysis.feather")
+    )
+  ),
+  
+  #comment("Generate dummy data for study_definition - VAX diabetes analysis"),
+  action(
+    name = "generate_study_population_vax_diabetes_analyis",
+    run = "cohortextractor:latest generate_cohort --study-definition study_definition_vax_diabetes_analysis --output-format feather",
+    needs = list("vax_eligibility_inputs", "stage1_data_cleaning_vax"),
+    highly_sensitive = list(
+      cohort = glue("output/input_vax_diabetes_analysis.feather")
+    )
+  ),
+  
+  #comment("Generate dummy data for study_definition - UNVAX diabetes analysis"),
+  action(
+    name = "generate_study_population_unvax_diabetes_analyis",
+    run = "cohortextractor:latest generate_cohort --study-definition study_definition_unvax_diabetes_analysis --output-format feather",
+    needs = list("vax_eligibility_inputs", "stage1_data_cleaning_unvax"),
+    highly_sensitive = list(
+      cohort = glue("output/input_unvax_diabetes_analysis.feather")
+    )
+  ),
+  
+  #comment("Diabetes additional analysis - prevax"),
+  action(
+    name = "diabetes_post_hoc_prevax",
+    run = "r:latest analysis/descriptives/diabetes-follow-up-analysis.R prevax",
+    needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs"),
+    moderately_sensitive = list(
+      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_prevax.csv")
+    )
+  ),
+  
+  #comment("Diabetes additional analysis - vax"),
+  action(
+    name = "diabetes_post_hoc_vax",
+    run = "r:latest analysis/descriptives/diabetes-follow-up-analysis.R vax",
+    needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs"),
+    moderately_sensitive = list(
+      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_vax.csv")
+    )
+  ), 
+  
+  #comment("Diabetes additional analysis - unvax"),
+  action(
+    name = "diabetes_post_hoc_unvax",
+    run = "r:latest analysis/descriptives/diabetes-follow-up-analysis.R unvax",
+    needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs"),
+    moderately_sensitive = list(
+      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_unvax.csv")
+    )
+  ), 
+  
   #comment("Stage 2 - Missing - Table 1 - all cohorts"),
   action(
     name = "stage2_missing_table1_all",
     run = "r:latest analysis/descriptives/Stage2_missing_table1.R all",
-    needs = list("stage1_data_cleaning_all"),
+    needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax"),
     moderately_sensitive = list(
       Missing_RangeChecks = glue("output/not-for-review/Check_missing_range_*.csv"),
       DateChecks = glue("output/not-for-review/Check_dates_range_*.csv"),
@@ -335,7 +430,7 @@ actions_list <- splice(
   action(
     name = "stage3_diabetes_flow_prevax",
     run = "r:latest analysis/descriptives/diabetes_flowchart.R prevax",
-    needs = list("stage1_data_cleaning_all"),
+    needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax"),
     moderately_sensitive = list(
       flow_df = glue("output/review/figure-data/diabetes_flow_values_prevax_*.csv")
     ),
@@ -346,7 +441,7 @@ actions_list <- splice(
   action(
     name = "stage3_diabetes_flow_vax",
     run = "r:latest analysis/descriptives/diabetes_flowchart.R vax",
-    needs = list("stage1_data_cleaning_all"),
+    needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax"),
     moderately_sensitive = list(
       flow_df = glue("output/review/figure-data/diabetes_flow_values_vax_*.csv")
     ),
@@ -357,7 +452,7 @@ actions_list <- splice(
   action(
     name = "stage3_diabetes_flow_unvax",
     run = "r:latest analysis/descriptives/diabetes_flowchart.R unvax",
-    needs = list("stage1_data_cleaning_all"),
+    needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax"),
     moderately_sensitive = list(
       flow_df = glue("output/review/figure-data/diabetes_flow_values_unvax_*.csv")
     ),
@@ -374,7 +469,8 @@ actions_list <- splice(
   action(
     name = "stage4_venn_diagram_all",
     run = "r:latest analysis/descriptives/venn_diagram.R all",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_all","stage1_end_date_table_prevax", "stage1_end_date_table_vax", "stage1_end_date_table_unvax"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax",
+                 "stage1_end_date_table_prevax", "stage1_end_date_table_vax", "stage1_end_date_table_unvax"),
     moderately_sensitive = list(
       venn_diagram = glue("output/review/venn-diagrams/venn_diagram_*")
       )

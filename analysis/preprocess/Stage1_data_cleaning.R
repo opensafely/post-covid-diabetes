@@ -382,7 +382,32 @@ stage1 <- function(cohort_name, group){
       filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
       # change name of t2dm variable to avoid duplicated cox actions
       dplyr::rename(out_date_t2dm_rec = out_date_t2dm)
-
+  
+  } else if (group == "diabetes_pre_recovery"){
+    # Have this as the same population as "diabetes" above (we apply censoring in end date script as per protocol)(. 
+    # Exclude individuals with a recorded diagnosis of diabetes prior to index date
+    input <- input %>% 
+      filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+      filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+      filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
+      # change name of t2dm variable to avoid duplicated cox actions
+      dplyr::rename(out_date_t2dm_pre_rec = out_date_t2dm)
+      
+  } else if (group == "diabetes_post_recovery"){
+    # Exclude individuals with a recorded diagnosis of diabetes prior to index date
+    input <- input %>% 
+      filter(! out_date_t1dm < index_date | is.na(out_date_t1dm)) %>%
+      filter(! out_date_t2dm < index_date | is.na(out_date_t2dm)) %>%
+      filter(! out_date_otherdm < index_date | is.na(out_date_otherdm)) %>%
+      # change name of t2dm variable to avoid duplicated cox actions
+      dplyr::rename(out_date_t2dm_post_rec = out_date_t2dm) %>%
+      
+      # DATE OF COVID TO ON/AFTER 16 JUNE 
+      mutate(rec_post = ifelse(exp_date_covid19_confirmed < "2020-06-16", TRUE, FALSE)) %>%
+      
+      filter(rec_post == FALSE | sub_cat_covid19_hospital == "no_infection") %>%
+      dplyr::select(-c(rec_post))
+        
   } else if (group == "diabetes_gestational"){
     # Exclude men from gestational diabetes analysis
     input <- input %>% 
@@ -428,6 +453,11 @@ stage1 <- function(cohort_name, group){
   
   saveRDS(input, file = file.path("output", paste0("input_",cohort_name, "_stage1_",group,".rds")))
   
+  # Save as CSV as well only for diabetes group to save time
+  
+  if (group == "diabetes"){
+  readr::write_csv(input, paste0("output/input_",cohort_name, "_stage1_",group,".csv.gz"))
+  }
 }
 
 # Run function using outcome group

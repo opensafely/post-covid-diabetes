@@ -82,6 +82,8 @@ input_4 <- input_4 %>%
   ungroup() %>%
   mutate(start_end_diff_months = start_end_diff/30.417) %>%
   mutate(follow_4mth = ifelse(start_end_diff_months >= 4, TRUE, FALSE))
+  
+  # ADD 12 MONTHS
 
 # summarise df
 summary(input_4)
@@ -116,20 +118,20 @@ input_nonhosp_4 <- input_4 %>%
 # (iv) N that were included in the 4-month follow-up analysis and 
 # (v) N of those that were followed up and still being prescribed medication or had elevated HbA1c.  
 
-results <- setNames(data.frame(matrix(ncol = 9, nrow = 0)), c("N_t2dm_any", "N_t2dm_hosp", "N_t2dm_non_hosp",
+results <- setNames(data.frame(matrix(ncol = 9, nrow = 1)), c("N_t2dm_any", "N_t2dm_hosp", "N_t2dm_non_hosp",
                                                               "N_any_COVID_included_4mth", "N_any_COVID_still_treated",
                                                               "N_hosp_COVID_included_4mth", "N_hosp_COVID_still_treated",
                                                               "N_non_hosp_COVID_included_4mth", "N_non_hosp_COVID_still_treated"))
 
-results[1,1] <- nrow(input_4)
-results[1,2] <- sum(input_4$sub_cat_covid19_hospital=="hospitalised")
-results[1,3] <- sum(input_4$sub_cat_covid19_hospital=="non_hospitalised")
-results[1,4] <- sum(input_4$follow_4mth==TRUE)
-results[1,5] <- sum(input_4$N_follow_prescribe==TRUE)
-results[1,6] <- sum(input_hosp_4$follow_4mth==TRUE)
-results[1,7] <- sum(input_hosp_4$N_follow_prescribe==TRUE)
-results[1,8] <- sum(input_nonhosp_4$follow_4mth==TRUE)
-results[1,9] <- sum(input_nonhosp_4$N_follow_prescribe==TRUE)
+results$N_t2dm_any <- nrow(input_4)
+results$N_t2dm_hosp <- sum(input_4$sub_cat_covid19_hospital=="hospitalised")
+results$N_t2dm_non_hosp <- sum(input_4$sub_cat_covid19_hospital=="non_hospitalised")
+results$N_any_COVID_included_4mth <- sum(input_4$follow_4mth==TRUE)
+results$N_any_COVID_still_treated <- sum(input_4$N_follow_prescribe==TRUE)
+results$N_hosp_COVID_included_4mth <- sum(input_hosp_4$follow_4mth==TRUE)
+results$N_hosp_COVID_still_treated <- sum(input_hosp_4$N_follow_prescribe==TRUE)
+results$N_non_hosp_COVID_included_4mth <- sum(input_nonhosp_4$follow_4mth==TRUE)
+results$N_non_hosp_COVID_still_treated <- sum(input_nonhosp_4$N_follow_prescribe==TRUE)
 results$cohort <- cohort_name
 
 # ADD PERCENTAGES ACCORDING TO PROTOCOL
@@ -217,20 +219,20 @@ if (cohort_name == "prevax"){
   # (iv) N that were included in the 4-month follow-up analysis and 
   # (v) N of those that were followed up and still being prescribed medication or had elevated HbA1c.  
   
-  results <- setNames(data.frame(matrix(ncol = 9, nrow = 0)), c("N_t2dm_any", "N_t2dm_hosp", "N_t2dm_non_hosp",
+  results <- setNames(data.frame(matrix(ncol = 9, nrow = 1)), c("N_t2dm_any", "N_t2dm_hosp", "N_t2dm_non_hosp",
                                                                 "N_any_COVID_included_12mth", "N_any_COVID_still_treated",
                                                                 "N_hosp_COVID_included_12mth", "N_hosp_COVID_still_treated",
                                                                 "N_non_hosp_COVID_included_12mth", "N_non_hosp_COVID_still_treated"))
   
-  results[1,1] <- nrow(input_12)
-  results[1,2] <- sum(input_12$sub_cat_covid19_hospital=="hospitalised")
-  results[1,3] <- sum(input_12$sub_cat_covid19_hospital=="non_hospitalised")
-  results[1,4] <- sum(input_12$follow_12mth==TRUE)
-  results[1,5] <- sum(input_12$N_follow_prescribe==TRUE)
-  results[1,6] <- sum(input_hosp_12$follow_12mth==TRUE)
-  results[1,7] <- sum(input_hosp_12$N_follow_prescribe==TRUE)
-  results[1,8] <- sum(input_nonhosp_12$follow_12mth==TRUE)
-  results[1,9] <- sum(input_nonhosp_12$N_follow_prescribe==TRUE)
+  results$N_t2dm_any <- nrow(input_12)
+  results$N_t2dm_hosp <- sum(input_12$sub_cat_covid19_hospital=="hospitalised")
+  results$N_t2dm_non_hosp <- sum(input_12$sub_cat_covid19_hospital=="non_hospitalised")
+  results$N_any_COVID_included_12mth <- sum(input_12$follow_12mth==TRUE)
+  results$N_any_COVID_still_treated <- sum(input_12$N_follow_prescribe==TRUE)
+  results$N_hosp_COVID_included_12mth <- sum(input_hosp_12$follow_12mth==TRUE)
+  results$N_hosp_COVID_still_treated <- sum(input_hosp_12$N_follow_prescribe==TRUE)
+  results$N_non_hosp_COVID_included_12mth <- sum(input_nonhosp_12$follow_12mth==TRUE)
+  results$N_non_hosp_COVID_still_treated <- sum(input_nonhosp_12$N_follow_prescribe==TRUE)
   results$cohort <- cohort_name
   
   # ADD PERCENTAGES ACCORDING TO PROTOCOL
@@ -258,12 +260,6 @@ if (cohort_name == "prevax"){
 
 # RUN FUNCTION WITH COMMAND ARGS
 
-if (cohort_name == "all") {
-  diabetes_post_hoc("prevax")
-  diabetes_post_hoc("vax")
-  diabetes_post_hoc("unvax")
-} else{
-  diabetes_post_hoc(cohort_name)
-}
+diabetes_post_hoc(cohort_name)
 
 # END

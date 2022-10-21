@@ -346,7 +346,7 @@ actions_list <- splice(
   action(
     name = "generate_study_population_prevax_diabetes_analyis",
     run = "cohortextractor:latest generate_cohort --study-definition study_definition_prevax_diabetes_analysis --output-format feather",
-    needs = list("stage1_data_cleaning_prevax"),
+    needs = list("vax_eligibility_inputs", "stage1_data_cleaning_prevax"),
     highly_sensitive = list(
       cohort = glue("output/input_prevax_diabetes_analysis.feather")
     )
@@ -356,7 +356,7 @@ actions_list <- splice(
   action(
     name = "generate_study_population_vax_diabetes_analyis",
     run = "cohortextractor:latest generate_cohort --study-definition study_definition_vax_diabetes_analysis --output-format feather",
-    needs = list("stage1_data_cleaning_vax"),
+    needs = list("vax_eligibility_inputs", "stage1_data_cleaning_vax"),
     highly_sensitive = list(
       cohort = glue("output/input_vax_diabetes_analysis.feather")
     )
@@ -366,7 +366,7 @@ actions_list <- splice(
   action(
     name = "generate_study_population_unvax_diabetes_analyis",
     run = "cohortextractor:latest generate_cohort --study-definition study_definition_unvax_diabetes_analysis --output-format feather",
-    needs = list("stage1_data_cleaning_unvax"),
+    needs = list("vax_eligibility_inputs", "stage1_data_cleaning_unvax"),
     highly_sensitive = list(
       cohort = glue("output/input_unvax_diabetes_analysis.feather")
     )

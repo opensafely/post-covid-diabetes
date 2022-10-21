@@ -19,6 +19,18 @@ from codelists import *
 ## Datetime functions
 from datetime import date
 
+## Study definition helper
+import study_definition_helper_functions as helpers
+
+## Variables for deriving JCVI groups
+from grouping_variables import (
+    study_dates,
+    jcvi_variables, 
+    start_date,
+    end_date,
+    pandemic_start
+)
+
 study = StudyDefinition(
 
 population = patients.all(),
@@ -102,11 +114,11 @@ population = patients.all(),
     ## Primary care
 
     primary_care_death_date=patients.with_death_recorded_in_primary_care(
-            on_or_after="2020-01-01",
+            on_or_after=study_dates["pandemic_start"],
             returning="date_of_death",
             date_format="YYYY-MM-DD",
             return_expectations={
-                "date": {"earliest": "2020-01-01", "latest" : "today"},
+                "date": {"earliest": study_dates["pandemic_start"], "latest" : "today"},
                 "rate": "uniform",
                 "incidence": 0.01,
             },
@@ -114,11 +126,11 @@ population = patients.all(),
     ## ONS
 
     ons_died_from_any_cause_date=patients.died_from_any_cause(
-            on_or_after="2020-01-01",
+            on_or_after=study_dates["pandemic_start"],
             returning="date_of_death",
             date_format="YYYY-MM-DD",
             return_expectations={
-                "date": {"earliest": "2020-01-01", "latest" : "today"},
+                "date": {"earliest": study_dates["pandemic_start"], "latest" : "today"},
                 "rate": "uniform",
                 "incidence": 0.01,
             },
@@ -132,9 +144,9 @@ population = patients.all(),
 # DEREG
 
     dereg_date=patients.date_deregistered_from_all_supported_practices(
-        on_or_after="2020-01-01", date_format = 'YYYY-MM-DD',
+        on_or_after=study_dates["pandemic_start"], date_format = 'YYYY-MM-DD',
                         return_expectations={
-                    "date": {"earliest": "2020-01-01", "latest": "today"},
+                    "date": {"earliest": study_dates["pandemic_start"], "latest": "today"},
                     "rate": "uniform",
                     "incidence": 0.01
                 },

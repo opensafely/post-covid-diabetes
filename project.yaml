@@ -204,6 +204,7 @@ actions:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_prevax_diabetes_analysis
       --output-format feather
     needs:
+    - vax_eligibility_inputs
     - stage1_data_cleaning_prevax
     outputs:
       highly_sensitive:
@@ -213,6 +214,7 @@ actions:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_vax_diabetes_analysis
       --output-format feather
     needs:
+    - vax_eligibility_inputs
     - stage1_data_cleaning_vax
     outputs:
       highly_sensitive:
@@ -222,6 +224,7 @@ actions:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_unvax_diabetes_analysis
       --output-format feather
     needs:
+    - vax_eligibility_inputs
     - stage1_data_cleaning_unvax
     outputs:
       highly_sensitive:

@@ -237,9 +237,11 @@ actions:
     - generate_study_population_vax_diabetes_analyis
     - generate_study_population_unvax_diabetes_analyis
     - vax_eligibility_inputs
+    - stage1_data_cleaning_prevax
     outputs:
       moderately_sensitive:
         res_table: output/review/descriptives/diabetes_posthoc_analysis_res_*_prevax.csv
+        cohort_new: output/input_prevax_stage1_diabetes.rds
 
   diabetes_post_hoc_vax:
     run: r:latest analysis/descriptives/diabetes-follow-up-analysis.R vax
@@ -248,6 +250,7 @@ actions:
     - generate_study_population_vax_diabetes_analyis
     - generate_study_population_unvax_diabetes_analyis
     - vax_eligibility_inputs
+    - stage1_data_cleaning_vax
     outputs:
       moderately_sensitive:
         res_table: output/review/descriptives/diabetes_posthoc_analysis_res_*_vax.csv
@@ -259,6 +262,7 @@ actions:
     - generate_study_population_vax_diabetes_analyis
     - generate_study_population_unvax_diabetes_analyis
     - vax_eligibility_inputs
+    - stage1_data_cleaning_unvax
     outputs:
       moderately_sensitive:
         res_table: output/review/descriptives/diabetes_posthoc_analysis_res_*_unvax.csv
@@ -369,6 +373,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t1dm_prevax.csv
@@ -390,6 +395,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
+    - diabetes_post_hoc_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t1dm_vax.csv
@@ -411,6 +417,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - diabetes_post_hoc_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t1dm_unvax.csv
@@ -432,6 +439,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_prevax.csv
@@ -453,6 +461,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
+    - diabetes_post_hoc_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_vax.csv
@@ -474,6 +483,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - diabetes_post_hoc_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_unvax.csv
@@ -495,6 +505,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pre_rec_prevax.csv
@@ -516,6 +527,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
+    - diabetes_post_hoc_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pre_rec_vax.csv
@@ -537,6 +549,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - diabetes_post_hoc_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pre_rec_unvax.csv
@@ -558,6 +571,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pd_prevax.csv
@@ -579,6 +593,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
+    - diabetes_post_hoc_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pd_vax.csv
@@ -600,6 +615,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - diabetes_post_hoc_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pd_unvax.csv
@@ -621,6 +637,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pd_no_prevax.csv
@@ -642,6 +659,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
+    - diabetes_post_hoc_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pd_no_vax.csv
@@ -663,6 +681,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - diabetes_post_hoc_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_pd_no_unvax.csv
@@ -684,6 +703,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_obes_prevax.csv
@@ -705,6 +725,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
+    - diabetes_post_hoc_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_obes_vax.csv
@@ -726,6 +747,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - diabetes_post_hoc_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_obes_unvax.csv
@@ -747,6 +769,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_obes_no_prevax.csv
@@ -768,6 +791,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
+    - diabetes_post_hoc_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_obes_no_vax.csv
@@ -789,6 +813,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - diabetes_post_hoc_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_obes_no_unvax.csv
@@ -810,6 +835,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_otherdm_prevax.csv
@@ -831,6 +857,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
+    - diabetes_post_hoc_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_otherdm_vax.csv
@@ -852,6 +879,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - diabetes_post_hoc_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_otherdm_unvax.csv
@@ -873,6 +901,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_gestationaldm_prevax.csv
@@ -894,6 +923,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
+    - diabetes_post_hoc_vax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_gestationaldm_vax.csv
@@ -915,6 +945,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - diabetes_post_hoc_unvax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_gestationaldm_unvax.csv
@@ -936,6 +967,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_rec_prevax.csv
@@ -957,6 +989,7 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
     outputs:
       moderately_sensitive:
         analyses_not_run: output/review/model/*/analyses_not_run_t2dm_post_rec_prevax.csv
@@ -968,4 +1001,26 @@ actions:
       highly_sensitive:
         dataset: output/input_t2dm_post_rec_*_prevax_*_time_periods.csv
         sampled_dataset: output/input_sampled_data_t2dm_post_rec_*_prevax_*_time_periods.csv
+
+  ## Cox model for t2dm_follow - prevax 
+
+  Analysis_cox_t2dm_follow_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_follow prevax
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_follow_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_follow_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_follow_prevax_to_release.csv
+        compiled_event_counts_csv: output/review/model/*/suppressed_compiled_event_counts_t2dm_follow_prevax.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/*/compiled_event_counts_t2dm_follow_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_follow_*_prevax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_follow_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_follow_*_prevax_*_time_periods.csv
 

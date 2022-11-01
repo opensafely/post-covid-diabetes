@@ -254,8 +254,37 @@ if (cohort_name == "prevax"){
   
   ####################################################################################
   # Redefine diabetes in the prevax cohort ----------------------------------
-  # We are simply removing those with diabetes following COVID that were not still being treated after 4 months
+  # We are simply removing those with diabetes that were not still being treated after 4 months
   ####################################################################################
+  
+  # do what we did above but for all (not just those following COVID)
+  # calculate new end date
+  
+  input$cohort_end_date <- cohort_end_date
+  input$end_date <- apply(input[,c("death_date", "dereg_date", "cohort_end_date")],1, min,na.rm=TRUE)
+  input$end_date <- as.Date(input$end_date)
+  
+  # Get N with 4 months follow up (those with an end date >= 4 months from t2dm)
+  
+  input <- input %>% 
+    rowwise() %>%
+    mutate(start_end_diff = as.numeric(difftime(end_date, out_date_t2dm, units = "days"))) %>%
+    ungroup() %>%
+    mutate(start_end_diff_months = start_end_diff/30.417) %>%
+    mutate(follow_4mth = ifelse(start_end_diff_months >= 4, TRUE, FALSE))
+  
+  # summarise df
+  summary(input)
+  
+  # N of those that were followed up and still being prescribed medication or had elevated HbA1c
+  
+  input <- input %>%
+    # create total N prescriptions variable
+    rowwise() %>%
+    mutate(total_prescriptions = sum(out_count_insulin_snomed_4mnths, out_count_antidiabetic_drugs_snomed_4mnths, out_count_nonmetform_drugs_snomed_4mnths)) %>%
+    ungroup() %>%
+    mutate(N_follow_prescribe = ifelse(follow_4mth == TRUE & (out_num_max_hba1c_mmol_4mnths >= 47.5), TRUE,
+                                       ifelse(follow_4mth == TRUE & (total_prescriptions >= 2), TRUE, FALSE)))
   
   # read in main input file 
   
@@ -263,7 +292,7 @@ if (cohort_name == "prevax"){
 
   # get list of IDs that will be t2dm cases post covid that are not being treated after 4 months (i.e., suspected stress/steroid induced cases)
   
-  remove <- input_4 %>%
+  remove <- input %>%
     dplyr::filter(N_follow_prescribe == FALSE)
   remove_ids <- remove$patient_id
   

@@ -299,10 +299,10 @@ stage2 <- function(cohort_name, covid_history, group) {
   # PRINT MEAN AND SD FOR NUMERIC VARS
   
   print(summary(input[numeric_var_names]))
-  print(sd(input$cov_num_age))
-  print(sd(input$cov_num_consulation_rate))
-  print(sd(input$cov_num_bmi))
-  print(sd(input$cov_num_tc_hdl_ratio))
+  print(sd(input$cov_num_age, na.rm = TRUE))
+  print(sd(input$cov_num_consulation_rate, na.rm = TRUE))
+  print(sd(input$cov_num_bmi, na.rm = TRUE))
+  print(sd(input$cov_num_tc_hdl_ratio, na.rm = TRUE))
   
   # print(s)
   

@@ -46,7 +46,8 @@ follow_up_end_dates <- function(cohort_name, group){
   active_analyses <- read_rds("lib/active_analyses.rds")
   active_analyses <- active_analyses %>% 
     filter(active == "TRUE" & outcome_group == group) %>% 
-    select(outcome_variable, outcome_group)
+    select(outcome_variable, outcome_group) %>%
+    filter(outcome_variable != "out_date_t2dm_follow")
   
   input <- input[,c("patient_id","death_date","index_date","sub_cat_covid19_hospital",active_analyses$outcome_variable,
                     colnames(input)[grepl("exp_",colnames(input))], 

@@ -9,7 +9,7 @@
 ############################################
 
 #Load libraries using pacman
-pacman::p_load(dplyr,tictoc,readr,stringr,tidyr,ggplot2,jsonlite,here,arrow)
+pacman::p_load(dplyr,tictoc,readr,stringr,tidyr,ggplot2,jsonlite,here,arrow,lubridate)
 
 #clear memory
 rm(list=ls())
@@ -82,8 +82,6 @@ input_4 <- input_4 %>%
   ungroup() %>%
   mutate(start_end_diff_months = start_end_diff/30.417) %>%
   mutate(follow_4mth = ifelse(start_end_diff_months >= 4, TRUE, FALSE))
-  
-  # ADD 12 MONTHS
 
 # summarise df
 summary(input_4)
@@ -253,6 +251,71 @@ if (cohort_name == "prevax"){
   # SAVE
   
   readr::write_csv(results, paste0("output/review/descriptives/diabetes_posthoc_analysis_res_12mnths_",cohort_name,".csv"))
+  
+  ####################################################################################
+  # Redefine diabetes in the prevax cohort ----------------------------------
+  # We are simply removing those with diabetes that were not still being treated after 4 months
+  ####################################################################################
+  
+  # do what we did above but for all (not just those following COVID)
+  # calculate new end date
+  
+  input$cohort_end_date <- cohort_end_date
+  input$end_date <- apply(input[,c("death_date", "dereg_date", "cohort_end_date")],1, min,na.rm=TRUE)
+  input$end_date <- as.Date(input$end_date)
+  
+  # Get N with 4 months follow up (those with an end date >= 4 months from t2dm)
+  
+  input <- input %>% 
+    rowwise() %>%
+    mutate(start_end_diff = as.numeric(difftime(end_date, out_date_t2dm, units = "days"))) %>%
+    ungroup() %>%
+    mutate(start_end_diff_months = start_end_diff/30.417) %>%
+    mutate(follow_4mth = ifelse(start_end_diff_months >= 4, TRUE, FALSE))
+  
+  # summarise df
+  summary(input)
+  
+  # N of those that were followed up and still being prescribed medication or had elevated HbA1c
+  
+  input <- input %>%
+    # create total N prescriptions variable
+    rowwise() %>%
+    mutate(total_prescriptions = sum(out_count_insulin_snomed_4mnths, out_count_antidiabetic_drugs_snomed_4mnths, out_count_nonmetform_drugs_snomed_4mnths)) %>%
+    ungroup() %>%
+    mutate(N_follow_prescribe = ifelse(follow_4mth == TRUE & (out_num_max_hba1c_mmol_4mnths >= 47.5), TRUE,
+                                       ifelse(follow_4mth == TRUE & (total_prescriptions >= 2), TRUE, FALSE)))
+  
+  # read in main input file 
+  
+  input_main <- readr::read_rds(file.path("output", paste0("input_prevax_stage1_diabetes.rds")))
+
+  # get list of IDs that will be t2dm cases post covid that are not being treated after 4 months (i.e., suspected stress/steroid induced cases)
+  
+  remove <- input %>%
+    dplyr::filter(N_follow_prescribe == FALSE)
+  remove_ids <- remove$patient_id
+  
+  # and now remove them 
+  
+  input_new_t2dm_cases <- input_main[ ! input_main$patient_id %in% remove_ids, ]
+  
+  # rename t2dm variable to t2dm_follow 
+  
+  input_new_t2dm_cases <- input_new_t2dm_cases %>%
+    dplyr::rename(out_date_t2dm_follow = out_date_t2dm) %>%
+    dplyr::select(patient_id, out_date_t2dm_follow)
+  
+  # merge and save input file back ready for cox analysis - the only change made is the addition of out_date_t2dm_follow variable 
+  
+  input_main <- merge(input_main, input_new_t2dm_cases, all.x = TRUE)
+  input_main <- input_main %>%
+    mutate(across(c(contains("_date")),
+                  ~ floor_date(as.Date(., format="%Y-%m-%d"), unit = "days")))
+  
+  # SAVE input file with new diabetes outcome added
+  
+  saveRDS(input_main, file = file.path("output", paste0("input_prevax_stage1_diabetes.rds")))
   
 }
 

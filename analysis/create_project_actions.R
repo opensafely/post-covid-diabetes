@@ -37,7 +37,7 @@ analyses_to_run_stata$subgroup <- ifelse(analyses_to_run_stata$subgroup=="non_ho
 
 #The normal time period actions have been removed for now as the stata code is only set up to run the 
 #reduced time periods
-analyses_to_run_stata <- analyses_to_run_stata %>% filter(cohort %in% cohort_to_run
+analyses_to_run_stata <- analyses_to_run_stata %>% filter(cohort %in% cohort_to_run_all
                                                           & time_periods == "reduced")
 
 # create action functions ----
@@ -516,7 +516,8 @@ actions_list <- splice(
   splice(
     # over outcomes
     unlist(lapply(outcomes_model_prevax, function(x) splice(unlist(lapply(cohort_to_run_prevax, function(y) apply_model_function(outcome = x, cohort = y)), recursive = FALSE))
-    ),recursive = FALSE))
+    ),recursive = FALSE)
+  ),
 
   splice(unlist(lapply(1:nrow(analyses_to_run_stata), 
                        function(i) stata_actions(outcome = analyses_to_run_stata[i, "outcome"],
@@ -532,7 +533,7 @@ actions_list <- splice(
     needs = paste0("stata_cox_model_",analyses_to_run_stata$outcome,"_",analyses_to_run_stata$subgroup,"_",analyses_to_run_stata$cohort,"_",analyses_to_run_stata$time_periods),
     moderately_sensitive = list(
       stata_output = "output/stata_output.csv")
-)
+))
 
 ## combine everything ----
 project_list <- splice(

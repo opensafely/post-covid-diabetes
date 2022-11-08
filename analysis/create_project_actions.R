@@ -30,6 +30,16 @@ cohort_to_run_prevax <- "prevax"
 
 analyses <- c("main", "subgroups")
 
+analyses_to_run_stata <- read.csv("lib/analyses_to_run_in_stata.csv")
+analyses_to_run_stata <- analyses_to_run_stata[,c("outcome","subgroup","cohort","time_periods")]
+analyses_to_run_stata$subgroup <- ifelse(analyses_to_run_stata$subgroup=="hospitalised","covid_pheno_hospitalised",analyses_to_run_stata$subgroup)
+analyses_to_run_stata$subgroup <- ifelse(analyses_to_run_stata$subgroup=="non_hospitalised","covid_pheno_non_hospitalised",analyses_to_run_stata$subgroup)
+
+#The normal time period actions have been removed for now as the stata code is only set up to run the 
+#reduced time periods
+analyses_to_run_stata <- analyses_to_run_stata %>% filter(cohort %in% cohort_to_run
+                                                          & time_periods == "reduced")
+
 # create action functions ----
 
 ############################
@@ -144,6 +154,22 @@ table2 <- function(cohort){
       needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax",glue("stage1_end_date_table_{cohort}")),
       moderately_sensitive = list(
         input_table_2 = glue("output/review/descriptives/table2_{cohort}_*.csv")
+      )
+    )
+  )
+}
+
+stata_actions <- function(outcome, cohort, subgroup, time_periods){
+  splice(
+    #comment(glue("Stata cox {outcome} {subgroup} {cohort} {time_periods}")),
+    action(
+      name = glue("stata_cox_model_{outcome}_{subgroup}_{cohort}_{time_periods}"),
+      run = "stata-mp:latest analysis/cox_model.do",
+      arguments = c(glue("input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods")),
+      needs = list(glue("Analysis_cox_{outcome}_{cohort}")),
+      moderately_sensitive = list(
+        medianfup = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_stata_median_fup.csv"),
+        stata_output = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_cox_model.txt")
       )
     )
   )
@@ -491,6 +517,21 @@ actions_list <- splice(
     # over outcomes
     unlist(lapply(outcomes_model_prevax, function(x) splice(unlist(lapply(cohort_to_run_prevax, function(y) apply_model_function(outcome = x, cohort = y)), recursive = FALSE))
     ),recursive = FALSE))
+
+  splice(unlist(lapply(1:nrow(analyses_to_run_stata), 
+                       function(i) stata_actions(outcome = analyses_to_run_stata[i, "outcome"],
+                                                 subgroup = analyses_to_run_stata[i, "subgroup"],
+                                                 cohort = analyses_to_run_stata[i, "cohort"],
+                                                 time_periods = analyses_to_run_stata[i, "time_periods"])),
+                recursive = FALSE)),
+  
+  #comment("Format Stata output")
+  action(
+    name = "format_stata_output",
+    run = "r:latest analysis/format_stata_output.R",
+    needs = paste0("stata_cox_model_",analyses_to_run_stata$outcome,"_",analyses_to_run_stata$subgroup,"_",analyses_to_run_stata$cohort,"_",analyses_to_run_stata$time_periods),
+    moderately_sensitive = list(
+      stata_output = "output/stata_output.csv")
 )
 
 ## combine everything ----

@@ -96,7 +96,7 @@ df <- tidyr::pivot_wider(df,
 
 # Make names match R output ----------------------------------------------------
 
-df <- df[df$model=="max" | (df$model=="min" & df$term %in% c("days0_28","days28_197","1.sex","2.sex","age_spline1","age_spline2")),]
+df <- df[df$model=="max" | (df$model=="min" & df$term %in% c("days0_28","days28_197","days197_535","1.sex","2.sex","age_spline1","age_spline2")),]
 
 df <- df[order(df$source, df$model),
          c("source","term","model","b","lci","uci","se","medianfup","subjects","outcomes")]

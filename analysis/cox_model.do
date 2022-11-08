@@ -38,8 +38,8 @@ rename region_name region
 rename event_date outcome_date
 
 * Generate pre vaccination cohort dummy variable
-gen prevac_cohort = regexm("`cpf'", "_pre")
-replace prevac_cohort = 0 if missing(prevac_cohort)
+gen prevax_cohort = regexm("`cpf'", "_pre")
+replace prevax_cohort = 0 if missing(prevax_cohort)
 
 * Replace NA with missing value that Stata recognises
 
@@ -165,8 +165,8 @@ stsplit days, after(exposure_date) at(0 28 197)
 
 * Calculate study follow up
 
-replace days = 535 if days==-1 & prevac_cohort==1 // prevaccination cohort
-replace days = 197 if days==-1 & prevac_cohort!=1 // vac & unvac cohorts
+replace days = 535 if days==-1 & prevax_cohort==1 // prevaccination cohort
+replace days = 197 if days==-1 & prevax_cohort!=1 // vac & unvac cohorts
 gen follow_up = _t - _t0
 egen follow_up_total = total(follow_up)  
 
@@ -180,8 +180,8 @@ gen days28_197 = 0
 replace days28_197 = 1 if days==28
 tab days28_197
 
-gen days197_535 = 0 & prevac_cohort==1 // prevaccination cohort only
-replace days197_535 = 1 if days==197 & prevac_cohort==1
+gen days197_535 = 0 
+replace days197_535 = 1 if days==197 & prevax_cohort==1
 tab days197_535
 
 * Run models and save output [Note: cannot use efron method with weights]
@@ -201,14 +201,16 @@ estout * using "output/`cpf'_cox_model.txt", cells("b se t ci_l ci_u p") stats(r
 * Calculate median follow-up
 
 keep if outcome_status==1
-drop if days0_28==0 & days28_197==0
+drop if days0_28==0 & days28_197==0 & days197_535==0
 keep patient_id days0_28 days28_197 follow_up
 
 gen term = ""
 replace term = "days0_28" if days0_28==1 & days28_197==0
 replace term = "days28_197" if days0_28==0 & days28_197==1
+replace term = "days197_535" if days0_28==0 & days28_197==0 & days197_535==1 
 
 replace follow_up = follow_up + 28 if term == "days28_197"
+replace follow_up = follow_up + 197 if term == "days197_535"
 bysort term: egen medianfup = median(follow_up)
 
 keep term medianfup

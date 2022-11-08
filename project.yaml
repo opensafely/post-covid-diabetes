@@ -1035,7 +1035,8 @@ actions:
 
   format_stata_output:
     run: r:latest analysis/format_stata_output.R
-    needs: stata_cox_model_t2dm_main_prevax_reduced
+    needs:
+    - stata_cox_model_t2dm_main_prevax_reduced
     outputs:
       moderately_sensitive:
         stata_output: output/stata_output.csv

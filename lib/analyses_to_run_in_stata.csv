@@ -1,1 +1,10 @@
 ﻿outcome,cohort,subgroup,time_periods
+t2dm,pre_vaccination,hospitalised,reduced
+t2dm,vaccinated,hospitalised,reduced
+t2dm,electively_unvaccinated,hospitalised,reduced
+t2dm,pre_vaccination,main,reduced
+t2dm,vaccinated,main,reduced
+t2dm,electively_unvaccinated,main,reduced
+t2dm,pre_vaccination,non_hospitalised,reduced
+t2dm,vaccinated,non_hospitalised,reduced
+t2dm,electively_unvaccinated,non_hospitalised,reduced

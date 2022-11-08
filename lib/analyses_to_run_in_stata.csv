@@ -1,13 +1,2 @@
 ﻿outcome,cohort,subgroup,time_periods
-t2dm,prevax,hospitalised,reduced
-t2dm,vax,hospitalised,reduced
-t2dm,unvax,hospitalised,reduced
 t2dm,prevax,main,reduced
-t2dm,vax,main,reduced
-t2dm,unvax,main,reduced
-t2dm,prevax,non_hospitalised,reduced
-t2dm,vax,non_hospitalised,reduced
-t2dm,unvax,non_hospitalised,reduced
-t2dm_follow,prevax,hospitalised,reduced
-t2dm_follow,prevax,main,reduced
-t2dm_follow,prevax,non_hospitalised,reduced

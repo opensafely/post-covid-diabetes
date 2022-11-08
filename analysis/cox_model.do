@@ -37,6 +37,10 @@ rename expo_date exposure_date
 rename region_name region
 rename event_date outcome_date
 
+* Generate pre vaccination cohort dummy variable
+gen prevac_cohort = regexm("`cpf'", "_pre")
+replace prevac_cohort = 0 if missing(prevac_cohort)
+
 * Replace NA with missing value that Stata recognises
 
 ds , has(type string)
@@ -161,7 +165,8 @@ stsplit days, after(exposure_date) at(0 28 197)
 
 * Calculate study follow up
 
-replace days = 197 if days==-1
+replace days = 535 if days==-1 & prevac_cohort==1 // prevaccination cohort
+replace days = 197 if days==-1 & prevac_cohort!=1 // vac & unvac cohorts
 gen follow_up = _t - _t0
 egen follow_up_total = total(follow_up)  
 
@@ -175,6 +180,10 @@ gen days28_197 = 0
 replace days28_197 = 1 if days==28
 tab days28_197
 
+gen days197_535 = 0 & prevac_cohort==1 // prevaccination cohort only
+replace days197_535 = 1 if days==197 & prevac_cohort==1
+tab days197_535
+
 * Run models and save output [Note: cannot use efron method with weights]
 
 tab days outcome_status 
@@ -182,9 +191,9 @@ tab days outcome_status
 di "Total follow-up in days: " follow_up_total
 bysort days: summarize(follow_up), detail
 
-stcox days0_28 days28_197 i.sex age_spline1 age_spline2, strata(region) vce(r)
+stcox days* i.sex age_spline1 age_spline2, strata(region) vce(r)
 est store min, title(Age_Sex)
-stcox days0_28 days28_197 i.sex age_spline1 age_spline2 i.cov_cat_ethnicity i.cov_cat_deprivation i.cov_cat_smoking_status cov_num_consulation_rate cov_bin_*, strata(region) vce(r)
+stcox days* i.sex age_spline1 age_spline2 i.cov_cat_ethnicity i.cov_cat_deprivation i.cov_cat_smoking_status cov_num_consulation_rate cov_bin_*, strata(region) vce(r)
 est store max, title(Maximal)
 
 estout * using "output/`cpf'_cox_model.txt", cells("b se t ci_l ci_u p") stats(risk N_fail N_sub N N_clust) replace 

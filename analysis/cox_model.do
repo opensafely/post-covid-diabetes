@@ -33,7 +33,7 @@ keep patient_id index_date age_at_cohort_start expo_date region_name follow_up_s
 
 * Rename variables
 rename age_at_cohort_start age
-rename cov_bin_sex sex
+rename cov_cat_sex sex
 rename expo_date exposure_date
 rename region_name region
 rename event_date outcome_date

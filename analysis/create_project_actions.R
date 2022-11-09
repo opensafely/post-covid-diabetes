@@ -406,7 +406,9 @@ actions_list <- splice(
     run = "r:latest analysis/descriptives/diabetes-follow-up-analysis.R prevax",
     needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs", "stage1_data_cleaning_prevax"),
     moderately_sensitive = list(
-      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_prevax.csv"),
+      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_prevax.csv")
+    ),
+    highly_sensitive = list(
       cohort_new = glue("output/input_prevax_stage1_diabetes.rds")
     )
   ),
@@ -418,8 +420,11 @@ actions_list <- splice(
     needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs", "stage1_data_cleaning_vax"),
     moderately_sensitive = list(
       res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_vax.csv")
+    ),
+    highly_sensitive = list(
+      cohort_new = glue("output/input_vax_stage1_diabetes.rds")
     )
-  ), 
+    ),
   
   #comment("Diabetes additional analysis - unvax"),
   action(
@@ -428,8 +433,11 @@ actions_list <- splice(
     needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs", "stage1_data_cleaning_unvax"),
     moderately_sensitive = list(
       res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_unvax.csv")
+    ),
+    highly_sensitive = list(
+      cohort_new = glue("output/input_unvax_stage1_diabetes.rds")
     )
-  ), 
+    ),
   
   #comment("Stage 2 - Missing - Table 1 - all cohorts"),
   action(
@@ -530,7 +538,7 @@ actions_list <- splice(
   action(
     name = "format_stata_output",
     run = "r:latest analysis/format_stata_output.R",
-    needs = list(paste0("stata_cox_model_",analyses_to_run_stata$outcome,"_",analyses_to_run_stata$subgroup,"_",analyses_to_run_stata$cohort,"_",analyses_to_run_stata$time_periods)),
+    needs = as.list(paste0("stata_cox_model_",analyses_to_run_stata$outcome,"_",analyses_to_run_stata$subgroup,"_",analyses_to_run_stata$cohort,"_",analyses_to_run_stata$time_periods)),
     moderately_sensitive = list(
       stata_output = "output/stata_output.csv")
 ))

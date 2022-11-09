@@ -29,7 +29,7 @@ des
 
 * Filter data
 
-keep patient_id index_date age_at_cohort_start expo_date region_name follow_up_start event_date ethnicity follow_up_end cox_weights cov_cat* cov_num* cov_bin*
+keep patient_id index_date age_at_cohort_start expo_date region_name follow_up_start event_date ethnicity follow_up_end cox_weights cov_cat* cov_num* cov_bin* sex
 
 * Rename variables
 rename age_at_cohort_start age
@@ -202,7 +202,7 @@ estout * using "output/`cpf'_cox_model.txt", cells("b se t ci_l ci_u p") stats(r
 
 keep if outcome_status==1
 drop if days0_28==0 & days28_197==0 & days197_535==0
-keep patient_id days0_28 days28_197 follow_up
+keep patient_id days0_28 days28_197 days197_535 follow_up
 
 gen term = ""
 replace term = "days0_28" if days0_28==1 & days28_197==0

@@ -202,7 +202,7 @@ estout * using "output/`cpf'_cox_model.txt", cells("b se t ci_l ci_u p") stats(r
 
 keep if outcome_status==1
 drop if days0_28==0 & days28_197==0 & days197_535==0
-keep patient_id days0_28 days28_197 follow_up
+keep patient_id days0_28 days28_197 days197_535 follow_up
 
 gen term = ""
 replace term = "days0_28" if days0_28==1 & days28_197==0

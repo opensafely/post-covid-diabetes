@@ -160,8 +160,8 @@ mkspline age_spline = age, cubic knots(`r(c_1)' `r(c_2)' `r(c_3)')
 
 * Apply stset // including IPW here as if unsampled dataset will be 1
 
-stset follow_up_end [pweight=cox_weights] if(prevax_cohort!=1), failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(06,01,2021))
-stset follow_up_end  [pweight=cox_weights] if(prevax_cohort==1), failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,01,2020))
+stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(06,01,2021)) if prevax_cohort!=1
+stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,01,2020)) if prevax_cohort==1
 stsplit days, after(exposure_date) at(0 28 197)
 
 * Calculate study follow up

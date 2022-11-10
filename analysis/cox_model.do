@@ -201,16 +201,17 @@ estout * using "output/`cpf'_cox_model.txt", cells("b se t ci_l ci_u p") stats(r
 * Calculate median follow-up
 
 keep if outcome_status==1
-drop if days0_28==0 & days28_197==0 & days197_535==0
-keep patient_id days0_28 days28_197 follow_up
+drop if days0_28==0 & days28_197==0 & prevax_cohort!=1 
+drop if days0_28==0 & days28_197==0 & days197_535==0 & prevax_cohort==1
+keep patient_id days* follow_up prevax_cohort
 
 gen term = ""
-replace term = "days0_28" if days0_28==1 & days28_197==0
-replace term = "days28_197" if days0_28==0 & days28_197==1
-replace term = "days197_535" if days0_28==0 & days28_197==0 & days197_535==1 
+replace term = "days0_28" if days0_28==1 & days28_197==0 & prevax_cohort!=1 
+replace term = "days28_197" if days0_28==0 & days28_197==1 & prevax_cohort!=1
+replace term = "days197_535" if days0_28==0 & days28_197==0 & days197_535==1 & prevax_cohort==1 
 
-replace follow_up = follow_up + 28 if term == "days28_197"
-replace follow_up = follow_up + 197 if term == "days197_535"
+replace follow_up = follow_up + 28 if term == "days28_197" 
+replace follow_up = follow_up + 197 if term == "days197_535" 
 bysort term: egen medianfup = median(follow_up)
 
 keep term medianfup

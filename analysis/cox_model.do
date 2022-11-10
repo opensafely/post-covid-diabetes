@@ -29,7 +29,7 @@ des
 
 * Filter data
 
-keep patient_id age_at_cohort_start expo_date region_name follow_up_start event_date ethnicity follow_up_end cox_weights cov_cat* cov_num* cov_bin*
+keep patient_id age_at_cohort_start expo_date region_name follow_up_start event_date ethnicity follow_up_end cox_weights cov_cat* cov_num* cov_bin* sex
 
 * Rename variables
 rename age_at_cohort_start age

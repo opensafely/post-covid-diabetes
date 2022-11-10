@@ -10,8 +10,7 @@ Datasets created:		*_cox_model.txt
 Other output:			logfiles
 -----------------------------------------------------------------------------*/
 
-local cpf "input_sampled_data_t2dm_rec_main_prevax_reduced_time_periods"
-//local cpf "`1'"
+local cpf "`1'"
 
 * Set file paths
 

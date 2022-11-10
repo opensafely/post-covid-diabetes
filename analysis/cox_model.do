@@ -10,7 +10,8 @@ Datasets created:		*_cox_model.txt
 Other output:			logfiles
 -----------------------------------------------------------------------------*/
 
-local cpf "`1'"
+local cpf "input_sampled_data_t2dm_rec_main_prevax_reduced_time_periods"
+//local cpf "`1'"
 
 * Set file paths
 
@@ -23,7 +24,7 @@ adopath + "$projectdir/analysis/extra_ados"
 
 * Import and describe data
 
-import delim using "./output/`cpf'.csv" 
+import delim using "./output/`cpf'.csv", clear
 
 des
 
@@ -38,8 +39,7 @@ rename region_name region
 rename event_date outcome_date
 
 * Generate pre vaccination cohort dummy variable
-gen prevax_cohort = regexm("`cpf'", "_pre")
-replace prevax_cohort = 0 if missing(prevax_cohort)
+local prevax_cohort = regexm("`cpf'", "_pre")
 
 * Replace NA with missing value that Stata recognises
 
@@ -160,37 +160,44 @@ mkspline age_spline = age, cubic knots(`r(c_1)' `r(c_2)' `r(c_3)')
 
 * Apply stset // including IPW here as if unsampled dataset will be 1
 
-stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(06,01,2021)) if prevax_cohort!=1
-stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,01,2020)) if prevax_cohort==1
-stsplit days, after(exposure_date) at(0 28 197)
+if `prevax_cohort'==1 {
+	stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,01,2020))
+	stsplit time, after(exposure_date) at(0 28 197 535)
+	replace time = 535 if time==-1
+} 
+else {
+	stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,06,2021))
+	stsplit time, after(exposure_date) at(0 28 197)
+	replace time = 197 if time==-1
+}
 
 * Calculate study follow up
 
-replace days = 535 if days==-1 & prevax_cohort==1 // prevaccination cohort
-replace days = 197 if days==-1 & prevax_cohort!=1 // vac & unvac cohorts
 gen follow_up = _t - _t0
 egen follow_up_total = total(follow_up)  
 
 * Make days variables
 
 gen days0_28 = 0
-replace days0_28 = 1 if days==0
+replace days0_28 = 1 if time==0
 tab days0_28
 
 gen days28_197 = 0
-replace days28_197 = 1 if days==28
+replace days28_197 = 1 if time==28
 tab days28_197
 
-gen days197_535 = 0 
-replace days197_535 = 1 if days==197 & prevax_cohort==1
-tab days197_535
+if `prevax_cohort'==1 {
+	gen days197_535 = 0 
+	replace days197_535 = 1 if time==197
+	tab days197_535
+}
 
 * Run models and save output [Note: cannot use efron method with weights]
 
-tab days outcome_status 
+tab time outcome_status 
 
 di "Total follow-up in days: " follow_up_total
-bysort days: summarize(follow_up), detail
+bysort time: summarize(follow_up), detail
 
 stcox days* i.sex age_spline1 age_spline2, strata(region) vce(r)
 est store min, title(Age_Sex)
@@ -202,17 +209,25 @@ estout * using "output/`cpf'_cox_model.txt", cells("b se t ci_l ci_u p") stats(r
 * Calculate median follow-up
 
 keep if outcome_status==1
-drop if days0_28==0 & days28_197==0 & prevax_cohort!=1 
-drop if days0_28==0 & days28_197==0 & days197_535==0 & prevax_cohort==1
-keep patient_id days* follow_up prevax_cohort
-
+keep patient_id days* follow_up
 gen term = ""
-replace term = "days0_28" if days0_28==1 & days28_197==0 & prevax_cohort!=1 
-replace term = "days28_197" if days0_28==0 & days28_197==1 & prevax_cohort!=1
-replace term = "days197_535" if days0_28==0 & days28_197==0 & days197_535==1 & prevax_cohort==1 
 
-replace follow_up = follow_up + 28 if term == "days28_197" 
-replace follow_up = follow_up + 197 if term == "days197_535" 
+if `prevax_cohort'==1 {
+	drop if days0_28==0 & days28_197==0 & days197_535==0	
+	replace term = "days0_28" if days0_28==1 & days28_197==0 & days197_535==0
+	replace term = "days28_197" if days0_28==0 & days28_197==1 & days197_535==0
+	replace term = "days197_535" if days0_28==0 & days28_197==0 & days197_535==1 
+
+} 
+else {
+	drop if days0_28==0 & days28_197==0
+	replace term = "days0_28" if days0_28==1 & days28_197==0
+	replace term = "days28_197" if days0_28==0 & days28_197==1
+	replace term = "days197_535" if days0_28==0 & days28_197==0
+	replace follow_up = follow_up + 197 if term == "days197_535" 
+}
+
+replace follow_up = follow_up + 28 if term == "days128_197" 
 bysort term: egen medianfup = median(follow_up)
 
 keep term medianfup

@@ -6,8 +6,8 @@ library(magrittr)
 
 # DIRECTORIES -------------------------------------------------------------
 
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v1/descriptives/")
-output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v1/generated-figures/")
+results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/descriptive/")
+output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/")
 
 # READ DATA ---------------------------------------------------------------
 
@@ -110,13 +110,19 @@ criteria_10 <- boxGrob(glue("Criteria 10 (Inclusion): Patient index date is with
                            pop = txtInt(values[13,1]),
                            .sep = "\n"))
 
-# BOX 11
+# BOX 14
 
 criteria_diabetes <- boxGrob(glue("Diabetes specific criteria: Remove those with diabetes prior to study start date",
                                   "N = {pop}",
                                   pop = txtInt(values[14,1]),
                                   .sep = "\n"))
 
+# BOX 15
+
+criteria_cov_history <- boxGrob(glue("Remove those with a COVID-19 diagnosis prior to the study start date",
+                                     "N = {pop}",
+                                     pop = txtInt(values[15,1]),
+                                     .sep = "\n"))
 
 # DEFINE EXCLUSION BOXES --------------------------------------------------
 
@@ -185,6 +191,11 @@ exclude13 <- boxGrob(glue("Excluded (n = {tot})",
                           .sep = "\n"),
                      just = "left")
 
+exclude14 <- boxGrob(glue("Excluded (n = {tot})",
+                          tot = txtInt(values[15,2]),
+                          .sep = "\n"),
+                     just = "left")
+
 # DRAW FLOW ---------------------------------------------------------------
 
 png(paste0(output_dir,"cohort_flow_unvax.png"),
@@ -209,7 +220,8 @@ vert <- spreadVertical(study_sample_pre_qa = study_sample_pre_qa,
                        criteria_8 = criteria_8,
                        criteria_9 = criteria_9,
                        criteria_10 = criteria_10,
-                       criteria_diabetes = criteria_diabetes)
+                       criteria_diabetes = criteria_diabetes,
+                       criteria_cov_history = criteria_cov_history)
 
 # DEFINE EXCLUSION BOXES PLACEMENT
 
@@ -265,6 +277,9 @@ exclude13 <- moveBox(exclude13,
                      x = .8,
                      y = coords(vert$criteria_diabetes)$top + distance(vert$criteria_10, vert$criteria_diabetes, half = TRUE, center = FALSE))
 
+exclude14 <- moveBox(exclude14,
+                     x = .8,
+                     y = coords(vert$criteria_cov_history)$top + distance(vert$criteria_diabetes, vert$criteria_cov_history, half = TRUE, center = FALSE))
 
 # GAPS BETWEEN VERTICAL BOXES
 
@@ -288,6 +303,7 @@ connectGrob(vert$study_sample_pre_qa, exclude10, type = "L")
 connectGrob(vert$study_sample_pre_qa, exclude11, type = "L")
 connectGrob(vert$study_sample_pre_qa, exclude12, type = "L")
 connectGrob(vert$study_sample_pre_qa, exclude13, type = "L")
+connectGrob(vert$study_sample_pre_qa, exclude14, type = "L")
 
 # PRINT BOXES
 
@@ -305,6 +321,7 @@ exclude10
 exclude11
 exclude12
 exclude13
+exclude14
 
 dev.off()
 

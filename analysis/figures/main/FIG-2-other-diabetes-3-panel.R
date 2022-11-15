@@ -10,8 +10,8 @@ library(grid)
 dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
 setwd(dir)
 
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v1/model/")
-output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v1/generated-figures/")
+results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/")
+output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/")
 
 #-------------------------#
 # 2. Get outcomes to plot #
@@ -26,23 +26,16 @@ outcomes_to_plot <- outcome_name_table$outcome_name
 outcomes_to_plot <- c("t1dm", "gestationaldm", "otherdm")
 
 #---------------------------------------------#
-# 3. Load and combine all estimates in 1 file #
+# 3. Load all estimates #
 #---------------------------------------------#
-hr_files=list.files(path = results_dir, pattern = "suppressed_compiled_HR_results_*")
-hr_files=hr_files[endsWith(hr_files,".csv")]
-hr_files=paste0(results_dir,"/", hr_files)
-hr_file_paths <- pmap(list(hr_files),
-                      function(fpath){
-                        df <- fread(fpath)
-                        return(df)
-                      })
-estimates <- rbindlist(hr_file_paths, fill=TRUE)
+
+# Load all estimates
+estimates <- read.csv(paste0(results_dir,"hr_output_formatted.csv"))
 
 # Get estimates for main analyses and list of outcomes from active analyses
 main_estimates <- estimates %>% filter(subgroup %in% c("main") 
                                        & event %in% outcomes_to_plot 
                                        & term %in% term[grepl("^days",term)]
-                                       & results_fitted == "fitted_successfully"
                                        & model == "mdl_max_adj") %>%
   select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,median_follow_up)
 
@@ -70,11 +63,11 @@ main_estimates <- main_estimates %>%
 
 
 #---------------------------Specify time to plot--------------------------------
-main_estimates$add_to_median <- sub("days","",main_estimates$term)
-main_estimates$add_to_median <- as.numeric(sub("\\_.*","",main_estimates$add_to_median))
-
-main_estimates$median_follow_up <- ((main_estimates$median_follow_up + main_estimates$add_to_median)-1)/7
-main_estimates$median_follow_up <- ifelse(main_estimates$median_follow_up == 0, 0.001,main_estimates$median_follow_up )
+# main_estimates$add_to_median <- sub("days","",main_estimates$term)
+# main_estimates$add_to_median <- as.numeric(sub("\\_.*","",main_estimates$add_to_median))
+# 
+# main_estimates$median_follow_up <- ((main_estimates$median_follow_up + main_estimates$add_to_median)-1)/7
+# main_estimates$median_follow_up <- ifelse(main_estimates$median_follow_up == 0, 0.001,main_estimates$median_follow_up )
 
 
 #term_to_time <- data.frame(term = c("days0_7","days7_14", "days14_28", "days28_56", "days56_84", "days84_197","days197_535", 
@@ -238,18 +231,18 @@ other <- ggplot2::ggplot(data=df_other,
 # COMBINE TO MULTIPANEL ---------------------------------------------------
 # PLOT WITHOUT TABLE ------------------------------------------------------
 
-png(paste0(output_dir,"Figure_2_subtypes_3panel.png"),
-    units = "mm", width=330, height=180, res = 1000)
-ggpubr::ggarrange(t1dm, gest, other, ncol=3, nrow=1, common.legend = TRUE, legend="bottom",
-                  labels = c("A: Type 1 Diabetes", "B: Gestational Diabetes", "C: Other or Non-Specified Diabetes"),
-                  hjust = -0.1,
-                  font.label = list(size = 12)) +
-  theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"))
-dev.off() 
+# png(paste0(output_dir,"Figure_2_subtypes_3panel.png"),
+#     units = "mm", width=330, height=180, res = 1000)
+# ggpubr::ggarrange(t1dm, gest, other, ncol=3, nrow=1, common.legend = TRUE, legend="bottom",
+#                   labels = c("A: Type 1 Diabetes", "B: Gestational Diabetes", "C: Other or Non-Specified Diabetes"),
+#                   hjust = -0.1,
+#                   font.label = list(size = 12)) +
+#   theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"))
+# dev.off() 
 
 # ADD EVENT COUNTS TO PLOT TABLE  -------------------------------------------------------
 
-table2 <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v1/generated-figures/formatted_table_2.csv",
+table2 <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/formatted_table_2.csv",
                    check.names = FALSE)
 
 # temporarily use type 2 diabetes as gestational results until I get table 2 gestational diabetes results out
@@ -261,9 +254,9 @@ table2 <- table2 %>%
   dplyr::rename(`Total events` = Total,
                 `Events after COVID-19` = `All COVID-19`) %>%
   dplyr::select(-c(`No COVID-19`)) %>%
-  mutate(`Number of people` = ifelse(Cohort == "Pre-vaccination (1 Jan 2020 to 18 Jun 2021)", 15176232,
-                                     ifelse(Cohort == "Vaccinated (1 Jun 2021 to 14 Dec 2021)", 12752330,
-                                            ifelse(Cohort == "Unvaccinated (1 Jun 2021 to 14 Dec 2021)", 3095271, NA)))) %>%
+  mutate(`Number of people` = ifelse(Cohort == "Pre-vaccination (1 Jan 2020 to 18 Jun 2021)", 15211471,
+                                     ifelse(Cohort == "Vaccinated (1 Jun 2021 to 14 Dec 2021)", 11822640,
+                                            ifelse(Cohort == "Unvaccinated (1 Jun 2021 to 14 Dec 2021)", 2851183, NA)))) %>%
   relocate(`Total events`, .after = `Cohort`) %>%
   relocate(`Number of people`, .after = `Cohort`) %>%
   relocate(`Events after COVID-19`, .after = `Total events`) %>%

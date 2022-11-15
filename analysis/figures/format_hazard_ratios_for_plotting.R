@@ -8,13 +8,15 @@ library(tidyverse)
 
 # Read in results from stata output
 
-results_dir <- "C:/Users/zy21123/OneDrive - University of Bristol/Documents/OpenSAFELY/Outputs/release"
-df <- read.csv(paste0(results_dir,"/stata_output.csv"))
-df_prevax <- read.csv(paste0(results_dir,"/stata_output_prevax.csv"))
-df <- rbind(df, df_prevax)
-df$X <- NULL
+results_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/model/"
+output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/"
 
-rm(df_prevax)
+df <- read.csv(paste0(results_dir,"/stata_output.csv"))
+# df_prevax <- read.csv(paste0(results_dir,"/stata_output_prevax.csv"))
+# df <- rbind(df, df_prevax)
+# df$X <- NULL
+# 
+# rm(df_prevax)
 
 active_analyses <- read_rds("lib/active_analyses.rds")
 
@@ -28,15 +30,15 @@ subgroup <- subgroup %>% select(!run)
 subgroup$subgroup <- paste0("_",subgroup$subgroup)
 
 # Get cohort
-df$cohort <- ifelse(grepl("electively_unvaccinated",df$source),"electively_unvaccinated", ifelse(grepl("pre_vaccination",df$source),"pre_vaccination","vaccinated"))
+df$cohort <- ifelse(grepl("unvax",df$source),"unvax", ifelse(grepl("prevax",df$source),"prevax","vax"))
 unique(df$cohort)
 
 # Get outcome event name
 df$event <- df$source
 df$event <- gsub("input_sampled_data_","",df$event)
-df$event <- sub('\\_electively_unvaccinated.*', '', df$event)
-df$event <- sub('\\_vaccinated.*', '', df$event)
-df$event <- sub('\\_pre_vaccination.*', '', df$event)
+df$event <- sub('\\_unvax.*', '', df$event)
+df$event <- sub('\\_vax.*', '', df$event)
+df$event <- sub('\\_prevax.*', '', df$event)
 df$event <- stri_replace_all_regex(df$event,
                                    pattern=subgroup$subgroup,
                                    replacement=c(""),
@@ -46,9 +48,9 @@ unique(df$event)
 # Get subgroup
 df$subgroup <- df$source
 df$subgroup <- str_replace(df$subgroup,paste0("input_sampled_data_", df$event,"_"),"")
-df$subgroup <- sub('\\_electively_unvaccinated.*', '', df$subgroup)
-df$subgroup <- sub('\\_vaccinated.*', '', df$subgroup)
-df$subgroup <- sub('\\_pre_vaccination.*', '', df$subgroup)
+df$subgroup <- sub('\\_unvax.*', '', df$subgroup)
+df$subgroup <- sub('\\_vax.*', '', df$subgroup)
+df$subgroup <- sub('\\_prevax.*', '', df$subgroup)
 unique(df$subgroup)
 
 # Rename model
@@ -79,12 +81,12 @@ df <- merge(df,stata_analyses, by=c("event","subgroup","cohort","time_points"))
 
 #Previous time period days have been added to the median which hasn't been done in the R HRs and gets done
 # in the figure scripts. Removing here so that everything is the same
-df$remove_from_median <- NA
-df$remove_from_median <- ifelse(grepl("days",df$term),df$term,df$remove_from_median)
-df$remove_from_median <- sub("days","",df$remove_from_median)
-df$remove_from_median <- as.numeric(sub("\\_.*","",df$remove_from_median))
-
-df$median_follow_up <- df$median_follow_up - df$remove_from_median
+# df$remove_from_median <- NA
+# df$remove_from_median <- ifelse(grepl("days",df$term),df$term,df$remove_from_median)
+# df$remove_from_median <- sub("days","",df$remove_from_median)
+# df$remove_from_median <- as.numeric(sub("\\_.*","",df$remove_from_median))
+# 
+# df$median_follow_up <- df$median_follow_up - df$remove_from_median
 
 df$source <- "stata"
 
@@ -138,14 +140,17 @@ df <- df[duplicated(df),]
 df <- merge(estimates,df)
 df <- df %>% filter(source == "stata")
 
-estimates <- estimates %>% anti_join(df)
+df <- df[!(df$cohort == "vax" & df$subgroup == "covid_pheno_hospitalised"),] 
+
+
+# estimates <- estimates %>% anti_join(df)
 
 #Left join event counts
-table2_pre_vax <- read.csv(paste0(results_dir,"/table2_pre_vaccination_cvd.csv"))
-table2_vax <- read.csv(paste0(results_dir,"/table2_vaccinated.csv"))
-table2_unvax <- read.csv(paste0(results_dir,"/table2_electively_unvaccinated.csv"))
+table2_pre_vax <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/descriptive/table2_prevax_diabetes.csv")
+table2_vax <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/descriptive/table2_vax_diabetes.csv")
+table2_unvax <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/descriptive/table2_unvax_diabetes.csv")
 
-table2_pre_vax <- table2_pre_vax %>% rename(cohort_to_run = cohort_name)
+# table2_pre_vax <- table2_pre_vax %>% rename(cohort_to_run = cohort_name)
 table2 <- rbind(table2_unvax,table2_vax,table2_pre_vax)
 table2 <- table2 %>% rename(cohort = cohort_to_run)
 table2 <- table2 %>% select(event, subgroup, cohort, post_exposure_event_count)
@@ -155,4 +160,4 @@ estimates$post_exposure_event_count <- NULL
 estimates <- estimates %>% left_join(table2) %>%
   select(event, subgroup, cohort, model, time_points, source,term, estimate, conf_low, conf_high, post_exposure_event_count, median_follow_up)
 
-write.csv(estimates, file = paste0(results_dir,"/hr_output_formatted.csv"),row.names = FALSE)
+write.csv(estimates, file = paste0(output_dir,"/hr_output_formatted.csv"),row.names = FALSE)

@@ -138,6 +138,19 @@ lab val cov_cat_smoking_status_tmp cov_cat_smoking_status_tmp
 drop cov_cat_smoking_status
 rename cov_cat_smoking_status_tmp cov_cat_smoking_status 
 
+*Recode BMI capture
+
+gen cov_cat_bmi_tmp = .
+replace cov_cat_bmi_tmp = 1 if cov_cat_bmi=="Healthy_weight"  
+replace cov_cat_bmi_tmp = 2 if cov_cat_bmi=="Underweight"  
+replace cov_cat_bmi_tmp = 3 if cov_cat_bmi=="Overweight"  
+replace cov_cat_bmi_tmp = 4 if cov_cat_bmi=="Obese"  
+replace cov_cat_bmi_tmp = 5 if cov_cat_bmi=="Missing"  
+lab def cov_cat_bmi_tmp 1 "Healthy_weight" 2 "Underweight" 3 "Overweight" 4 "Obese" 5 "Missing" 
+lab var cov_cat_bmi_tmp cov_cat_bmi_tmp
+drop cov_cat_bmi
+rename cov_cat_bmi_tmp cov_cat_bmi
+
 * Summarize missingness following recoding
 
 misstable summarize
@@ -200,7 +213,7 @@ bysort time: summarize(follow_up), detail
 
 stcox days* i.sex age_spline1 age_spline2, strata(region) vce(r)
 est store min, title(Age_Sex)
-stcox days* i.sex age_spline1 age_spline2 i.cov_cat_ethnicity i.cov_cat_deprivation i.cov_cat_smoking_status cov_num_consulation_rate cov_bin_*, strata(region) vce(r)
+stcox days* i.sex age_spline1 age_spline2 i.cov_cat_ethnicity i.cov_cat_deprivation i.cov_cat_smoking_status i.cov_cat_bmi cov_num_consulation_rate cov_num_tc_hdl_ratio cov_bin_*, strata(region) vce(r)
 est store max, title(Maximal)
 
 estout * using "output/`cpf'_cox_model.txt", cells("b se t ci_l ci_u p") stats(risk N_fail N_sub N N_clust) replace 

@@ -151,6 +151,14 @@ lab var cov_cat_bmi_groups_tmp cov_cat_bmi_groups_tmp
 drop cov_cat_bmi_groups
 rename cov_cat_bmi_groups_tmp cov_cat_bmi_groups
 
+* Recode HDL ratio
+
+gen cov_num_tc_hdl_ratio_tmp = cov_num_tc_hdl_ratio
+replace cov_num_tc_hdl_ratio_tmp = "." if cov_num_tc_hdl_ratio=="NA"
+destring cov_num_tc_hdl_ratio_tmp, replace
+drop cov_num_tc_hdl_ratio
+rename cov_num_tc_hdl_ratio_tmp cov_num_tc_hdl_ratio
+
 * Summarize missingness following recoding
 
 misstable summarize

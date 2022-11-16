@@ -188,6 +188,7 @@ actions:
     outputs:
       highly_sensitive:
         end_date_table: output/follow_up_end_dates_vax_*.rds
+        end_date_table_csv: output/follow_up_end_dates_vax_*.csv.gz
 
   stage1_end_date_table_unvax:
     run: r:latest analysis/preprocess/create_follow_up_end_date.R unvax
@@ -200,6 +201,7 @@ actions:
     outputs:
       highly_sensitive:
         end_date_table: output/follow_up_end_dates_unvax_*.rds
+        end_date_table_csv: output/follow_up_end_dates_unvax_*.csv.gz
 
   generate_study_population_prevax_diabetes_analyis:
     run: cohortextractor:latest generate_cohort --study-definition study_definition_prevax_diabetes_analysis
@@ -218,6 +220,7 @@ actions:
     needs:
     - vax_eligibility_inputs
     - stage1_data_cleaning_vax
+    - stage1_end_date_table_vax
     outputs:
       highly_sensitive:
         cohort: output/input_vax_diabetes_analysis.feather
@@ -228,6 +231,7 @@ actions:
     needs:
     - vax_eligibility_inputs
     - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
     outputs:
       highly_sensitive:
         cohort: output/input_unvax_diabetes_analysis.feather

@@ -357,7 +357,8 @@ actions_list <- splice(
     run = "r:latest analysis/preprocess/create_follow_up_end_date.R vax",
     needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_vax","vax_eligibility_inputs"),
     highly_sensitive = list(
-      end_date_table = glue("output/follow_up_end_dates_vax_*.rds")
+      end_date_table = glue("output/follow_up_end_dates_vax_*.rds"),
+      end_date_table_csv = glue("output/follow_up_end_dates_vax_*.csv.gz")
     )
   ),
   
@@ -367,7 +368,8 @@ actions_list <- splice(
     run = "r:latest analysis/preprocess/create_follow_up_end_date.R unvax",
     needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_unvax","vax_eligibility_inputs"),
     highly_sensitive = list(
-      end_date_table = glue("output/follow_up_end_dates_unvax_*.rds")
+      end_date_table = glue("output/follow_up_end_dates_unvax_*.rds"),
+      end_date_table_csv = glue("output/follow_up_end_dates_unvax_*.csv.gz")
     )
   ),
   
@@ -385,7 +387,7 @@ actions_list <- splice(
   action(
     name = "generate_study_population_vax_diabetes_analyis",
     run = "cohortextractor:latest generate_cohort --study-definition study_definition_vax_diabetes_analysis --output-format feather",
-    needs = list("vax_eligibility_inputs", "stage1_data_cleaning_vax"),
+    needs = list("vax_eligibility_inputs", "stage1_data_cleaning_vax", "stage1_end_date_table_vax"),
     highly_sensitive = list(
       cohort = glue("output/input_vax_diabetes_analysis.feather")
     )
@@ -395,7 +397,7 @@ actions_list <- splice(
   action(
     name = "generate_study_population_unvax_diabetes_analyis",
     run = "cohortextractor:latest generate_cohort --study-definition study_definition_unvax_diabetes_analysis --output-format feather",
-    needs = list("vax_eligibility_inputs", "stage1_data_cleaning_unvax"),
+    needs = list("vax_eligibility_inputs", "stage1_data_cleaning_unvax", "stage1_end_date_table_unvax"),
     highly_sensitive = list(
       cohort = glue("output/input_unvax_diabetes_analysis.feather")
     )

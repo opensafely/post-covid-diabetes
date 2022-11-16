@@ -52,6 +52,13 @@ population = patients.all(),
 
 # DATES
 
+    index_date_copy = patients.with_value_from_file(
+        f_path = 'output/input_prevax_stage1_diabetes.csv.gz', 
+        returning = 'index_date', 
+        returning_type = 'date', 
+        date_format = 'YYYY-MM-DD',
+    ),
+
     vax_date_covid_1 = patients.with_value_from_file(
         f_path = 'output/input_prevax_stage1_diabetes.csv.gz', 
         returning = 'vax_date_covid_1', 

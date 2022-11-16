@@ -61,7 +61,7 @@ input_4 <- input %>%
   dplyr::filter( !is.na(out_date_t2dm) &  !is.na(exp_date_covid19_confirmed)) %>%
   # keep those where t2dm is after infection
   rowwise() %>%
-  mutate(keep = ifelse((out_date_t2dm >= cohort_start_date) & (out_date_t2dm >= exp_date_covid19_confirmed) & (out_date_t2dm <= t2dm_follow_up_end), TRUE, FALSE)) %>%
+  mutate(keep = ifelse((out_date_t2dm >= index_date_copy) & (out_date_t2dm >= exp_date_covid19_confirmed) & (out_date_t2dm <= t2dm_follow_up_end), TRUE, FALSE)) %>%
   ungroup() %>%
   dplyr::filter(keep == TRUE) %>%
   dplyr::select(-c(keep))
@@ -162,7 +162,7 @@ if (cohort_name == "prevax"){
     dplyr::filter( !is.na(out_date_t2dm) &  !is.na(exp_date_covid19_confirmed)) %>%
     # keep those where t2dm is after infection
     rowwise() %>%
-    mutate(keep = ifelse(out_date_t2dm < exp_date_covid19_confirmed, FALSE, TRUE)) %>%
+    mutate(keep = ifelse((out_date_t2dm >= cohort_start_date) & (out_date_t2dm >= exp_date_covid19_confirmed) & (out_date_t2dm <= t2dm_follow_up_end), TRUE, FALSE)) %>%
     ungroup() %>%
     dplyr::filter(keep == TRUE) %>%
     dplyr::select(-c(keep))
@@ -291,7 +291,7 @@ if (cohort_name == "prevax"){
   
   input_main <- readr::read_rds(file.path("output", paste0("input_prevax_stage1_diabetes.rds")))
 
-  # get list of IDs that will be t2dm cases post covid that are not being treated after 4 months (i.e., suspected stress/steroid induced cases)
+    # get list of IDs that will be t2dm cases post covid that are not being treated after 4 months (i.e., suspected stress/steroid induced cases)
   
   remove <- input %>%
     dplyr::filter(N_follow_prescribe == FALSE)

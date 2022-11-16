@@ -55,12 +55,13 @@ input <- arrow::read_feather(file = paste0("output/input_",cohort_name,"_diabete
 summary(input)
 
 # Restrict data only to those that had a diagnosis of type 2 diabetes following a COVID-19 infection
+# This should then give the same number as the Table 2 event counts
 
 input_4 <- input %>%
   dplyr::filter( !is.na(out_date_t2dm) &  !is.na(exp_date_covid19_confirmed)) %>%
   # keep those where t2dm is after infection
   rowwise() %>%
-  mutate(keep = ifelse(out_date_t2dm < exp_date_covid19_confirmed, FALSE, TRUE)) %>%
+  mutate(keep = ifelse((out_date_t2dm >= cohort_start_date) & (out_date_t2dm >= exp_date_covid19_confirmed) & (out_date_t2dm <= t2dm_follow_up_end), TRUE, FALSE)) %>%
   ungroup() %>%
   dplyr::filter(keep == TRUE) %>%
   dplyr::select(-c(keep))
@@ -68,13 +69,13 @@ input_4 <- input %>%
 # summarise df
 summary(input_4)
 
-# calculate new end date
+# New end date to check follow up 
 
 input_4$cohort_end_date <- cohort_end_date
 input_4$end_date <- apply(input_4[,c("death_date", "dereg_date", "cohort_end_date")],1, min,na.rm=TRUE)
 input_4$end_date <- as.Date(input_4$end_date)
 
-# Get N with 4 months follow up (those with an end date >= 4 months from t2dm)
+# Get N with 4 months follow up (those with a new end date >= 4 months from t2dm)
 
 input_4 <- input_4 %>% 
   rowwise() %>%

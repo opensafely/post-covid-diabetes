@@ -346,7 +346,8 @@ actions_list <- splice(
     run = "r:latest analysis/preprocess/create_follow_up_end_date.R prevax",
     needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_prevax","vax_eligibility_inputs"),
     highly_sensitive = list(
-      end_date_table = glue("output/follow_up_end_dates_prevax_*.rds")
+      end_date_table = glue("output/follow_up_end_dates_prevax_*.rds"),
+      end_date_table_csv = glue("output/follow_up_end_dates_prevax_*.csv.gz")
     )
   ),
   
@@ -374,7 +375,7 @@ actions_list <- splice(
   action(
     name = "generate_study_population_prevax_diabetes_analyis",
     run = "cohortextractor:latest generate_cohort --study-definition study_definition_prevax_diabetes_analysis --output-format feather",
-    needs = list("vax_eligibility_inputs", "stage1_data_cleaning_prevax"),
+    needs = list("vax_eligibility_inputs", "stage1_data_cleaning_prevax", "stage1_end_date_table_prevax"),
     highly_sensitive = list(
       cohort = glue("output/input_prevax_diabetes_analysis.feather")
     )

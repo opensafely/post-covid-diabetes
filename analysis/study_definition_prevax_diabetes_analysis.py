@@ -50,6 +50,29 @@ population = patients.all(),
         date_format = 'YYYY-MM-DD',
     ), 
 
+# DATES
+
+    vax_date_covid_1 = patients.with_value_from_file(
+        f_path = 'output/input_prevax_stage1_diabetes.csv.gz', 
+        returning = 'vax_date_covid_1', 
+        returning_type = 'date', 
+        date_format = 'YYYY-MM-DD',
+    ),
+
+    vax_date_eligible = patients.with_value_from_file(
+        f_path = 'output/input_prevax_stage1_diabetes.csv.gz', 
+        returning = 'vax_date_eligible', 
+        returning_type = 'date', 
+        date_format = 'YYYY-MM-DD',
+    ),
+
+    t2dm_follow_up_end = patients.with_value_from_file(
+        f_path = 'output/follow_up_end_dates_prevax_diabetes.csv.gz', 
+        returning = 't2dm_follow_up_end', 
+        returning_type = 'date', 
+        date_format = 'YYYY-MM-DD',
+    ),
+    
 # Get t2dm diagnosis date from stage 1 dataset
 
     out_date_t2dm = patients.with_value_from_file(

@@ -166,6 +166,13 @@ follow_up_end_dates <- function(cohort_name, group){
                     colnames(input)[grepl("censor",colnames(input))])] 
   
   saveRDS(input, paste0("output/follow_up_end_dates_",cohort_name, "_",group, ".rds"))
+  
+  # Save as CSV as well only for diabetes group to save time
+  
+  if (group == "diabetes"){
+    readr::write_csv(input, paste0("output/follow_up_end_dates_",cohort_name, "_",group,".csv.gz"))
+  }
+  
 }
 
 # Run function using specified commandArgs and active analyses for group

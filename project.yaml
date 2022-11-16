@@ -175,6 +175,7 @@ actions:
     outputs:
       highly_sensitive:
         end_date_table: output/follow_up_end_dates_prevax_*.rds
+        end_date_table_csv: output/follow_up_end_dates_prevax_*.csv.gz
 
   stage1_end_date_table_vax:
     run: r:latest analysis/preprocess/create_follow_up_end_date.R vax
@@ -206,6 +207,7 @@ actions:
     needs:
     - vax_eligibility_inputs
     - stage1_data_cleaning_prevax
+    - stage1_end_date_table_prevax
     outputs:
       highly_sensitive:
         cohort: output/input_prevax_diabetes_analysis.feather

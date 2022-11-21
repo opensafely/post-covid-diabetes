@@ -97,9 +97,9 @@ df$source <- "stata"
 
 # PREVAX 
 
-hr_files=list.files(path = r_results_dir_prevax, pattern = "to_release")
+hr_files=list.files(path = "output/review/model/prevax/", pattern = "to_release")
 hr_files=hr_files[endsWith(hr_files,".csv")]
-hr_files=paste0(r_results_dir_prevax,"/", hr_files)
+hr_files=paste0("output/review/model/prevax/", hr_files)
 hr_file_paths <- pmap(list(hr_files),
                       function(fpath){
                         df <- fread(fpath)

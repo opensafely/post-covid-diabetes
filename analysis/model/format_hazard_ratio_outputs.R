@@ -14,6 +14,8 @@ r_results_dir_vax <- "output/review/model/prevax"
 r_results_dir_unvax <- "output/review/model/prevax"
 output_dir <- "output/review/model"
 
+print(getwd())
+
 df <- read.csv(paste0(stata_results_dir,"/stata_output.csv"))
 # df_prevax <- read.csv(paste0(results_dir,"/stata_output_prevax.csv"))
 # df <- rbind(df, df_prevax)
@@ -93,9 +95,12 @@ df <- merge(df,stata_analyses, by=c("event","subgroup","cohort","time_points"))
 
 df$source <- "stata"
 
+print("Stata part of script ran successfully")
 #Read in R HRs
 
 # PREVAX 
+
+print(getwd())
 
 hr_files=list.files(path = "output/review/model/prevax/", pattern = "to_release")
 hr_files=hr_files[endsWith(hr_files,".csv")]

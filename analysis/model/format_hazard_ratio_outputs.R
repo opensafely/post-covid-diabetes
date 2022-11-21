@@ -14,6 +14,8 @@ r_results_dir_vax <- "output/review/model/prevax"
 r_results_dir_unvax <- "output/review/model/prevax"
 output_dir <- "output/review/model"
 
+print(getwd())
+
 df <- read.csv(paste0(stata_results_dir,"/stata_output.csv"))
 # df_prevax <- read.csv(paste0(results_dir,"/stata_output_prevax.csv"))
 # df <- rbind(df, df_prevax)
@@ -93,11 +95,14 @@ df <- merge(df,stata_analyses, by=c("event","subgroup","cohort","time_points"))
 
 df$source <- "stata"
 
+print("Stata part of script ran successfully")
 #Read in R HRs
 
 # PREVAX 
 
-hr_files=list.files(path = "output/review/model/prevax/", pattern = "to_release")
+print(getwd())
+
+hr_files=list.files(path = "output/", pattern = "to_release")
 hr_files=hr_files[endsWith(hr_files,".csv")]
 hr_files=paste0("output/review/model/prevax/", hr_files)
 hr_file_paths <- pmap(list(hr_files),
@@ -106,6 +111,8 @@ hr_file_paths <- pmap(list(hr_files),
                         return(df)
                       })
 estimates <- rbindlist(hr_file_paths, fill=TRUE)
+
+print("prevax estimates read successfully")
 
 # VAX
 
@@ -119,6 +126,8 @@ hr_file_paths_vax <- pmap(list(hr_files_vax),
                       })
 estimates_vax <- rbindlist(hr_file_paths_vax, fill=TRUE)
 
+print("vax estimates read successfully")
+
 # UNVAX
 
 hr_files_unvax=list.files(path = "output/review/model/unvax/", pattern = "to_release")
@@ -130,6 +139,8 @@ hr_file_paths_unvax <- pmap(list(hr_files_unvax),
                             return(df)
                           })
 estimates_unvax <- rbindlist(hr_file_paths_unvax, fill=TRUE)
+
+print("unvax estimates read successfully")
 
 estimates <- do.call("rbind", list(estimates, estimates_vax, estimates_unvax))
 

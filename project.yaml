@@ -1166,7 +1166,37 @@ actions:
     run: r:latest analysis/model/format_hazard_ratio_outputs.R
     needs:
     - format_stata_output
+    - Analysis_cox_t1dm_prevax
+    - Analysis_cox_t1dm_vax
+    - Analysis_cox_t1dm_unvax
+    - Analysis_cox_t2dm_prevax
+    - Analysis_cox_t2dm_vax
+    - Analysis_cox_t2dm_unvax
+    - Analysis_cox_t2dm_pre_rec_prevax
+    - Analysis_cox_t2dm_pre_rec_vax
+    - Analysis_cox_t2dm_pre_rec_unvax
+    - Analysis_cox_t2dm_pd_prevax
+    - Analysis_cox_t2dm_pd_vax
+    - Analysis_cox_t2dm_pd_unvax
+    - Analysis_cox_t2dm_pd_no_prevax
+    - Analysis_cox_t2dm_pd_no_vax
+    - Analysis_cox_t2dm_pd_no_unvax
+    - Analysis_cox_t2dm_obes_prevax
+    - Analysis_cox_t2dm_obes_vax
+    - Analysis_cox_t2dm_obes_unvax
+    - Analysis_cox_t2dm_obes_no_prevax
+    - Analysis_cox_t2dm_obes_no_vax
+    - Analysis_cox_t2dm_obes_no_unvax
+    - Analysis_cox_otherdm_prevax
+    - Analysis_cox_otherdm_vax
+    - Analysis_cox_otherdm_unvax
+    - Analysis_cox_gestationaldm_prevax
+    - Analysis_cox_gestationaldm_vax
+    - Analysis_cox_gestationaldm_unvax
+    - Analysis_cox_t2dm_rec_prevax
+    - Analysis_cox_t2dm_post_rec_prevax
+    - Analysis_cox_t2dm_follow_prevax
     outputs:
       moderately_sensitive:
-        stata_output: output/hr_output_formatted.csv
+        hr_output: output/hr_output_formatted.csv
 

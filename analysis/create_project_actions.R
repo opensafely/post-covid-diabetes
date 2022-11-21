@@ -21,6 +21,7 @@ active_analyses_table <- subset(active_analyses, active_analyses$active =="TRUE"
 
 active_analyses_table_all <- active_analyses_table %>% dplyr::filter(cohort == "all")
 outcomes_model_all <- active_analyses_table_all$outcome_variable %>% str_replace("out_date_", "")
+outcomes_list <- as.data.frame(outcomes_model_all)
 
 active_analyses_table_prevax <- active_analyses_table %>% dplyr::filter(cohort == "prevax")
 outcomes_model_prevax <- active_analyses_table_prevax$outcome_variable %>% str_replace("out_date_", "")
@@ -550,9 +551,21 @@ actions_list <- splice(
 action(
   name = "format_hazard_ratios",
   run = "r:latest analysis/model/format_hazard_ratio_outputs.R",
-  needs = as.list(paste0("format_stata_output")),
+  needs = list("format_stata_output",
+               "Analysis_cox_t1dm_prevax", "Analysis_cox_t1dm_vax", "Analysis_cox_t1dm_unvax",
+                  "Analysis_cox_t2dm_prevax", "Analysis_cox_t2dm_vax", "Analysis_cox_t2dm_unvax",
+                  "Analysis_cox_t2dm_pre_rec_prevax", "Analysis_cox_t2dm_pre_rec_vax", "Analysis_cox_t2dm_pre_rec_unvax",
+                  "Analysis_cox_t2dm_pd_prevax", "Analysis_cox_t2dm_pd_vax", "Analysis_cox_t2dm_pd_unvax",
+                  "Analysis_cox_t2dm_pd_no_prevax", "Analysis_cox_t2dm_pd_no_vax", "Analysis_cox_t2dm_pd_no_unvax",
+                  "Analysis_cox_t2dm_obes_prevax", "Analysis_cox_t2dm_obes_vax", "Analysis_cox_t2dm_obes_unvax",
+                  "Analysis_cox_t2dm_obes_no_prevax", "Analysis_cox_t2dm_obes_no_vax", "Analysis_cox_t2dm_obes_no_unvax",
+                  "Analysis_cox_otherdm_prevax", "Analysis_cox_otherdm_vax", "Analysis_cox_otherdm_unvax",
+                  "Analysis_cox_gestationaldm_prevax", "Analysis_cox_gestationaldm_vax", "Analysis_cox_gestationaldm_unvax",
+                  "Analysis_cox_t2dm_rec_prevax",
+                  "Analysis_cox_t2dm_post_rec_prevax",
+                  "Analysis_cox_t2dm_follow_prevax"),
   moderately_sensitive = list(
-    stata_output = "output/hr_output_formatted.csv")
+    hr_output = "output/hr_output_formatted.csv")
 ))
 
 ## combine everything ----

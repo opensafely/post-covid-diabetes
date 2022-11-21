@@ -112,12 +112,13 @@ print(getwd())
 hr_files=list.files(path = "output/review/model/prevax/", pattern = "to_release")
 hr_files=hr_files[endsWith(hr_files,".csv")]
 hr_files=paste0("output/review/model/prevax/", hr_files)
-hr_file_paths <- pmap(list(hr_files),
-                      function(fpath){
-                        df <- fread(fpath)
-                        return(df)
-                      })
-estimates <- rbindlist(hr_file_paths, fill=TRUE)
+# hr_file_paths <- pmap(list(hr_files),
+#                       function(fpath){
+#                         df <- fread(fpath)
+#                         return(df)
+#                       })
+temp <- lapply(hr_files, read_csv)
+estimates <- rbindlist(temp, fill=TRUE)
 
 print("prevax estimates read successfully")
 
@@ -126,12 +127,9 @@ print("prevax estimates read successfully")
 hr_files_vax=list.files(path = "output/review/model/vax/", pattern = "to_release")
 hr_files_vax=hr_files_vax[endsWith(hr_files_vax,".csv")]
 hr_files_vax=paste0("output/review/model/vax/", hr_files_vax)
-hr_file_paths_vax <- pmap(list(hr_files_vax),
-                      function(fpath){
-                        df <- fread(fpath)
-                        return(df)
-                      })
-estimates_vax <- rbindlist(hr_file_paths_vax, fill=TRUE)
+
+temp <- lapply(hr_files_vax, read_csv)
+estimates_vax <- rbindlist(temp, fill=TRUE)
 
 print("vax estimates read successfully")
 
@@ -140,12 +138,9 @@ print("vax estimates read successfully")
 hr_files_unvax=list.files(path = "output/review/model/unvax/", pattern = "to_release")
 hr_files_unvax=hr_files_unvax[endsWith(hr_files_unvax,".csv")]
 hr_files_unvax=paste0("output/review/model/unvax/", hr_files_unvax)
-hr_file_paths_unvax <- pmap(list(hr_files_unvax),
-                          function(fpath){
-                            df <- fread(fpath)
-                            return(df)
-                          })
-estimates_unvax <- rbindlist(hr_file_paths_unvax, fill=TRUE)
+
+temp <- lapply(hr_files_unvax, read_csv)
+estimates_unvax <- rbindlist(temp, fill=TRUE)
 
 print("unvax estimates read successfully")
 

@@ -104,7 +104,7 @@ print(getwd())
 
 hr_files=list.files(path = "output/", pattern = "to_release")
 hr_files=hr_files[endsWith(hr_files,".csv")]
-hr_files=paste0("output/review/model/prevax/", hr_files)
+hr_files=paste0("output/", hr_files)
 hr_file_paths <- pmap(list(hr_files),
                       function(fpath){
                         df <- fread(fpath)

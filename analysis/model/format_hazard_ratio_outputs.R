@@ -97,9 +97,9 @@ df$source <- "stata"
 
 # PREVAX 
 
-hr_files=list.files(path = r_results_dir_prevax, pattern = "to_release")
+hr_files=list.files(path = "output/review/model/prevax/", pattern = "to_release")
 hr_files=hr_files[endsWith(hr_files,".csv")]
-hr_files=paste0(r_results_dir_prevax,"/", hr_files)
+hr_files=paste0("output/review/model/prevax/", hr_files)
 hr_file_paths <- pmap(list(hr_files),
                       function(fpath){
                         df <- fread(fpath)
@@ -109,9 +109,9 @@ estimates <- rbindlist(hr_file_paths, fill=TRUE)
 
 # VAX
 
-hr_files_vax=list.files(path = r_results_dir_vax, pattern = "to_release")
+hr_files_vax=list.files(path = "output/review/model/vax/", pattern = "to_release")
 hr_files_vax=hr_files_vax[endsWith(hr_files_vax,".csv")]
-hr_files_vax=paste0(r_results_dir_vax,"/", hr_files_vax)
+hr_files_vax=paste0("output/review/model/vax/", hr_files_vax)
 hr_file_paths_vax <- pmap(list(hr_files_vax),
                       function(fpath){
                         df <- fread(fpath)
@@ -121,9 +121,9 @@ estimates_vax <- rbindlist(hr_file_paths_vax, fill=TRUE)
 
 # UNVAX
 
-hr_files_unvax=list.files(path = r_results_dir_unvax, pattern = "to_release")
+hr_files_unvax=list.files(path = "output/review/model/unvax/", pattern = "to_release")
 hr_files_unvax=hr_files_unvax[endsWith(hr_files_unvax,".csv")]
-hr_files_unvax=paste0(r_results_dir_unvax,"/", hr_files_unvax)
+hr_files_unvax=paste0("output/review/model/unvax/", hr_files_unvax)
 hr_file_paths_unvax <- pmap(list(hr_files_unvax),
                           function(fpath){
                             df <- fread(fpath)

@@ -1162,3 +1162,11 @@ actions:
       moderately_sensitive:
         stata_output: output/stata_output.csv
 
+  format_hazard_ratios:
+    run: r:latest analysis/format_hazard_ratio_outputs.R
+    needs:
+    - format_stata_output
+    outputs:
+      moderately_sensitive:
+        stata_output: output/hr_output_formatted.csv
+

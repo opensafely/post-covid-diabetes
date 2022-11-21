@@ -549,7 +549,7 @@ actions_list <- splice(
 #comment("Format hazard ratio output")
 action(
   name = "format_hazard_ratios",
-  run = "r:latest analysis/format_hazard_ratio_outputs.R",
+  run = "r:latest analysis/model/format_hazard_ratio_outputs.R",
   needs = as.list(paste0("format_stata_output")),
   moderately_sensitive = list(
     stata_output = "output/hr_output_formatted.csv")

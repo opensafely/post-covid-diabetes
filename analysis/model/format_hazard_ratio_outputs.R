@@ -6,6 +6,13 @@ library(stringr)
 library(data.table)
 library(tidyverse)
 
+fs::dir_create(here::here("output", "not-for-review"))
+fs::dir_create(here::here("output", "review", "model"))
+fs::dir_create(here::here("output", "review", "descriptives"))
+fs::dir_create(here::here("output", "review", "model","prevax"))
+fs::dir_create(here::here("output", "review", "model","vax"))
+fs::dir_create(here::here("output", "review", "model","unvax"))
+
 # Read in results from stata output
 
 stata_results_dir <- "output"
@@ -102,7 +109,7 @@ print("Stata part of script ran successfully")
 
 print(getwd())
 
-hr_files=list.files(path = "output/", pattern = "to_release")
+hr_files=list.files(path = "output/review/model/prevax/", pattern = "to_release")
 hr_files=hr_files[endsWith(hr_files,".csv")]
 hr_files=paste0("output/review/model/prevax/", hr_files)
 hr_file_paths <- pmap(list(hr_files),

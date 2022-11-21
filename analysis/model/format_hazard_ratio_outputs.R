@@ -6,6 +6,13 @@ library(stringr)
 library(data.table)
 library(tidyverse)
 
+fs::dir_create(here::here("output", "not-for-review"))
+fs::dir_create(here::here("output", "review", "model"))
+fs::dir_create(here::here("output", "review", "model","fit-individual-covariates"))
+fs::dir_create(here::here("output", "review", "model","prevax"))
+fs::dir_create(here::here("output", "review", "model","vax"))
+fs::dir_create(here::here("output", "review", "model","unvax"))
+
 # Read in results from stata output
 
 stata_results_dir <- "output"

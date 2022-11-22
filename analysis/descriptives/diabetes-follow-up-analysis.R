@@ -186,6 +186,34 @@ ggplot(input_hist_hosp, aes(x=days_t2dm_diag_post_covid)) + geom_histogram(binwi
   theme(plot.title = element_text(face = "bold")) 
 ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_hosp_covid_histogram_",cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
 
+
+# Add plots with minimum counts set to 5 ----------------------------------
+
+input_hist_plot <- input_hist %>%
+  dplyr::count(bin = floor(days_t2dm_diag_post_covid)) %>%
+  mutate(n = pmax(5, n))
+
+input_hist_hosp_plot <- input_hist %>% 
+  dplyr::filter(sub_cat_covid19_hospital == "hospitalised") %>%
+  dplyr::count(bin = floor(days_t2dm_diag_post_covid)) %>%
+  mutate(n = pmax(5, n))
+
+ggplot(input_hist_plot, aes(bin, n)) +
+  geom_col() +
+  ylab("Number of type 2 diabetes events") + xlab("Days between date of confirmed COVID-19 and type 2 diabetes diagnosis") +
+  ggtitle("Number of type 2 diabetes events by days since COVID-19 diagnosis (main)") +
+  theme_light() +
+  theme(plot.title = element_text(face = "bold")) 
+ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_covid_histogram_to_release_",cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
+
+ggplot(input_hist_hosp_plot, aes(bin, n)) +
+  geom_col() +
+  ylab("Number of type 2 diabetes events") + xlab("Days between date of confirmed COVID-19 and type 2 diabetes diagnosis") +
+  ggtitle("Number of type 2 diabetes events by days since COVID-19 diagnosis (hospitalised)") +
+  theme_light() +
+  theme(plot.title = element_text(face = "bold")) 
+ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_hosp_covid_histogram_to_release_",cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
+
 ###################################################################################################
 # REPEAT ABOVE BUT FOR 12 MONTHS INSTEAD OF 4 MONTHS FOR PREVAX ONLY ------------------------------
 ###################################################################################################

@@ -410,7 +410,8 @@ actions_list <- splice(
     run = "r:latest analysis/descriptives/diabetes-follow-up-analysis.R prevax",
     needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs", "stage1_data_cleaning_prevax"),
     moderately_sensitive = list(
-      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_prevax.csv")
+      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_prevax.csv"),
+      histograms = glue("output/review/descriptives/days_*_prevax.png")
     ),
     highly_sensitive = list(
       cohort_new = glue("output/input_prevax_stage1_diabetes.rds")
@@ -423,7 +424,8 @@ actions_list <- splice(
     run = "r:latest analysis/descriptives/diabetes-follow-up-analysis.R vax",
     needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs", "stage1_data_cleaning_vax"),
     moderately_sensitive = list(
-      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_vax.csv")
+      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_vax.csv"),
+      histograms = glue("output/review/descriptives/days_*_vax.png")
     ),
     highly_sensitive = list(
       cohort_new = glue("output/input_vax_stage1_diabetes.rds")
@@ -436,7 +438,8 @@ actions_list <- splice(
     run = "r:latest analysis/descriptives/diabetes-follow-up-analysis.R unvax",
     needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs", "stage1_data_cleaning_unvax"),
     moderately_sensitive = list(
-      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_unvax.csv")
+      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_*_unvax.csv"),
+      histograms = glue("output/review/descriptives/days_*_unvax.png")
     ),
     highly_sensitive = list(
       cohort_new = glue("output/input_unvax_stage1_diabetes.rds")
@@ -552,6 +555,7 @@ action(
   name = "format_hazard_ratios",
   run = "r:latest analysis/model/format_hazard_ratio_outputs.R",
   needs = list("format_stata_output",
+               "stage4_table_2_prevax", "stage4_table_2_vax", "stage4_table_2_unvax",
                "Analysis_cox_t1dm_prevax", "Analysis_cox_t1dm_vax", "Analysis_cox_t1dm_unvax",
                   "Analysis_cox_t2dm_prevax", "Analysis_cox_t2dm_vax", "Analysis_cox_t2dm_unvax",
                   "Analysis_cox_t2dm_pre_rec_prevax", "Analysis_cox_t2dm_pre_rec_vax", "Analysis_cox_t2dm_pre_rec_unvax",

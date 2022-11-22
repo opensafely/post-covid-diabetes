@@ -152,7 +152,43 @@ results$N_non_hosp_COVID_still_treated <- paste0(results$N_non_hosp_COVID_still_
 
 readr::write_csv(results, paste0("output/review/descriptives/diabetes_posthoc_analysis_res_4mnths_",cohort_name,".csv"))
 
+########################################################################
+# HISTOGRAM PLOTS ---------------------------------------------------------
+########################################################################
+
+# Type 2 diabetes, histograms x axis time-since covid, y-axis no. of events for each cohort, main and stratified by hospitalised status 
+# Get time since diagnosis variable 
+
+input_hist <- input_4 %>% 
+  mutate(days_t2dm_diag_post_covid = difftime(out_date_t2dm, exp_date_covid19_confirmed, units = "days")) %>%
+  mutate(days_t2dm_diag_post_covid = as.numeric(days_t2dm_diag_post_covid))
+
+# Do it for hospitalised as well 
+
+input_hist_hosp <- input_hist %>% 
+  dplyr::filter(sub_cat_covid19_hospital == "hospitalised")
+
+# PLOT MAIN
+
+ggplot(input_hist, aes(x=days_t2dm_diag_post_covid)) + geom_histogram(binwidth=1, colour="gray2") +
+  ylab("Number of type 2 diabetes events") + xlab("Days between date of confirmed COVID-19 and type 2 diabetes diagnosis") +
+  ggtitle("Number of type 2 diabetes events by days since COVID-19 diagnosis (main)") +
+  theme_light() +
+  theme(plot.title = element_text(face = "bold")) 
+ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_covid_histogram_", cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
+
+# PLOT HOSPITALISED
+
+ggplot(input_hist_hosp, aes(x=days_t2dm_diag_post_covid)) + geom_histogram(binwidth=1, colour="gray2") +
+  ylab("Number of type 2 diabetes events") + xlab("Days between date of confirmed COVID-19 and type 2 diabetes diagnosis") +
+  ggtitle("Number of type 2 diabetes events by days since COVID-19 diagnosis (hospitalised)") +
+  theme_light() +
+  theme(plot.title = element_text(face = "bold")) 
+ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_hosp_covid_histogram_",cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
+
+###################################################################################################
 # REPEAT ABOVE BUT FOR 12 MONTHS INSTEAD OF 4 MONTHS FOR PREVAX ONLY ------------------------------
+###################################################################################################
 
 if (cohort_name == "prevax"){
 
@@ -290,7 +326,7 @@ if (cohort_name == "prevax"){
   # read in main input file 
   
   input_main <- readr::read_rds(file.path("output", paste0("input_prevax_stage1_diabetes.rds")))
-
+  input_main$out_date_t2dm_follow <- NULL
     # get list of IDs that will be t2dm cases post covid that are not being treated after 4 months (i.e., suspected stress/steroid induced cases)
   
   remove <- input %>%

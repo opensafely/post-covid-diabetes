@@ -1204,5 +1204,5 @@ actions:
     - Analysis_cox_t2dm_follow_prevax
     outputs:
       moderately_sensitive:
-        hr_output: output/hr_output_formatted.csv
+        hr_output: output/review/model/hr_output_formatted.csv
 

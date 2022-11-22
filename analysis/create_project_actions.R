@@ -569,7 +569,7 @@ action(
                   "Analysis_cox_t2dm_post_rec_prevax",
                   "Analysis_cox_t2dm_follow_prevax"),
   moderately_sensitive = list(
-    hr_output = "output/hr_output_formatted.csv")
+    hr_output = "output/review/model/hr_output_formatted.csv")
 ))
 
 ## combine everything ----

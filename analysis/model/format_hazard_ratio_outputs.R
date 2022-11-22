@@ -144,7 +144,7 @@ estimates_unvax <- rbindlist(temp, fill=TRUE)
 
 print("unvax estimates read successfully")
 
-estimates <- do.call("rbind", list(estimates, estimates_vax, estimates_unvax))
+estimates <- rbindlist(list(estimates, estimates_vax, estimates_unvax), fill = TRUE)
 
 estimates$source <- "R"
 

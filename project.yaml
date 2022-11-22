@@ -247,6 +247,7 @@ actions:
     outputs:
       moderately_sensitive:
         res_table: output/review/descriptives/diabetes_posthoc_analysis_res_*_prevax.csv
+        histograms: output/review/descriptives/days_*_prevax.png
       highly_sensitive:
         cohort_new: output/input_prevax_stage1_diabetes.rds
 
@@ -261,6 +262,7 @@ actions:
     outputs:
       moderately_sensitive:
         res_table: output/review/descriptives/diabetes_posthoc_analysis_res_*_vax.csv
+        histograms: output/review/descriptives/days_*_vax.png
       highly_sensitive:
         cohort_new: output/input_vax_stage1_diabetes.rds
 
@@ -275,6 +277,7 @@ actions:
     outputs:
       moderately_sensitive:
         res_table: output/review/descriptives/diabetes_posthoc_analysis_res_*_unvax.csv
+        histograms: output/review/descriptives/days_*_unvax.png
       highly_sensitive:
         cohort_new: output/input_unvax_stage1_diabetes.rds
 
@@ -1166,6 +1169,9 @@ actions:
     run: r:latest analysis/model/format_hazard_ratio_outputs.R
     needs:
     - format_stata_output
+    - stage4_table_2_prevax
+    - stage4_table_2_vax
+    - stage4_table_2_unvax
     - Analysis_cox_t1dm_prevax
     - Analysis_cox_t1dm_vax
     - Analysis_cox_t1dm_unvax

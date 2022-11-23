@@ -168,6 +168,11 @@ input_hist <- input_4 %>%
 input_hist_hosp <- input_hist %>% 
   dplyr::filter(sub_cat_covid19_hospital == "hospitalised")
 
+# non hosp
+
+input_hist_nonhosp <- input_hist %>% 
+  dplyr::filter(sub_cat_covid19_hospital == "non_hospitalised")
+
 # PLOT MAIN
 
 ggplot(input_hist, aes(x=days_t2dm_diag_post_covid)) + geom_histogram(binwidth=1, colour="gray2") +
@@ -186,6 +191,15 @@ ggplot(input_hist_hosp, aes(x=days_t2dm_diag_post_covid)) + geom_histogram(binwi
   theme(plot.title = element_text(face = "bold")) 
 ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_hosp_covid_histogram_",cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
 
+# PLOT NON-HOSPITALISED
+
+ggplot(input_hist_nonhosp, aes(x=days_t2dm_diag_post_covid)) + geom_histogram(binwidth=1, colour="gray2") +
+  ylab("Number of type 2 diabetes events") + xlab("Days between date of confirmed COVID-19 and type 2 diabetes diagnosis") +
+  ggtitle("Number of type 2 diabetes events by days since COVID-19 diagnosis (non-hospitalised)") +
+  theme_light() +
+  theme(plot.title = element_text(face = "bold")) 
+ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_non_hosp_covid_histogram_",cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
+
 
 # Add plots with minimum counts set to 6 ----------------------------------
 
@@ -195,6 +209,11 @@ input_hist_plot <- input_hist %>%
 
 input_hist_hosp_plot <- input_hist %>% 
   dplyr::filter(sub_cat_covid19_hospital == "hospitalised") %>%
+  dplyr::count(bin = floor(days_t2dm_diag_post_covid)) %>%
+  mutate(n = pmax(6, n))
+
+input_hist_nonhosp_plot <- input_hist %>% 
+  dplyr::filter(sub_cat_covid19_hospital == "non_hospitalised") %>%
   dplyr::count(bin = floor(days_t2dm_diag_post_covid)) %>%
   mutate(n = pmax(6, n))
 
@@ -213,6 +232,14 @@ ggplot(input_hist_hosp_plot, aes(bin, n)) +
   theme_light() +
   theme(plot.title = element_text(face = "bold")) 
 ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_hosp_covid_histogram_to_release_",cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
+
+ggplot(input_hist_nonhosp_plot, aes(bin, n)) +
+  geom_col() +
+  ylab("Number of type 2 diabetes events") + xlab("Days between date of confirmed COVID-19 and type 2 diabetes diagnosis") +
+  ggtitle("Number of type 2 diabetes events by days since COVID-19 diagnosis (non-hospitalised)") +
+  theme_light() +
+  theme(plot.title = element_text(face = "bold")) 
+ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_non_hosp_covid_histogram_to_release_",cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
 
 ###################################################################################################
 # REPEAT ABOVE BUT FOR 12 MONTHS INSTEAD OF 4 MONTHS FOR PREVAX ONLY ------------------------------

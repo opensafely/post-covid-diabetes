@@ -1,3 +1,4 @@
+library(tidyverse)
 
 # Calculates AER within age/sex subgroups
 
@@ -172,7 +173,11 @@ AER_compiled_results=rbindlist(AER_compiled_results, fill=TRUE)
 AER_combined <- AER_compiled_results %>% select(days, event, cohort, subgroup, time_points, excess_risk_main, excess_risk_subgroup)
 table_2 <- table_2 %>% select(event, cohort, subgroup, N_population_size)
 
-AER_combined <- AER_combined %>% left_join(table_2, by=c("event","cohort","subgroup"))
+# AER_combined <- AER_combined %>% left_join(table_2, by=c("event","cohort","subgroup"))
+
+#Standardize AER and use pre-vax subgroup sizes for all cohorts
+table_2 <- table_2 %>% filter(cohort == "prevax") %>% select(!cohort)
+AER_combined <- AER_combined %>% left_join(table_2, by=c("event","subgroup"))
 
 AER_combined_overall <- AER_combined %>% filter(!is.na(excess_risk_main))
 AER_combined_subgroup <- AER_combined %>% filter(!is.na(excess_risk_subgroup))

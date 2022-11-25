@@ -123,6 +123,8 @@ if(cohort=="prevax" & event_name == "t2dm_rec"){
   
   cuts_days_since_expo <- c(7, 14, 28, 56, 84, 166) 
   cuts_days_since_expo_reduced <- c(28, 166) 
+  cuts_days_since_expo_day_zero <- c(7, 14, 28, 56, 84, 166) 
+  cuts_days_since_expo_reduced_day_zero <- c(28, 166) 
   
 }else if(cohort=="prevax" & event_name == "t2dm_post_rec"){
   
@@ -134,6 +136,8 @@ if(cohort=="prevax" & event_name == "t2dm_rec"){
   
   cuts_days_since_expo <- c(7, 14, 28, 56, 84, 197, 367) 
   cuts_days_since_expo_reduced <- c(28, 197, 367) 
+  cuts_days_since_expo_day_zero <- c(7, 14, 28, 56, 84, 197, 367) 
+  cuts_days_since_expo_reduced_day_zero <- c(28, 197, 367) 
   
 } else if(cohort=="prevax" & (event_name != "t2dm_rec" | event_name != "t2dm_post_rec")){
   

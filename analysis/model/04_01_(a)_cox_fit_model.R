@@ -9,7 +9,7 @@ source(file.path(scripts_dir,"04_01_(b)_cox_format_survival_data.R"))
 
 #------------------FORMAT SURVIVAL DATASET AND RUN COX MODEL--------------------
 
-fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stratify_by,mdl, survival_data,input,cuts_days_since_expo,covar_names,time_point){
+fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stratify_by,mdl, survival_data,input,cuts_days_since_expo,covar_names,time_point,total_covid_cases){
   list_data_surv_noncase_ids_interval_names <- fit_get_data_surv(event,subgroup, stratify_by_subgroup, stratify_by,survival_data,cuts_days_since_expo,time_point)
   
   if(length(list_data_surv_noncase_ids_interval_names)==1){
@@ -31,7 +31,7 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
   }
   
   # Describe survival data
-  sink(paste0("output/not-for-review/describe_data_surv_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.txt"))
+  sink(paste0("output/not-for-review/describe_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.txt"))
   print(Hmisc::describe(data_surv))
   sink()
   
@@ -95,6 +95,7 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
     fit_model$time_points <- time_point
     fit_model$data_sampled <- ifelse(non_case_inverse_weight == 1, "FALSE", "TRUE")
     fit_model$N_sample_size <- length(unique(data_surv$patient_id))
+    fit_model$total_covid_cases <- total_covid_cases
     
     if(cohort == "prevax"){
 

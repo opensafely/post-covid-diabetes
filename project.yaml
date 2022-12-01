@@ -2,7 +2,7 @@ version: '3.0'
 
 expectations:
 
-  population_size: 200000
+  population_size: 100000
 
 actions:
 
@@ -1037,6 +1037,95 @@ actions:
       highly_sensitive:
         dataset: output/input_t2dm_follow_*_prevax_*_time_periods.csv
         sampled_dataset: output/input_sampled_data_t2dm_follow_*_prevax_*_time_periods.csv
+
+  ## Cox model for t1dm_extended_follow_up - prevax 
+
+  Analysis_cox_t1dm_extended_follow_up_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R t1dm_extended_follow_up prevax
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/*/analyses_not_run_t1dm_extended_follow_up_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t1dm_extended_follow_up_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t1dm_extended_follow_up_prevax_to_release.csv
+        compiled_event_counts_csv: output/review/model/*/suppressed_compiled_event_counts_t1dm_extended_follow_up_prevax.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/*/compiled_event_counts_t1dm_extended_follow_up_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t1dm_extended_follow_up_*_prevax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t1dm_extended_follow_up_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t1dm_extended_follow_up_*_prevax_*_time_periods.csv
+
+  ## Cox model for t2dm_extended_follow_up - prevax 
+
+  Analysis_cox_t2dm_extended_follow_up_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_extended_follow_up prevax
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_extended_follow_up_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_extended_follow_up_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_extended_follow_up_prevax_to_release.csv
+        compiled_event_counts_csv: output/review/model/*/suppressed_compiled_event_counts_t2dm_extended_follow_up_prevax.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/*/compiled_event_counts_t2dm_extended_follow_up_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_extended_follow_up_*_prevax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_extended_follow_up_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_extended_follow_up_*_prevax_*_time_periods.csv
+
+  ## Cox model for otherdm_extended_follow_up - prevax 
+
+  Analysis_cox_otherdm_extended_follow_up_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R otherdm_extended_follow_up prevax
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/*/analyses_not_run_otherdm_extended_follow_up_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_otherdm_extended_follow_up_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_otherdm_extended_follow_up_prevax_to_release.csv
+        compiled_event_counts_csv: output/review/model/*/suppressed_compiled_event_counts_otherdm_extended_follow_up_prevax.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/*/compiled_event_counts_otherdm_extended_follow_up_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_otherdm_extended_follow_up_*_prevax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_otherdm_extended_follow_up_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_otherdm_extended_follow_up_*_prevax_*_time_periods.csv
+
+  ## Cox model for gestationaldm_extended_follow_up - prevax 
+
+  Analysis_cox_gestationaldm_extended_follow_up_prevax:
+    run: r:latest analysis/model/01_cox_pipeline.R gestationaldm_extended_follow_up
+      prevax
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/*/analyses_not_run_gestationaldm_extended_follow_up_prevax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_gestationaldm_extended_follow_up_prevax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_gestationaldm_extended_follow_up_prevax_to_release.csv
+        compiled_event_counts_csv: output/review/model/*/suppressed_compiled_event_counts_gestationaldm_extended_follow_up_prevax.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/*/compiled_event_counts_gestationaldm_extended_follow_up_prevax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_gestationaldm_extended_follow_up_*_prevax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_gestationaldm_extended_follow_up_*_prevax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_gestationaldm_extended_follow_up_*_prevax_*_time_periods.csv
 
   stata_cox_model_t2dm_covid_pheno_hospitalised_prevax_reduced:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_covid_pheno_hospitalised_prevax_reduced_time_periods

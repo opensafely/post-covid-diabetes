@@ -58,12 +58,17 @@ outcomes <- c("type 1 diabetes",
               "type 2 diabetes - obesity",
               "type 2 diabetes - no obesity",
               "other or non-specific diabetes",
-              "gestational diabetes")
+              "gestational diabetes",
+              "type 1 diabetes - extended follow up",
+              "type 2 diabetes - extended follow up",
+              "other or non-specific diabetes - extended follow up",
+              "gestational diabetes - extended follow up")
 
 outcome_group <- "diabetes"
 
-outcomes_short <- c("t1dm","t2dm", "t2dm_rec", "t2dm_pre_rec", "t2dm_post_rec", "t2dm_follow", "t2dm_pd","t2dm_pd_no", "t2dm_obes","t2dm_obes_no", "otherdm","gestationaldm")
-outcome_venn <- c(TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)
+outcomes_short <- c("t1dm","t2dm", "t2dm_rec", "t2dm_pre_rec", "t2dm_post_rec", "t2dm_follow", "t2dm_pd","t2dm_pd_no", "t2dm_obes","t2dm_obes_no", "otherdm","gestationaldm",
+                    "t1dm_extended_follow_up","t2dm_extended_follow_up", "otherdm_extended_follow_up","gestationaldm_extended_follow_up")
+outcome_venn <- c(TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)
 
 for (i in 1:length(outcomes)) {
   df[nrow(df)+1,] <- c(TRUE,
@@ -81,6 +86,9 @@ for (i in 1:length(outcomes)) {
 # change outcome group so that gestational diabetes has its own group
 
 df <- df %>% mutate(outcome_group = case_when(outcome_variable == "out_date_gestationaldm" ~ "diabetes_gestational",
+                                              TRUE ~ as.character(outcome_group)))
+
+df <- df %>% mutate(outcome_group = case_when(outcome_variable == "out_date_gestationaldm_extended_follow_up" ~ "diabetes_gestational",
                                               TRUE ~ as.character(outcome_group)))
 
 # change outcome groups
@@ -107,7 +115,9 @@ df <- df %>% mutate(cohort = case_when(outcome == "type 2 diabetes - recovery" ~
                     cohort = case_when(outcome == "type 2 diabetes - post_recovery" ~ "prevax",
                                        TRUE ~ as.character(cohort)),
                     cohort = case_when(outcome == "type 2 diabetes - 4_mnth_follow" ~ "prevax",
-                                      TRUE ~ as.character(cohort)))
+                                      TRUE ~ as.character(cohort)),
+                    cohort = case_when(outcomes_short == "t1dm_extended_follow_up" | outcomes_short == "t2dm_extended_follow_up" | outcomes_short == "otherdm_extended_follow_up" | outcomes_short == "gestationaldm_extended_follow_up" ~ "prevax",
+                                       TRUE ~ as.character(cohort)))
 
 # turn on subgroups for main t2dm analyses
 

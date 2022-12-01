@@ -12,8 +12,8 @@ library(ggplot2)
 dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
 setwd(dir)
 
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v1/model/")
-output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v1/generated-figures/")
+results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/model/")
+output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/")
 
 #-------------------------#
 # 2. Get outcomes to plot #
@@ -26,26 +26,21 @@ outcome_name_table <- active_analyses %>%
 
 outcomes_to_plot <- outcome_name_table$outcome_name
 # exclude main exposures - but keep t2dm so we can compare
-remove <- c("t1dm", "otherdm", "gestationaldm")
+remove <- c("t1dm", "otherdm", "gestationaldm", "t2dm_follow", "t2dm_pre_rec", "t2dm_post_rec", "t2dm_rec")
 outcomes_to_plot <- outcomes_to_plot [! outcomes_to_plot %in% remove]
 #---------------------------------------------#
 # 3. Load and combine all estimates in 1 file #
 #---------------------------------------------#
-hr_files=list.files(path = results_dir, pattern = "suppressed_compiled_HR_results_*")
-hr_files=hr_files[endsWith(hr_files,".csv")]
-hr_files=paste0(results_dir,"/", hr_files)
-hr_file_paths <- pmap(list(hr_files),
-                      function(fpath){
-                        df <- fread(fpath)
-                        return(df)
-                      })
-estimates <- rbindlist(hr_file_paths, fill=TRUE)
+
+# Load all estimates
+estimates <- read.csv(paste0(results_dir,"/hr_output_formatted.csv"))
+
 
 # Get estimates for main analyses and list of outcomes from active analyses
 main_estimates <- estimates %>% filter(subgroup == "main" 
                                        & event %in% outcomes_to_plot 
                                        & term %in% term[grepl("^days",term)]
-                                       & results_fitted == "fitted_successfully"
+                                       & time_points == "reduced"
                                        & model == "mdl_max_adj") %>%
   select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,median_follow_up)
 
@@ -68,10 +63,10 @@ main_estimates <- main_estimates %>%
 
 
 #---------------------------Specify time to plot--------------------------------
-main_estimates$add_to_median <- sub("days","",main_estimates$term)
-main_estimates$add_to_median <- as.numeric(sub("\\_.*","",main_estimates$add_to_median))
-
-main_estimates$median_follow_up <- ((main_estimates$median_follow_up + main_estimates$add_to_median)-1)/7
+# main_estimates$add_to_median <- sub("days","",main_estimates$term)
+# main_estimates$add_to_median <- as.numeric(sub("\\_.*","",main_estimates$add_to_median))
+# 
+# main_estimates$median_follow_up <- ((main_estimates$median_follow_up + main_estimates$add_to_median)-1)/7
 #main_estimates$median_follow_up <- ifelse(main_estimates$median_follow_up == 0, 0.001,main_estimates$median_follow_up )
 
 
@@ -96,7 +91,7 @@ main_estimates$cohort <- factor(main_estimates$cohort, levels=c("prevax","vax","
 main_estimates$colour <- factor(main_estimates$colour, levels=c("#d2ac47","#58764c","#0018a8"))
 
 # Rename adjustment groups
-levels(main_estimates$cohort) <- list("Pre-vaccinated (2020-01-01 - 2021-06-18)"="prevax", "Vaccinated (2021-06-01 - 2021-12-14)"="vax","Unvaccinated (2021-06-01 - 2021-12-14)"="unvax")
+levels(main_estimates$cohort) <- list("Pre-vaccination (2020-01-01 - 2021-06-18)"="prevax", "Vaccinated (2021-06-01 - 2021-12-14)"="vax","Unvaccinated (2021-06-01 - 2021-12-14)"="unvax")
 
 # Order outcomes for plotting
 # Use the nice names from active_analyses table i.e. outcome_name_table
@@ -104,17 +99,17 @@ main_estimates <- main_estimates %>% left_join(outcome_name_table %>% select(out
 main_estimates$outcome <- str_to_title(main_estimates$outcome)
 
 # rename groups
-main_estimates$outcome[main_estimates$outcome == 'Type 2 Diabetes'] <- 'Type 2 Diabetes - Main Analysis'
-main_estimates$outcome[main_estimates$outcome == 'Type 2 Diabetes - No Pre Diabetes'] <- 'Type 2 Diabetes - No History of Pre Diabetes'
-main_estimates$outcome[main_estimates$outcome == 'Type 2 Diabetes - Pre Diabetes'] <- 'Type 2 Diabetes - History of Pre Diabetes'
-main_estimates$outcome[main_estimates$outcome == 'Type 2 Diabetes - Obesity'] <- 'Type 2 Diabetes - Obese Population'
-main_estimates$outcome[main_estimates$outcome == 'Type 2 Diabetes - No Obesity'] <- 'Type 2 Diabetes - Non-Obese Population'
+main_estimates$outcome[main_estimates$outcome == 'Type 2 Diabetes'] <- 'Type 2 diabetes - Main analysis'
+main_estimates$outcome[main_estimates$outcome == 'Type 2 Diabetes - No Pre Diabetes'] <- 'Type 2 diabetes - No history of pre diabetes'
+main_estimates$outcome[main_estimates$outcome == 'Type 2 Diabetes - Pre Diabetes'] <- 'Type 2 diabetes - History of pre diabetes'
+main_estimates$outcome[main_estimates$outcome == 'Type 2 Diabetes - Obesity'] <- 'Type 2 diabetes - History of obesity'
+main_estimates$outcome[main_estimates$outcome == 'Type 2 Diabetes - No Obesity'] <- 'Type 2 diabetes - No history of obesity'
 
-main_estimates$outcome <- factor(main_estimates$outcome, levels=c("Type 2 Diabetes - Non-Obese Population",
-                                                                  "Type 2 Diabetes - Obese Population",
-                                                                  "Type 2 Diabetes - No History of Pre Diabetes",
-                                                                  "Type 2 Diabetes - History of Pre Diabetes",
-                                                                  "Type 2 Diabetes - Main Analysis"))
+main_estimates$outcome <- factor(main_estimates$outcome, levels=c("Type 2 diabetes - No history of obesity",
+                                                                  "Type 2 diabetes - History of obesity",
+                                                                  "Type 2 diabetes - No history of pre diabetes",
+                                                                  "Type 2 diabetes - History of pre diabetes",
+                                                                  "Type 2 diabetes - Main analysis"))
 
 for(i in c("any_position")){
   if(i == "any_position"){
@@ -155,7 +150,7 @@ for(i in c("any_position")){
                    plot.background = ggplot2::element_rect(fill = "white", colour = "white")) +    
     ggplot2::facet_wrap(outcome~., ncol = 2)
   
-  ggplot2::ggsave(paste0(output_dir,"Figure1_all_cohorts_diabetes_subgroups",i,".png"), height = 297, width = 220, unit = "mm", dpi = 600, scale = 1)
+  ggplot2::ggsave(paste0(output_dir,"t2dm_subgroups",i,".png"), height = 297, width = 220, unit = "mm", dpi = 600, scale = 1)
   
   
 }

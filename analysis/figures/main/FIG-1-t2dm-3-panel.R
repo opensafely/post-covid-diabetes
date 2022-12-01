@@ -10,8 +10,8 @@ library(grid)
 dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
 setwd(dir)
 
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/")
-output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/")
+results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/model/")
+output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/")
 
 #-------------------------#
 # 2. Get outcomes to plot #
@@ -112,6 +112,8 @@ df <- main_estimates %>% dplyr::filter(time_points == "reduced")
 
 # MAIN --------------------------------------------------------------------
 
+# set desired dodge width
+pd <- position_dodge2(width = 0.5)
 
 df_main <- df %>%
   # hospitalise 
@@ -120,16 +122,16 @@ df_main <- df %>%
 main <- ggplot2::ggplot(data=df_main,
                         mapping = ggplot2::aes(x=median_follow_up, y = estimate, color = cohort, shape= cohort, fill= cohort))+
   #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
-  ggplot2::geom_point(aes(),size = 2) +
+  ggplot2::geom_point(aes(),size = 2, position = pd) +
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
   ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
                                                             ymax = ifelse(conf_high>64,64,conf_high),  
                                                             width = 0), 
-                         position = ggplot2::position_dodge(width = 0.5))+   
+                         position = pd)+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
-  ggplot2::geom_line() +
+  ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.5,64), breaks = c(0.5,1,2,4,8,16,32, 64), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,56), breaks = seq(0,56,4)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
@@ -154,7 +156,6 @@ main <- ggplot2::ggplot(data=df_main,
 
 # HOSPITALISED ------------------------------------------------------------
 
-
 df_hosp <- df %>%
   # hospitalise 
   dplyr::filter(subgroup=="covid_pheno_hospitalised")
@@ -162,16 +163,16 @@ df_hosp <- df %>%
 hosp <- ggplot2::ggplot(data=df_hosp,
                         mapping = ggplot2::aes(x=median_follow_up, y = estimate, color = cohort, shape= cohort, fill= cohort))+
   #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
-  ggplot2::geom_point(aes(),size = 2) +
+  ggplot2::geom_point(aes(),size = 2, position = pd) +
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
   ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
                                                             ymax = ifelse(conf_high>64,64,conf_high),  
                                                             width = 0), 
-                         position = ggplot2::position_dodge(width = 0.5))+   
+                         position = pd)+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
-  ggplot2::geom_line() +
+  ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.5,64), breaks = c(0.5,1,2,4,8,16,32, 64), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,56), breaks = seq(0,56,4)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
@@ -205,16 +206,16 @@ df_nonhosp <- df %>%
 non_hosp <- ggplot2::ggplot(data=df_nonhosp,
                             mapping = ggplot2::aes(x=median_follow_up, y = estimate, color = cohort, shape= cohort, fill= cohort))+
   #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
-  ggplot2::geom_point(aes(), size = 2) +
+  ggplot2::geom_point(aes(), size = 2, position = pd) +
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
   ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
                                                             ymax = ifelse(conf_high>64,64,conf_high),  
                                                             width = 0), 
-                         position = ggplot2::position_dodge(width = 0.5))+   
+                         position = pd)+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
-  ggplot2::geom_line() +
+  ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.5,64), breaks = c(0.5,1,2,4,8,16,32, 64), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,56), breaks = seq(0,56,4)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
@@ -251,7 +252,7 @@ non_hosp <- ggplot2::ggplot(data=df_nonhosp,
 
 # ADD EVENT COUNTS TO PLOT TABLE  -------------------------------------------------------
 
-table2 <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/formatted_table_2.csv",
+table2 <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/formatted_table_2.csv",
                    check.names = FALSE)
 
 table2 <- table2 %>%

@@ -6,8 +6,8 @@ library(purrr)
 library(tidyr)
 rm(list = ls())
 
-results_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/model/"
-output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/"
+results_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/model/"
+output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/"
 
 dir.create(file.path(output_dir), recursive =TRUE, showWarnings = FALSE)
 
@@ -25,14 +25,25 @@ outcome_name_table <- active_analyses %>%
 outcomes_to_plot <- outcome_name_table$outcome_name
 
 # Load all estimates
-estimates <- read.csv(paste0(output_dir,"/hr_output_formatted.csv"))
+estimates <- read.csv(paste0(results_dir,"/hr_output_formatted.csv"))
 
+# Remove any hospitalised analyses ran with R
+
+estimates <- estimates %>% filter(!(subgroup == "covid_pheno_hospitalised" & source == "R")) %>%
+  filter(!(subgroup == "covid_pheno_non_hospitalised" & source == "stata"))
+
+# Remove any main analyses ran with Stata
+
+estimates <- estimates %>% filter(!(subgroup == "main" & source == "stata"))
 
 estimates <- estimates %>% filter(((subgroup == "main" & model %in% c("mdl_max_adj","mdl_age_sex_region"))
                                    | (subgroup %in% c("covid_pheno_hospitalised","covid_pheno_non_hospitalised") & model=="mdl_max_adj")) 
                                   & event %in% outcomes_to_plot 
                                   & term %in% term[grepl("^days",term)])%>%
   select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,model)
+
+# remove duplicate rows
+estimates <- estimates[!duplicated(estimates), ]
 
 #----------------------Add empty rows for missing results-----------------------
 df1 <- crossing(outcomes_to_plot,c("main","covid_pheno_non_hospitalised","covid_pheno_hospitalised"),c("prevax","vax","unvax"),

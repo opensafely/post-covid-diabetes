@@ -10,8 +10,8 @@ library(RColorBrewer)
 library(gridExtra)
 #library(plyr)
 
-aer_output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/AER/"
-aer_output_fig <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/"
+aer_output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/AER/"
+aer_output_fig <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/"
 
 event_of_interest <- c("t2dm")
 cohort_name <- c("prevax", "vax","unvax")

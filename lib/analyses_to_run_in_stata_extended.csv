@@ -1,0 +1,4 @@
+﻿outcome,cohort,subgroup,time_periods
+t2dm_extended_follow_up,prevax,main,extended
+t2dm_extended_follow_up,prevax,non_hospitalised,extended
+t2dm_extended_follow_up,prevax,hospitalised,extended

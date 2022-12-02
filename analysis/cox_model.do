@@ -247,7 +247,7 @@ else {
 	replace follow_up = follow_up + 197 if term == "days197_535" 
 }
 
-replace follow_up = follow_up + 28 if term == "days128_197" 
+replace follow_up = follow_up + 28 if term == "days28_197" 
 bysort term: egen medianfup = median(follow_up)
 
 keep term medianfup

@@ -24,12 +24,20 @@ subgroup_table1$event <- "t2dm"
 subgroup_table2 <- subset(combined_hr, event == "t2dm")
 
 combined_hr <- rbind(subgroup_table1,subgroup_table2)
-rm(subgroup_table1,subgroup_table2,hr_file_paths)
+
+if (cohort == "prevax"){
+  combined_hr <- combined_hr %>% filter(cohort == "prevax")
+} else if (cohort == "vax"){
+  combined_hr <- combined_hr %>% filter(cohort == "vax")
+} else if (cohort == "unvax"){
+  combined_hr <- combined_hr %>% filter(cohort == "unvax")
+}
 
 #-------------------------Filter to active outcomes-----------------------------
 
-combined_hr <- combined_hr %>% filter(event == "t2dm")
-combined_hr <- combined_hr %>% filter(model == "mdl_max_adj" | (model=="mdl_age_sex" & subgroup=="main"))
+combined_hr <- combined_hr %>% filter(event == "t2dm") %>%
+  filter(time_points == "reduced")
+combined_hr <- combined_hr %>% filter(model == "mdl_max_adj")
 # combined_hr <- combined_hr %>% filter(subgroup != "covid_pheno_hospitalised" & subgroup !="covid_history" & subgroup !="covid_pheno_non_hospitalised")
 combined_hr <- combined_hr %>% mutate_at(c("estimate","conf_low","conf_high", "median_follow_up"), as.numeric)
 
@@ -44,18 +52,23 @@ combined_hr <- combined_hr %>% filter(str_detect(term, "^days"))
 
 #---------------------------Specify time to plot--------------------------------
 
-combined_hr$add_to_median <- sub("days","",combined_hr$term)
-combined_hr$add_to_median <- as.numeric(sub("\\_.*","",combined_hr$add_to_median))
-
-combined_hr$median_follow_up <- ((combined_hr$median_follow_up + combined_hr$add_to_median)-1)/7
+# combined_hr$add_to_median <- sub("days","",combined_hr$term)
+# combined_hr$add_to_median <- as.numeric(sub("\\_.*","",combined_hr$add_to_median))
+# 
+# combined_hr$median_follow_up <- ((combined_hr$median_follow_up + combined_hr$add_to_median)-1)/7
 
 
 ### REMOVE SUBGROUPS THAT ARE NOT NEEDED IN FIGURES
 
-combined_hr <- subset(combined_hr, subgroup != "covid_pheno_hospitalised")
-combined_hr <- subset(combined_hr, subgroup != "covid_pheno_non_hospitalised")
-combined_hr <- subset(combined_hr, subgroup != "sex_Male")
-combined_hr <- subset(combined_hr, subgroup != "sex_Female")
+combined_hr <- subset(combined_hr, subgroup == "agegp_18_39" | subgroup == "agegp_40_59" | subgroup == "agegp_60_79" | subgroup == "agegp_80_110" |
+                        subgroup == "ethnicity_Black" | subgroup == "ethnicity_Missing" | subgroup == "ethnicity_Other" | subgroup == "ethnicity_South_Asian" |
+                        subgroup == "ethnicity_White" | subgroup == "obes" | subgroup == "obes_no" | subgroup == "pd" |
+                        subgroup == "pd_no" | subgroup == "sex_Female" | subgroup == "sex_Male")
+
+# combined_hr <- subset(combined_hr, subgroup != "covid_pheno_hospitalised")
+# combined_hr <- subset(combined_hr, subgroup != "covid_pheno_non_hospitalised")
+# combined_hr <- subset(combined_hr, subgroup != "sex_Male")
+# combined_hr <- subset(combined_hr, subgroup != "sex_Female")
 # combined_hr <- subset(combined_hr, subgroup != "obes")
 # combined_hr <- subset(combined_hr, subgroup != "obes_no")
 # combined_hr <- subset(combined_hr, subgroup != "pd")
@@ -74,8 +87,8 @@ combined_hr$subgroup <- ifelse(combined_hr$subgroup=="agegp_18_39","Age group: 1
 combined_hr$subgroup <- ifelse(combined_hr$subgroup=="agegp_40_59","Age group: 40-59",combined_hr$subgroup)
 combined_hr$subgroup <- ifelse(combined_hr$subgroup=="agegp_60_79","Age group: 60-79",combined_hr$subgroup)
 combined_hr$subgroup <- ifelse(combined_hr$subgroup=="agegp_80_110","Age group: 80-110",combined_hr$subgroup)
-# combined_hr$subgroup <- ifelse(combined_hr$subgroup=="sex_Male","Sex: Male",combined_hr$subgroup)
-# combined_hr$subgroup <- ifelse(combined_hr$subgroup=="sex_Female","Sex: Female",combined_hr$subgroup)
+combined_hr$subgroup <- ifelse(combined_hr$subgroup=="sex_Male","Sex: Male",combined_hr$subgroup)
+combined_hr$subgroup <- ifelse(combined_hr$subgroup=="sex_Female","Sex: Female",combined_hr$subgroup)
 combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_White","Ethnicity: White",combined_hr$subgroup)
 combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_Mixed","Ethnicity: Mixed",combined_hr$subgroup)
 combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_South_Asian","Ethnicity: South Asian",combined_hr$subgroup)
@@ -109,8 +122,8 @@ combined_hr$colour <- ifelse(combined_hr$subgroup=="Age group: 18-39","#006d2c",
 combined_hr$colour <- ifelse(combined_hr$subgroup=="Age group: 40-59","#31a354",combined_hr$colour)
 combined_hr$colour <- ifelse(combined_hr$subgroup=="Age group: 60-79","#74c476",combined_hr$colour)
 combined_hr$colour <- ifelse(combined_hr$subgroup=="Age group: 80-110","#bae4b3",combined_hr$colour)
-# combined_hr$colour <- ifelse(combined_hr$subgroup=="Sex: Male","#bababa",combined_hr$colour)
-# combined_hr$colour <- ifelse(combined_hr$subgroup=="Sex: Female","#000000",combined_hr$colour)
+combined_hr$colour <- ifelse(combined_hr$subgroup=="Sex: Male","#bababa",combined_hr$colour)
+combined_hr$colour <- ifelse(combined_hr$subgroup=="Sex: Female","#000000",combined_hr$colour)
 combined_hr$colour <- ifelse(combined_hr$subgroup=="Ethnicity: White","#08519c",combined_hr$colour)
 combined_hr$colour <- ifelse(combined_hr$subgroup=="Ethnicity: Black","#2171b5",combined_hr$colour)
 combined_hr$colour <- ifelse(combined_hr$subgroup=="Ethnicity: South Asian","#4292c6",combined_hr$colour)
@@ -139,14 +152,12 @@ combined_hr$grouping=""
 # combined_hr$grouping=ifelse(combined_hr$subgroup=="Non-hospitalised COVID-19","Hospitalised/Non-hospitalised COVID-19",combined_hr$grouping)
 #combined_hr$grouping=ifelse(endsWith(combined_hr$subgroup,"event")==T,"Prior history of event",combined_hr$grouping)
 combined_hr$grouping=ifelse(startsWith(combined_hr$subgroup,"Age group")==T,"Age group",combined_hr$grouping)
-# combined_hr$grouping=ifelse(startsWith(combined_hr$subgroup,"Sex")==T,"Sex",combined_hr$grouping)
+combined_hr$grouping=ifelse(startsWith(combined_hr$subgroup,"Sex")==T,"Sex",combined_hr$grouping)
 combined_hr$grouping=ifelse(startsWith(combined_hr$subgroup,"Ethnicity")==T,"Ethnicity",combined_hr$grouping)
 combined_hr$grouping=ifelse(combined_hr$subgroup=="History of obesity","Obesity",combined_hr$grouping)
 combined_hr$grouping=ifelse(combined_hr$subgroup=="No history of obesity","Obesity",combined_hr$grouping)
 combined_hr$grouping=ifelse(combined_hr$subgroup=="History of pre-diabetes","Pre-diabetes",combined_hr$grouping)
 combined_hr$grouping=ifelse(combined_hr$subgroup=="No history of pre-diabetes","Pre-diabetes",combined_hr$grouping)
-
-combined_hr$cohort <- cohort
 
 # keep only reduced timepoints for subgroups for easy comparison
 
@@ -169,7 +180,7 @@ for(c in cohort){
     #for(i in c("Overall","Hospitalised/Non-hospitalised COVID-19", "Prior history of event","Age group","Sex","Ethnicity" )){
     # for(i in c("Age group","Sex","Ethnicity", "Obesity", "Pre-diabetes")){
       # without SEX
-      for(i in c("Age group","Ethnicity", "Obesity", "Pre-diabetes")){
+      for(i in c("Age group", "Sex","Ethnicity", "Obesity", "Pre-diabetes")){
       levels_available <- unique(df$grouping)
       if(i %in% levels_available){
         group_levels <- append(group_levels,i)
@@ -182,6 +193,7 @@ for(c in cohort){
     for(i in c(
                # "Hospitalised COVID-19", "Non-hospitalised COVID-19",
                "Age group: 18-39","Age group: 40-59","Age group: 60-79","Age group: 80-110",
+               "Sex: Male", "Sex: Female",
                "Ethnicity: White","Ethnicity: Black","Ethnicity: South Asian","Ethnicity: Other Ethnic Groups", "Ethnicity: Mixed","Ethnicity: Missing",
                "History of obesity", "No history of obesity", "History of pre-diabetes", "No history of pre-diabetes")){
       levels_available <- unique(df$subgroup)
@@ -198,6 +210,8 @@ for(c in cohort){
                "#31a354",
                "#74c476",
                "#bae4b3",
+               "#bababa",
+               "#000000",
                "#08519c",
                "#2171b5",
                "#4292c6",

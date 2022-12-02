@@ -11,3 +11,9 @@ t2dm,unvax,non_hospitalised,reduced
 t2dm_follow,prevax,hospitalised,reduced
 t2dm_follow,prevax,main,reduced
 t2dm_follow,prevax,non_hospitalised,reduced
+t2dm_rec,prevax,hospitalised,reduced
+t2dm_pre_rec,prevax,hospitalised,reduced
+t2dm_post_rec,prevax,hospitalised,reduced
+t2dm_rec,prevax,main,reduced
+t2dm_pre_rec,prevax,main,reduced
+t2dm_post_rec,prevax,main,reduced

@@ -1,5 +1,5 @@
 /*----------------------------------------------------------------------------
-Do file name: 			cox_models
+Do file name: 			cox_models for day 0 sensitivity analysis
 Project: 				Project 12: Post covid CVD events
 Date:					08/09/2022
 Author:					Venexia Walker and Rachel Denholm
@@ -182,12 +182,12 @@ mkspline age_spline = age, cubic knots(`r(c_1)' `r(c_2)' `r(c_3)')
 
 if `prevax_cohort'==1 {
 	stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,01,2020))
-	stsplit time, after(exposure_date) at(0 28 197 535)
+	stsplit time, after(exposure_date) at(0 1 28 197 535)
 	replace time = 535 if time==-1
 } 
 else {
 	stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,06,2021))
-	stsplit time, after(exposure_date) at(0 28 197)
+	stsplit time, after(exposure_date) at(0 1 28 197)
 	replace time = 197 if time==-1
 }
 
@@ -198,9 +198,13 @@ egen follow_up_total = total(follow_up)
 
 * Make days variables
 
-gen days0_28 = 0
-replace days0_28 = 1 if time==0
-tab days0_28
+gen days0 = 0
+replace days0 = 1 if time==0
+tab days0
+
+gen days1_28 = 0
+replace days1_28 = 1 if time==1
+tab days1_28
 
 gen days28_197 = 0
 replace days28_197 = 1 if time==28
@@ -233,17 +237,19 @@ keep patient_id days* follow_up
 gen term = ""
 
 if `prevax_cohort'==1 {
-	drop if days0_28==0 & days28_197==0 & days197_535==0	
-	replace term = "days0_28" if days0_28==1 & days28_197==0 & days197_535==0
-	replace term = "days28_197" if days0_28==0 & days28_197==1 & days197_535==0
-	replace term = "days197_535" if days0_28==0 & days28_197==0 & days197_535==1 
+	drop if days0==0 & days1_28==0 & days28_197==0 & days197_535==0	
+	replace term = "days0" if days0==1 & days1_28==0 & days28_197==0 & days197_535==0
+	replace term = "days1_28" if days0==0 & days1_28==1 & days28_197==0 & days197_535==0
+	replace term = "days28_197" if days0==0 & days1_28==0 & days28_197==1 & days197_535==0
+	replace term = "days197_535" if days0==0 & days1_28==0 & days28_197==0 & days197_535==1 
 
 } 
 else {
-	drop if days0_28==0 & days28_197==0
-	replace term = "days0_28" if days0_28==1 & days28_197==0
-	replace term = "days28_197" if days0_28==0 & days28_197==1
-	replace term = "days197_535" if days0_28==0 & days28_197==0
+	drop if days0==0 & days1_28==0 & days28_197==0
+	replace term = "days0" if days0==1 & days1_28==0 & days28_197==0
+	replace term = "days1_28" if days==0 & days1_28==1 & days28_197==0
+	replace term = "days28_197" if days==0 & days1_28==0 & days28_197==1
+	replace term = "days197_535" if days==0 & days1_28==0 & days28_197==0
 	replace follow_up = follow_up + 197 if term == "days197_535" 
 }
 

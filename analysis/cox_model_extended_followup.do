@@ -182,14 +182,10 @@ mkspline age_spline = age, cubic knots(`r(c_1)' `r(c_2)' `r(c_3)')
 
 if `prevax_cohort'==1 {
 	stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,01,2020))
-	stsplit time, after(exposure_date) at(0 28 197 535)
-	replace time = 535 if time==-1
+	stsplit time, after(exposure_date) at(28 197 365 714)
+	replace time = 714 if time==-1
 } 
-else {
-	stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,06,2021))
-	stsplit time, after(exposure_date) at(0 28 197)
-	replace time = 197 if time==-1
-}
+
 
 * Calculate study follow up
 
@@ -198,18 +194,18 @@ egen follow_up_total = total(follow_up)
 
 * Make days variables
 
-gen days0_28 = 0
-replace days0_28 = 1 if time==0
-tab days0_28
-
-gen days28_197 = 0
-replace days28_197 = 1 if time==28
-tab days28_197
-
 if `prevax_cohort'==1 {
-	gen days197_535 = 0 
-	replace days197_535 = 1 if time==197
-	tab days197_535
+    gen days28_197 = 0
+    replace days28_197 = 1 if time==28
+    tab days28_197
+
+	gen days197_365 = 0 
+	replace days197_365 = 1 if time==197
+	tab days197_365
+
+    gen days365_714 = 0 
+	replace days365_714 = 1 if time==365
+	tab days365_714
 }
 
 * Run models and save output [Note: cannot use efron method with weights]
@@ -233,24 +229,18 @@ keep patient_id days* follow_up
 gen term = ""
 
 if `prevax_cohort'==1 {
-	drop if days0_28==0 & days28_197==0 & days197_535==0	
-	replace term = "days0_28" if days0_28==1 & days28_197==0 & days197_535==0
-	replace term = "days28_197" if days0_28==0 & days28_197==1 & days197_535==0
-	replace term = "days197_535" if days0_28==0 & days28_197==0 & days197_535==1 
-
+	drop if days28_197==0 & days197_365==0 & days365_714==0
+	replace term = "days28_197" if days28_197==1 & days197_365==0 & & days365_714==0
+	replace term = "days197_365" if days28_197==0 & days197_365==1 & days365_714==0
+    replace term = "days0_28" if days28_197==0 & days197_365==0 & days365_714==1
 } 
-else {
-	drop if days0_28==0 & days28_197==0
-	replace term = "days0_28" if days0_28==1 & days28_197==0
-	replace term = "days28_197" if days0_28==0 & days28_197==1
-	replace term = "days197_535" if days0_28==0 & days28_197==0
-	replace follow_up = follow_up + 197 if term == "days197_535" 
-}
 
+
+*Unsure if/how this line should be updated
 replace follow_up = follow_up + 28 if term == "days28_197" 
 bysort term: egen medianfup = median(follow_up)
 
 keep term medianfup
 duplicates drop
 
-export delimited using "output/`cpf'_stata_median_fup", replace
+export delimited using "output/`cpf'_stata_median_fup_extendedfup", replace

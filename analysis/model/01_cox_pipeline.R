@@ -32,7 +32,7 @@ library(matrixStats)
 args = commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
-  event_name="t2dm"
+  event_name="t2dm_extended_follow_up"
   cohort="prevax"
 }else{
   event_name  = args[[1]]
@@ -72,7 +72,7 @@ analyses_to_run$reduced_timepoint <- lapply(split(analyses_to_run,seq(nrow(analy
                                                 subgroup=analyses_to_run$subgroup,
                                                 stratify_by_subgroup=analyses_to_run$stratify_by_subgroup,
                                                 stratify_by=analyses_to_run$strata,
-                                                input, cuts_days_since_expo,cuts_days_since_expo_reduced)
+                                                input)
 )
 
 analyses_to_run$reduced_timepoint <-  as.character(analyses_to_run$reduced_timepoint)

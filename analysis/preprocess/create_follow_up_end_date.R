@@ -33,6 +33,7 @@ if (cohort_name %in% c("vax","unvax"))
 }else if (cohort_name == "prevax") {
   cohort_start_date <- as.Date(study_dates$pandemic_start)
   cohort_end_date <- as.Date(study_dates$all_eligible)
+  cohort_end_date_extended <- as.Date("2021-12-14")
   
 }
 
@@ -66,13 +67,14 @@ follow_up_end_dates <- function(cohort_name, group){
     # Calculate follow up end dates based on cohort
     # follow_up_end_unexposed is required in Table 2 script and follow_up_end is 
     # the general follow up end date for each patient
-    if(cohort_name=="prevax" & group != "diabetes_recovery"){
+    if(cohort_name=="prevax" & group != "diabetes_recovery" & event != grepl("extended_follow_up",event)){
       
       input$follow_up_end_unexposed <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "expo_date", "death_date", "cohort_end_date")],1, min,na.rm=TRUE)
       input$follow_up_end <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "death_date", "cohort_end_date")],1, min,na.rm=TRUE)
       
       input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
       input$follow_up_end <- as.Date(input$follow_up_end)
+      
     }else if(cohort_name=="prevax" & group == "diabetes_recovery"){
       
       cohort_end_date <- as.Date(as.Date("2020-06-15"))
@@ -96,9 +98,11 @@ follow_up_end_dates <- function(cohort_name, group){
       
       input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
       input$follow_up_end <- as.Date(input$follow_up_end)
+      
+    }else if(grepl("extended_follow_up",event)){
+      input$follow_up_end_unexposed <- apply(input[,c("event_date", "expo_date", "death_date","cohort_end_date_extended")],1, min,na.rm=TRUE)
+      input$follow_up_end <- apply(input[,c("event_date", "death_date","cohort_end_date_extended")],1, min, na.rm=TRUE)
     }
-    
-    
     # Calculate date_expo_censor which is the COVID exposure date for the phenotype  not of interest
     # in the phenotype analyses. This is needed to re-calculate follow-up end for pheno anlayses
     
@@ -162,7 +166,7 @@ follow_up_end_dates <- function(cohort_name, group){
   }
   
   input <- input[,c("patient_id","index_date",
-                    colnames(input)[grepl("follow_up",colnames(input))],
+                    colnames(input)[grepl("follow_up_end",colnames(input))],
                     colnames(input)[grepl("censor",colnames(input))])] 
   
   saveRDS(input, paste0("output/follow_up_end_dates_",cohort_name, "_",group, ".rds"))

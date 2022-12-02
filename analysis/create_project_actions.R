@@ -52,7 +52,7 @@ analyses_to_run_stata_day0$subgroup <- ifelse(analyses_to_run_stata_day0$subgrou
 
 # ANALYSES TO RUN STATA - EXTENDED FOLLOW UP PREVAX
 
-analyses_to_run_stata_extended <- read.csv("lib/analyses_to_run_in_stata.csv")
+analyses_to_run_stata_extended <- read.csv("lib/analyses_to_run_in_stata_extended.csv")
 analyses_to_run_stata_extended <- analyses_to_run_stata_extended[,c("outcome","subgroup","cohort","time_periods")]
 analyses_to_run_stata_extended$subgroup <- ifelse(analyses_to_run_stata_extended$subgroup=="hospitalised","covid_pheno_hospitalised",analyses_to_run_stata_extended$subgroup)
 analyses_to_run_stata_extended$subgroup <- ifelse(analyses_to_run_stata_extended$subgroup=="non_hospitalised","covid_pheno_non_hospitalised",analyses_to_run_stata_extended$subgroup)

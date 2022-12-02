@@ -37,6 +37,7 @@ fs::dir_create(here::here("output", "review", "descriptives"))
 
 cohort_start_date_prevax <- as.Date("2020-01-01")
 cohort_end_date_prevax <- as.Date("2021-06-18")
+cohort_end_date_prevax_extended <- as.Date("2021-12-14")
 
 cohort_start_date_delta <- as.Date("2021-06-01")
 cohort_end_date_delta <- as.Date("2021-12-14")
@@ -63,13 +64,13 @@ table_2_subgroups_output <- function(cohort_name, group){
   survival_data<- survival_data %>% left_join(end_dates, by="patient_id")
   rm(end_dates)
   
-  survival_data<-survival_data[,c("patient_id","index_date","cov_cat_sex",
+  survival_data<-survival_data[,unique(c("patient_id","index_date","cov_cat_sex",
                                   "cov_num_age","cov_cat_ethnicity",
                                   "sub_bin_covid19_confirmed_history","exp_date_covid19_confirmed","sub_cat_covid19_hospital",
                                   colnames(survival_data)[grepl("out_",colnames(survival_data))],
                                   colnames(survival_data)[grepl("follow_up",colnames(survival_data))],
                                   colnames(survival_data)[grepl("_expo_",colnames(survival_data))],
-                                  unique(active_analyses$prior_history_var[active_analyses$prior_history_var !=""]))]
+                                  unique(active_analyses$prior_history_var[active_analyses$prior_history_var !=""])))]
   
   setnames(survival_data, 
            old = c("cov_cat_sex", 
@@ -155,6 +156,7 @@ table_2_subgroups_output <- function(cohort_name, group){
              old = c(paste0("out_date_",event_short),
                      paste0(event_short,"_follow_up_end_unexposed"),
                      paste0(event_short,"_follow_up_end"),
+                     paste0(event_short,"_follow_up_end_exposure_period"),
                      paste0(event_short,"_hospitalised_follow_up_end"),
                      paste0(event_short,"_non_hospitalised_follow_up_end"),
                      paste0(event_short,"_hospitalised_date_expo_censor"),
@@ -163,6 +165,7 @@ table_2_subgroups_output <- function(cohort_name, group){
              new = c("event_date",
                      "follow_up_end_unexposed",
                      "follow_up_end",
+                     "follow_up_end_exposure_period",
                      "hospitalised_follow_up_end",
                      "non_hospitalised_follow_up_end",
                      "hospitalised_date_expo_censor",
@@ -189,6 +192,7 @@ table_2_subgroups_output <- function(cohort_name, group){
              old = c("event_date",
                      "follow_up_end_unexposed",
                      "follow_up_end",
+                     "follow_up_end_exposure_period",
                      "hospitalised_follow_up_end",
                      "non_hospitalised_follow_up_end",
                      "hospitalised_date_expo_censor",
@@ -197,6 +201,7 @@ table_2_subgroups_output <- function(cohort_name, group){
              new = c(paste0("out_date_",event_short),
                      paste0(event_short,"_follow_up_end_unexposed"),
                      paste0(event_short,"_follow_up_end"),
+                     paste0(event_short,"_follow_up_end_exposure_period"),
                      paste0(event_short,"_hospitalised_follow_up_end"),
                      paste0(event_short,"_non_hospitalised_follow_up_end"),
                      paste0(event_short,"_hospitalised_date_expo_censor"),
@@ -268,7 +273,7 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
   }
   
   if(startsWith(subgroup,"covid_pheno_")){
-    data_active <- data_active %>% mutate(exp_date_covid19_confirmed = replace(exp_date_covid19_confirmed, which(!is.na(date_expo_censor) & (exp_date_covid19_confirmed >= date_expo_censor)), NA) )%>%
+    data_active <- data_active %>% mutate(exp_date_covid19_confirmed = replace(exp_date_covid19_confirmed, which(exp_date_covid19_confirmed>follow_up_end_exposure_period | exp_date_covid19_confirmed<index_date), NA)) %>%
       mutate(event_date = replace(event_date, which(!is.na(date_expo_censor) & (event_date >= date_expo_censor)), NA)) %>%
       filter((index_date != date_expo_censor)|is.na(date_expo_censor))
     
@@ -305,8 +310,11 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
     
     data_active = data_active %>% filter((person_days_unexposed >=0 & person_days_unexposed <= 197)
                                          & (person_days >=0 & person_days <= 197)) # filter out follow up period
+    
+  } else if(grepl("extended_follow_up",event)){
+    data_active = data_active %>% filter((person_days_unexposed >=0 & person_days_unexposed <= 714)
+                                         & (person_days >=0 & person_days <= 714)) # filter out follow up period
   }
-  
   
   person_days_total_unexposed  = round(sum(data_active$person_days_unexposed, na.rm = TRUE),1)
   person_days_total = round(sum(data_active$person_days, na.rm = TRUE),1)

@@ -62,20 +62,11 @@ follow_up_end_dates <- function(cohort_name, group){
     input <- input %>%rename(event_date = event)
     input$expo_date <- input$exp_date_covid19_confirmed
     input$expo_pheno <- input$sub_cat_covid19_hospital
-    input <- input %>% mutate(expo_date = replace(expo_date, which(expo_date<index_date | expo_date > vax_date_eligible | expo_date > vax_date_covid_1 | expo_date > cohort_end_date ), NA))
+    input <- input %>% mutate(expo_date = replace(expo_date, which(expo_date<index_date), NA))
     
     # Calculate follow up end dates based on cohort
     # follow_up_end_unexposed is required in Table 2 script and follow_up_end is 
     # the general follow up end date for each patient
-    
-    #Add censor date for COVID exposure. In extended follow up analysis we don't want to extend the exposure period
-    #so need an additional end date for COVID exposures which is the same as in the regular analysis.
-    #This needs to be applied before calculating end dates so that only COVID exposure date within the original exposure
-    #period are used for calcuting extended follow up end dates
-    
-    input$follow_up_end_exposure_period <- apply(input[,c("vax_date_eligible", "vax_date_covid_1","event_date", "death_date","cohort_end_date")],1, min, na.rm=TRUE)
-    input <- input %>% mutate(expo_date = replace(expo_date, which(expo_date>follow_up_end_exposure_period | expo_date<index_date), NA))
-    
     if(cohort_name=="prevax" & group != "diabetes_recovery" & event != grepl("extended_follow_up",event)){
       
       input$follow_up_end_unexposed <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "expo_date", "death_date", "cohort_end_date")],1, min,na.rm=TRUE)
@@ -112,14 +103,12 @@ follow_up_end_dates <- function(cohort_name, group){
       input$follow_up_end_unexposed <- apply(input[,c("event_date", "expo_date", "death_date","cohort_end_date_extended")],1, min,na.rm=TRUE)
       input$follow_up_end <- apply(input[,c("event_date", "death_date","cohort_end_date_extended")],1, min, na.rm=TRUE)
     }
-    
-    input$follow_up_end_exposure_period <- as.Date(input$follow_up_end_exposure_period)
-    
     # Calculate date_expo_censor which is the COVID exposure date for the phenotype  not of interest
     # in the phenotype analyses. This is needed to re-calculate follow-up end for pheno anlayses
     
     input <- input %>% mutate(event_date = replace(event_date, which(event_date>follow_up_end | event_date<index_date), NA))
-
+    input <- input %>% mutate(expo_date =  replace(expo_date, which(expo_date>follow_up_end | expo_date<index_date), NA))
+    
     # Update COVID phenotypes after setting COVID exposure dates to NA that lie
     # outside follow up
     input$expo_pheno=as.character(input$expo_pheno)
@@ -161,7 +150,6 @@ follow_up_end_dates <- function(cohort_name, group){
              old = c("event_date",
                      "follow_up_end_unexposed",
                      "follow_up_end",
-                     "follow_up_end_exposure_period",
                      "hospitalised_follow_up_end",
                      "non_hospitalised_follow_up_end",
                      "hospitalised_date_expo_censor",
@@ -169,7 +157,6 @@ follow_up_end_dates <- function(cohort_name, group){
              new = c(paste0("out_date_",event_short),
                      paste0(event_short,"_follow_up_end_unexposed"),
                      paste0(event_short,"_follow_up_end"),
-                     paste0(event_short,"_follow_up_end_exposure_period"),
                      paste0(event_short,"_hospitalised_follow_up_end"),
                      paste0(event_short,"_non_hospitalised_follow_up_end"),
                      paste0(event_short,"_hospitalised_date_expo_censor"),

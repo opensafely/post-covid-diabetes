@@ -65,12 +65,12 @@ table_2_subgroups_output <- function(cohort_name, group){
   rm(end_dates)
   
   survival_data<-survival_data[,unique(c("patient_id","index_date","cov_cat_sex",
-                                  "cov_num_age","cov_cat_ethnicity",
-                                  "sub_bin_covid19_confirmed_history","exp_date_covid19_confirmed","sub_cat_covid19_hospital",
-                                  colnames(survival_data)[grepl("out_",colnames(survival_data))],
-                                  colnames(survival_data)[grepl("follow_up",colnames(survival_data))],
-                                  colnames(survival_data)[grepl("_expo_",colnames(survival_data))],
-                                  unique(active_analyses$prior_history_var[active_analyses$prior_history_var !=""])))]
+                                         "cov_num_age","cov_cat_ethnicity",
+                                         "sub_bin_covid19_confirmed_history","exp_date_covid19_confirmed","sub_cat_covid19_hospital",
+                                         colnames(survival_data)[grepl("out_",colnames(survival_data))],
+                                         colnames(survival_data)[grepl("follow_up",colnames(survival_data))],
+                                         colnames(survival_data)[grepl("_expo_",colnames(survival_data))],
+                                         unique(active_analyses$prior_history_var[active_analyses$prior_history_var !=""])))]
   
   setnames(survival_data, 
            old = c("cov_cat_sex", 
@@ -144,18 +144,19 @@ table_2_subgroups_output <- function(cohort_name, group){
       startsWith(subgroup, "sex") ~ "sex",
       startsWith(subgroup, "aer") ~ "aer_subgroup",
       TRUE ~ as.character(subgroup)))
-
+  
   analyses_of_interest[,c("unexposed_person_days", "unexposed_event_count","post_exposure_event_count", "total_person_days","day_0_event_counts","total_covid19_cases","N_population_size")] <- NA
   
   #-----------Populate analyses_of_interest with events counts/follow up--------
   for(i in 1:nrow(analyses_of_interest)){
     print(paste0("Working on ", analyses_of_interest$event[i]," ", analyses_of_interest$subgroup[i]))
-
+    
     event_short = gsub("out_date_", "",analyses_of_interest$event[i])
     setnames(survival_data,
              old = c(paste0("out_date_",event_short),
                      paste0(event_short,"_follow_up_end_unexposed"),
                      paste0(event_short,"_follow_up_end"),
+                     paste0(event_short,"_follow_up_end_exposure_period"),
                      paste0(event_short,"_hospitalised_follow_up_end"),
                      paste0(event_short,"_non_hospitalised_follow_up_end"),
                      paste0(event_short,"_hospitalised_date_expo_censor"),
@@ -164,6 +165,7 @@ table_2_subgroups_output <- function(cohort_name, group){
              new = c("event_date",
                      "follow_up_end_unexposed",
                      "follow_up_end",
+                     "follow_up_end_exposure_period",
                      "hospitalised_follow_up_end",
                      "non_hospitalised_follow_up_end",
                      "hospitalised_date_expo_censor",
@@ -184,12 +186,13 @@ table_2_subgroups_output <- function(cohort_name, group){
     analyses_of_interest$day_0_event_counts[i] <- table2_output[[5]]
     analyses_of_interest$total_covid19_cases[i] <- table2_output[[6]]
     analyses_of_interest$N_population_size[i] <- table2_output[[7]]
-  
+    
     
     setnames(survival_data,
              old = c("event_date",
                      "follow_up_end_unexposed",
                      "follow_up_end",
+                     "follow_up_end_exposure_period",
                      "hospitalised_follow_up_end",
                      "non_hospitalised_follow_up_end",
                      "hospitalised_date_expo_censor",
@@ -198,6 +201,7 @@ table_2_subgroups_output <- function(cohort_name, group){
              new = c(paste0("out_date_",event_short),
                      paste0(event_short,"_follow_up_end_unexposed"),
                      paste0(event_short,"_follow_up_end"),
+                     paste0(event_short,"_follow_up_end_exposure_period"),
                      paste0(event_short,"_hospitalised_follow_up_end"),
                      paste0(event_short,"_non_hospitalised_follow_up_end"),
                      paste0(event_short,"_hospitalised_date_expo_censor"),
@@ -269,7 +273,8 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
   }
   
   if(startsWith(subgroup,"covid_pheno_")){
-    data_active <- data_active %>% mutate(exp_date_covid19_confirmed = replace(exp_date_covid19_confirmed, which(!is.na(date_expo_censor) & (exp_date_covid19_confirmed >= date_expo_censor)), NA) )%>%      mutate(event_date = replace(event_date, which(!is.na(date_expo_censor) & (event_date >= date_expo_censor)), NA)) %>%
+    data_active <- data_active %>% mutate(exp_date_covid19_confirmed = replace(exp_date_covid19_confirmed, which(exp_date_covid19_confirmed>follow_up_end_exposure_period | exp_date_covid19_confirmed<index_date), NA)) %>%
+      mutate(event_date = replace(event_date, which(!is.na(date_expo_censor) & (event_date >= date_expo_censor)), NA)) %>%
       filter((index_date != date_expo_censor)|is.na(date_expo_censor))
     
     data_active[follow_up_end == date_expo_censor, follow_up_end := follow_up_end-1]
@@ -295,7 +300,7 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
     
     data_active = data_active %>% filter((person_days_unexposed >=0 & person_days_unexposed <= 535)
                                          & (person_days >=0 & person_days <= 535)) # filter out follow up period
-  
+    
   } else if (cohort == "prevax" & group == "diabetes_recovery"){
     
     data_active = data_active %>% filter((person_days_unexposed >=0 & person_days_unexposed <= 166)

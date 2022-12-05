@@ -31,7 +31,7 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
   }
   
   # Describe survival data
-  sink(paste0("output/not-for-review/describe_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.txt"))
+  sink(paste0("output/not-for-review/describe_data_surv_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.txt"))
   print(Hmisc::describe(data_surv))
   sink()
   

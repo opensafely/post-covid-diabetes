@@ -156,7 +156,6 @@ table_2_subgroups_output <- function(cohort_name, group){
              old = c(paste0("out_date_",event_short),
                      paste0(event_short,"_follow_up_end_unexposed"),
                      paste0(event_short,"_follow_up_end"),
-                     paste0(event_short,"_follow_up_end_exposure_period"),
                      paste0(event_short,"_hospitalised_follow_up_end"),
                      paste0(event_short,"_non_hospitalised_follow_up_end"),
                      paste0(event_short,"_hospitalised_date_expo_censor"),
@@ -165,7 +164,6 @@ table_2_subgroups_output <- function(cohort_name, group){
              new = c("event_date",
                      "follow_up_end_unexposed",
                      "follow_up_end",
-                     "follow_up_end_exposure_period",
                      "hospitalised_follow_up_end",
                      "non_hospitalised_follow_up_end",
                      "hospitalised_date_expo_censor",
@@ -192,7 +190,6 @@ table_2_subgroups_output <- function(cohort_name, group){
              old = c("event_date",
                      "follow_up_end_unexposed",
                      "follow_up_end",
-                     "follow_up_end_exposure_period",
                      "hospitalised_follow_up_end",
                      "non_hospitalised_follow_up_end",
                      "hospitalised_date_expo_censor",
@@ -201,7 +198,6 @@ table_2_subgroups_output <- function(cohort_name, group){
              new = c(paste0("out_date_",event_short),
                      paste0(event_short,"_follow_up_end_unexposed"),
                      paste0(event_short,"_follow_up_end"),
-                     paste0(event_short,"_follow_up_end_exposure_period"),
                      paste0(event_short,"_hospitalised_follow_up_end"),
                      paste0(event_short,"_non_hospitalised_follow_up_end"),
                      paste0(event_short,"_hospitalised_date_expo_censor"),
@@ -273,8 +269,7 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
   }
   
   if(startsWith(subgroup,"covid_pheno_")){
-    data_active <- data_active %>% mutate(exp_date_covid19_confirmed = replace(exp_date_covid19_confirmed, which(exp_date_covid19_confirmed>follow_up_end_exposure_period | exp_date_covid19_confirmed<index_date), NA)) %>%
-      mutate(event_date = replace(event_date, which(!is.na(date_expo_censor) & (event_date >= date_expo_censor)), NA)) %>%
+    data_active <- data_active %>% mutate(exp_date_covid19_confirmed = replace(exp_date_covid19_confirmed, which(!is.na(date_expo_censor) & (exp_date_covid19_confirmed >= date_expo_censor)), NA) )%>%      mutate(event_date = replace(event_date, which(!is.na(date_expo_censor) & (event_date >= date_expo_censor)), NA)) %>%
       filter((index_date != date_expo_censor)|is.na(date_expo_censor))
     
     data_active[follow_up_end == date_expo_censor, follow_up_end := follow_up_end-1]

@@ -55,6 +55,7 @@ follow_up_end_dates <- function(cohort_name, group){
                     colnames(input)[grepl("vax_date_",colnames(input))])] 
   
   input$cohort_end_date<- cohort_end_date
+  input$cohort_end_date_extended<- cohort_end_date_extended
   
   for(event in active_analyses$outcome_variable){
     print(paste0("Working on ",event))
@@ -108,9 +109,15 @@ follow_up_end_dates <- function(cohort_name, group){
       input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
       input$follow_up_end <- as.Date(input$follow_up_end)
       
-    }else if(grepl("extended_follow_up",event)){
+    }
+    
+    if(grepl("extended_follow_up",event)){
       input$follow_up_end_unexposed <- apply(input[,c("event_date", "expo_date", "death_date","cohort_end_date_extended")],1, min,na.rm=TRUE)
       input$follow_up_end <- apply(input[,c("event_date", "death_date","cohort_end_date_extended")],1, min, na.rm=TRUE)
+      
+      input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
+      input$follow_up_end <- as.Date(input$follow_up_end)
+      input$test <- "HELLO"
     }
     
     input$follow_up_end_exposure_period <- as.Date(input$follow_up_end_exposure_period)

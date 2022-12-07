@@ -55,8 +55,9 @@ follow_up_end_dates <- function(cohort_name, group){
                     colnames(input)[grepl("vax_date_",colnames(input))])] 
   
   input$cohort_end_date<- cohort_end_date
+  if (cohort_name == "prevax") {
   input$cohort_end_date_extended<- cohort_end_date_extended
-  
+  }
   for(event in active_analyses$outcome_variable){
     print(paste0("Working on ",event))
     

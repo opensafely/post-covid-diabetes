@@ -16,7 +16,7 @@ args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
   # use for interactive testing
-  cohort_name <- "all"
+  cohort_name <- "prevax"
   group <- "diabetes"
 } else {
   cohort_name <- args[[1]]
@@ -25,8 +25,7 @@ if(length(args)==0){
 #json file containing vax study dates
 study_dates <- fromJSON("output/study_dates.json")
 
-if (cohort_name %in% c("vax","unvax"))
-{
+if (cohort_name %in% c("vax","unvax")){
   #These are the study start and end dates for the Delta era
   cohort_start_date <- as.Date(study_dates$delta_date)
   cohort_end_date <- as.Date(study_dates$omicron_date)
@@ -118,7 +117,6 @@ follow_up_end_dates <- function(cohort_name, group){
       
       input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
       input$follow_up_end <- as.Date(input$follow_up_end)
-      input$test <- "HELLO"
     }
     
     input$follow_up_end_exposure_period <- as.Date(input$follow_up_end_exposure_period)

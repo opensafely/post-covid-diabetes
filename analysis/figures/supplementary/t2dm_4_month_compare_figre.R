@@ -52,7 +52,7 @@ main_estimates <- main_estimates %>% dplyr::mutate(across(c(estimate,conf_low,co
 
 main_estimates$analysis <- NA
 main_estimates$analysis[main_estimates$event == "t2dm"] <- "Type 2 diabetes - main analysis"
-main_estimates$analysis[main_estimates$event == "t2dm_follow"] <- "Type 2 diabetes - Still treated after 4 months"
+main_estimates$analysis[main_estimates$event == "t2dm_follow"] <- "Type 2 diabetes - still treated after 4 months"
 
 # We want to plot the figures using the same time-points across all cohorts so that they can be compared
 # If any cohort uses reduced time points then all cohorts will be plotted with reduced time points
@@ -88,8 +88,8 @@ main_estimates <- main_estimates %>%
 #------------------------------------------#
 # Specify colours
 main_estimates$colour <- ""
-main_estimates$colour <- ifelse(main_estimates$analysis=="Type 2 diabetes - main analysis","#000000",main_estimates$colour)
-main_estimates$colour <- ifelse(main_estimates$analysis=="Type 2 diabetes - Still treated after 4 months","#66CC66",main_estimates$colour) # Black
+main_estimates$colour <- ifelse(main_estimates$analysis=="Type 2 diabetes - main analysis","#d2ac47",main_estimates$colour)
+main_estimates$colour <- ifelse(main_estimates$analysis=="Type 2 diabetes - still treated after 4 months","#009999",main_estimates$colour) # Black
 
 #Specify lines
 main_estimates$linetype <- ""
@@ -97,8 +97,8 @@ main_estimates$linetype <- ifelse(main_estimates$subgroup=="covid_pheno_hospital
 main_estimates$linetype <- ifelse(main_estimates$subgroup=="covid_pheno_non_hospitalised","dashed",main_estimates$linetype)
 
 # Factor variables for ordering
-main_estimates$analysis <- factor(main_estimates$analysis, levels=c("Type 2 diabetes - main analysis","Type 2 diabetes - Still treated after 4 months")) 
-main_estimates$colour <- factor(main_estimates$colour, levels=c("#000000","#66CC66"))
+main_estimates$analysis <- factor(main_estimates$analysis, levels=c("Type 2 diabetes - main analysis","Type 2 diabetes - still treated after 4 months")) 
+main_estimates$colour <- factor(main_estimates$colour, levels=c("#d2ac47","#009999"))
 main_estimates$linetype <- factor(main_estimates$linetype,levels = c("solid","dashed"))
 main_estimates$subgroup <- factor(main_estimates$subgroup,levels = c("main", "covid_pheno_hospitalised","covid_pheno_non_hospitalised"))
 

@@ -111,7 +111,7 @@ follow_up_end_dates <- function(cohort_name, group){
       
     }
     
-    if(grepl("extended_follow_up",event)){
+    if(cohort_name=="prevax" & grepl("extended_follow_up",event)){
       input$follow_up_end_unexposed <- apply(input[,c("event_date", "expo_date", "death_date","cohort_end_date_extended")],1, min,na.rm=TRUE)
       input$follow_up_end <- apply(input[,c("event_date", "death_date","cohort_end_date_extended")],1, min, na.rm=TRUE)
       

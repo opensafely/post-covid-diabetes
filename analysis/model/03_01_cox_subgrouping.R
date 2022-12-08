@@ -85,7 +85,7 @@ get_vacc_res <- function(event,subgroup,stratify_by_subgroup,stratify_by,time_po
   #have been checked in inclusion/exclusion & QA
   
   survival_data <- survival_data %>% mutate(event_date = replace(event_date, which(event_date>follow_up_end | event_date<follow_up_start), NA))
-  survival_data <- survival_data %>% mutate(expo_date = replace(expo_date, which(expo_date>follow_up_end_exposure_period | expo_date<follow_up_start), NA))
+  survival_data <- survival_data %>% mutate(expo_date = replace(expo_date, which(expo_date>follow_up_end | expo_date<follow_up_start), NA))
   
   # 1.Adjust follow up end date for COVID phenotype dataset to censor at COVID exposure for the
   # phenotype that is not of interest

@@ -194,6 +194,38 @@ stata_actions <- function(outcome, cohort, subgroup, time_periods){
   )
 }
 
+stata_actions_day0 <- function(outcome, cohort, subgroup, time_periods){
+  splice(
+    #comment(glue("Stata cox {outcome} {subgroup} {cohort} {time_periods}")),
+    action(
+      name = glue("stata_cox_model_{outcome}_{subgroup}_{cohort}_{time_periods}"),
+      run = "stata-mp:latest analysis/cox_model_day0.do",
+      arguments = c(glue("input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods")),
+      needs = list(glue("Analysis_cox_{outcome}_{cohort}")),
+      moderately_sensitive = list(
+        medianfup = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_stata_median_fup.csv"),
+        stata_output = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_cox_model.txt")
+      )
+    )
+  )
+}
+
+
+stata_actions_extended <- function(outcome, cohort, subgroup, time_periods){
+  splice(
+    #comment(glue("Stata cox {outcome} {subgroup} {cohort} {time_periods}")),
+    action(
+      name = glue("stata_cox_model_{outcome}_{subgroup}_{cohort}_{time_periods}"),
+      run = "stata-mp:latest analysis/cox_model_extended_followup.do",
+      arguments = c(glue("input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods")),
+      needs = list(glue("Analysis_cox_{outcome}_{cohort}")),
+      moderately_sensitive = list(
+        medianfup = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_stata_median_fup.csv"),
+        stata_output = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_cox_model.txt")
+      )
+    )
+  )
+}
 
 ##########################################################
 ## Define and combine all actions into a list of actions #
@@ -564,7 +596,7 @@ actions_list <- splice(
   # STATA ANALYSES - DAY 0 
   
   splice(unlist(lapply(1:nrow(analyses_to_run_stata_day0), 
-                       function(i) stata_actions(outcome = analyses_to_run_stata_day0[i, "outcome"],
+                       function(i) stata_actions_day0(outcome = analyses_to_run_stata_day0[i, "outcome"],
                                                  subgroup = analyses_to_run_stata_day0[i, "subgroup"],
                                                  cohort = analyses_to_run_stata_day0[i, "cohort"],
                                                  time_periods = analyses_to_run_stata_day0[i, "time_periods"])),
@@ -573,7 +605,7 @@ actions_list <- splice(
   # STATA ANALYSES - EXTENDED
   
   splice(unlist(lapply(1:nrow(analyses_to_run_stata_extended), 
-                       function(i) stata_actions(outcome = analyses_to_run_stata_extended[i, "outcome"],
+                       function(i) stata_actions_extended(outcome = analyses_to_run_stata_extended[i, "outcome"],
                                                  subgroup = analyses_to_run_stata_extended[i, "subgroup"],
                                                  cohort = analyses_to_run_stata_extended[i, "cohort"],
                                                  time_periods = analyses_to_run_stata_extended[i, "time_periods"])),

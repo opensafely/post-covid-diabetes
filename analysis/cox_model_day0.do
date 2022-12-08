@@ -198,9 +198,9 @@ egen follow_up_total = total(follow_up)
 
 * Make days variables
 
-gen days0 = 0
-replace days0 = 1 if time==0
-tab days0
+gen days0_1 = 0
+replace days0_1 = 1 if time==0
+tab days0_1
 
 gen days1_28 = 0
 replace days1_28 = 1 if time==1
@@ -237,16 +237,16 @@ keep patient_id days* follow_up
 gen term = ""
 
 if `prevax_cohort'==1 {
-	drop if days0==0 & days1_28==0 & days28_197==0 & days197_535==0	
-	replace term = "days0" if days0==1 & days1_28==0 & days28_197==0 & days197_535==0
-	replace term = "days1_28" if days0==0 & days1_28==1 & days28_197==0 & days197_535==0
-	replace term = "days28_197" if days0==0 & days1_28==0 & days28_197==1 & days197_535==0
-	replace term = "days197_535" if days0==0 & days1_28==0 & days28_197==0 & days197_535==1 
+	drop if days0_1==0 & days1_28==0 & days28_197==0 & days197_535==0	
+	replace term = "days0_1" if days0_1==1 & days1_28==0 & days28_197==0 & days197_535==0
+	replace term = "days1_28" if days0_1==0 & days1_28==1 & days28_197==0 & days197_535==0
+	replace term = "days28_197" if days0_1==0 & days1_28==0 & days28_197==1 & days197_535==0
+	replace term = "days197_535" if days0_1==0 & days1_28==0 & days28_197==0 & days197_535==1 
 
 } 
 else {
-	drop if days0==0 & days1_28==0 & days28_197==0
-	replace term = "days0" if days0==1 & days1_28==0 & days28_197==0
+	drop if days0_1==0 & days1_28==0 & days28_197==0
+	replace term = "days0_1" if days0_1==1 & days1_28==0 & days28_197==0
 	replace term = "days1_28" if days==0 & days1_28==1 & days28_197==0
 	replace term = "days28_197" if days==0 & days1_28==0 & days28_197==1
 	replace term = "days197_535" if days==0 & days1_28==0 & days28_197==0

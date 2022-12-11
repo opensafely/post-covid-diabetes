@@ -68,7 +68,7 @@ follow_up_end_dates <- function(cohort_name, group){
     # Calculate follow up end dates based on cohort
     # follow_up_end_unexposed is required in Table 2 script and follow_up_end is 
     # the general follow up end date for each patient
-    if(cohort_name=="prevax" & group != "diabetes_recovery" & event != grepl("extended_follow_up",event)){
+    if(cohort_name=="prevax" & group != "diabetes_recovery"){
       
       input$follow_up_end_unexposed <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "expo_date", "death_date", "cohort_end_date")],1, min,na.rm=TRUE)
       input$follow_up_end <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "death_date", "cohort_end_date")],1, min,na.rm=TRUE)

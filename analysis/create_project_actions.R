@@ -117,13 +117,13 @@ convert_comment_actions <-function(yaml.txt){
 ## Function for typical actions to analyse data #
 #################################################
 # Updated to a typical action running Cox models for one outcome
-apply_model_function <- function(outcome, cohort){
+apply_model_function <- function(outcome, cohort, data_only){
   splice(
     comment(glue("Cox model for {outcome} - {cohort}")),
     action(
       name = glue("Analysis_cox_{outcome}_{cohort}"),
       run = "r:latest analysis/model/01_cox_pipeline.R",
-      arguments = c(outcome,cohort),
+      arguments = c(outcome,cohort,data_only),
       needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax", 
                    glue("stage1_end_date_table_{cohort}"),
                    glue("diabetes_post_hoc_{cohort}")),
@@ -573,14 +573,14 @@ actions_list <- splice(
   #comment("Stage 5 - Apply models - outcomes ran on all cohorts"),
   splice(
     # over outcomes
-    unlist(lapply(outcomes_model_all, function(x) splice(unlist(lapply(cohort_to_run_all, function(y) apply_model_function(outcome = x, cohort = y)), recursive = FALSE))
+    unlist(lapply(outcomes_model_all, function(x) splice(unlist(lapply(cohort_to_run_all, function(y) apply_model_function(outcome = x, cohort = y, data_only = "FALSE")), recursive = FALSE))
       ),recursive = FALSE)
     ),
   
   #comment("Stage 5 - Apply models - outcomes ran on prevax only"),
   splice(
     # over outcomes
-    unlist(lapply(outcomes_model_prevax, function(x) splice(unlist(lapply(cohort_to_run_prevax, function(y) apply_model_function(outcome = x, cohort = y)), recursive = FALSE))
+    unlist(lapply(outcomes_model_prevax, function(x) splice(unlist(lapply(cohort_to_run_prevax, function(y) apply_model_function(outcome = x, cohort = y, data_only = "FALSE")), recursive = FALSE))
     ),recursive = FALSE)
   ),
 

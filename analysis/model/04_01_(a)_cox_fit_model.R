@@ -81,14 +81,12 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
     sampled_data$index_date <- as.Date("2020-01-01")
   }
   
-  # ADD IF STATEMENT TO SKIP MODELING CODE BUT KEEP SAVING OF DATASET FOR STATA
-  
-  if(cohort == "prevax" | cohort == "vax" | cohort == "unvax") {
-    
   write.csv(sampled_data, paste0("output/input_sampled_data_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"), row.names = F )
   rm(sampled_data)
   
-  } else {
+  # ADD IF STATEMENT TO SKIP MODELING CODE BUT KEEP SAVING OF DATASET FOR STATA
+  
+  if (data_only=="FALSE") {
     
     data.table::fwrite(data_surv, paste0("output/input_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"))
     

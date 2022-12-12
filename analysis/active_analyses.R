@@ -41,6 +41,7 @@ df <- data.frame(active = logical(),
                  prior_history_var = character(),
                  outcome_group = character(),
                  venn = character(),
+                 data_only = character(),
                  stringsAsFactors = FALSE)
 
 # ------------------------------------------------------------------------------
@@ -80,7 +81,8 @@ for (i in 1:length(outcomes)) {
                        rep(FALSE,22),
                        "",
                        "diabetes",
-                       outcome_venn[i])
+                       outcome_venn[i],
+                       "FALSE")
 }
 
 # change outcome group so that gestational diabetes has its own group

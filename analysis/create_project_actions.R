@@ -29,6 +29,8 @@ outcomes_model_prevax <- active_analyses_table_prevax$outcome_variable %>% str_r
 cohort_to_run_all <- c("prevax", "vax", "unvax")
 cohort_to_run_prevax <- "prevax"
 
+data_only_all <- active_analyses_table_all$data_only
+  
 analyses <- c("main", "subgroups")
 
 # ANALYSES TO RUN STATA - REDUCED MAIN
@@ -144,25 +146,25 @@ apply_model_function <- function(outcome, cohort, data_only){
 }
 
 # Updated to a typical action running Cox models for one outcome
-apply_model_function_covariate_testing <- function(outcome, cohort){
-  splice(
-    comment(glue("Cox model {outcome} - {cohort}, covariate_testing")),
-    action(
-      name = glue("Analysis_cox_{outcome}_{cohort}_covariate_testing"),
-      run = "r:latest analysis/model/01_cox_pipeline.R",
-      arguments = c(outcome,cohort,"test_all"),
-      needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax", glue("stage1_end_date_table_{cohort}")),
-      moderately_sensitive = list(
-        analyses_not_run = glue("output/review/model/analyses_not_run_{outcome}_{cohort}_covariate_testing_test_all.csv"),
-        compiled_hrs_csv = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}_covariate_testing_test_all.csv"),
-        compiled_hrs_csv_to_release = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}_covariate_testing_test_all_to_release.csv"),
-        compiled_event_counts_csv = glue("output/review/model/suppressed_compiled_event_counts_{outcome}_{cohort}_covariate_testing_test_all.csv"),
-        compiled_event_counts_csv_non_supressed = glue("output/review/model/compiled_event_counts_{outcome}_{cohort}_covariate_testing_test_all.csv"),
-        describe_data_surv = glue("output/not-for-review/describe_data_surv_{outcome}_*_{cohort}_*_covariate_testing_test_all.txt")
-      )
-    )
-  )
-}
+# apply_model_function_covariate_testing <- function(outcome, cohort){
+#   splice(
+#     comment(glue("Cox model {outcome} - {cohort}, covariate_testing")),
+#     action(
+#       name = glue("Analysis_cox_{outcome}_{cohort}_covariate_testing"),
+#       run = "r:latest analysis/model/01_cox_pipeline.R",
+#       arguments = c(outcome,cohort,"test_all"),
+#       needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax", glue("stage1_end_date_table_{cohort}")),
+#       moderately_sensitive = list(
+#         analyses_not_run = glue("output/review/model/analyses_not_run_{outcome}_{cohort}_covariate_testing_test_all.csv"),
+#         compiled_hrs_csv = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}_covariate_testing_test_all.csv"),
+#         compiled_hrs_csv_to_release = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}_covariate_testing_test_all_to_release.csv"),
+#         compiled_event_counts_csv = glue("output/review/model/suppressed_compiled_event_counts_{outcome}_{cohort}_covariate_testing_test_all.csv"),
+#         compiled_event_counts_csv_non_supressed = glue("output/review/model/compiled_event_counts_{outcome}_{cohort}_covariate_testing_test_all.csv"),
+#         describe_data_surv = glue("output/not-for-review/describe_data_surv_{outcome}_*_{cohort}_*_covariate_testing_test_all.txt")
+#       )
+#     )
+#   )
+# }
 table2 <- function(cohort){
   splice(
     comment(glue("Stage 4 - Table 2 - {cohort} cohort")),

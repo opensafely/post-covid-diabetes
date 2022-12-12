@@ -17,17 +17,15 @@ defaults_list <- list(
 )
 
 active_analyses <- read_rds("lib/active_analyses.rds")
-active_analyses_table <- subset(active_analyses, active_analyses$active =="TRUE")
+active_analyses <- subset(active_analyses, active_analyses$active =="TRUE")
 
-active_analyses_table_all <- active_analyses_table %>% dplyr::filter(cohort == "all")
-outcomes_model_all <- active_analyses_table_all$outcome_variable %>% str_replace("out_date_", "")
-outcomes_list <- as.data.frame(outcomes_model_all)
-
-active_analyses_table_prevax <- active_analyses_table %>% dplyr::filter(cohort == "prevax")
-outcomes_model_prevax <- active_analyses_table_prevax$outcome_variable %>% str_replace("out_date_", "")
+analyses_to_run <- active_analyses[,c("outcome_variable","cohort")]
+analyses_to_run$cohort <- ifelse(analyses_to_run$cohort=="all","prevax;vax;unvax",analyses_to_run$cohort)
+analyses_to_run <- tidyr::separate_rows(analyses_to_run, cohort, sep = ";")
+analyses_to_run$outcome <- str_replace(analyses_to_run$outcome_variable,"out_date_", "")
+analyses_to_run$data_only <- "FALSE" # KURT TO UPDATE TO RELEVANT ANALYSES
 
 cohort_to_run_all <- c("prevax", "vax", "unvax")
-cohort_to_run_prevax <- "prevax"
 
 analyses <- c("main", "subgroups")
 
@@ -571,18 +569,12 @@ actions_list <- splice(
   ),
 
   #comment("Stage 5 - Apply models - outcomes ran on all cohorts"),
-  splice(
-    # over outcomes
-    unlist(lapply(outcomes_model_all, function(x) splice(unlist(lapply(cohort_to_run_all, function(y) apply_model_function(outcome = x, cohort = y, data_only = "FALSE")), recursive = FALSE))
-      ),recursive = FALSE)
-    ),
-  
-  #comment("Stage 5 - Apply models - outcomes ran on prevax only"),
-  splice(
-    # over outcomes
-    unlist(lapply(outcomes_model_prevax, function(x) splice(unlist(lapply(cohort_to_run_prevax, function(y) apply_model_function(outcome = x, cohort = y, data_only = "FALSE")), recursive = FALSE))
-    ),recursive = FALSE)
-  ),
+
+  splice(unlist(lapply(1:nrow(analyses_to_run), 
+                       function(i) apply_model_function(outcome = analyses_to_run[i, "outcome"],
+                                                        cohort = analyses_to_run[i, "cohort"],
+                                                        data_only = analyses_to_run[i, "data_only"])),
+                recursive = FALSE)),
 
   # STATA ANALYSES
   

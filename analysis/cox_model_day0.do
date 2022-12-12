@@ -247,9 +247,9 @@ if `prevax_cohort'==1 {
 else {
 	drop if days0_1==0 & days1_28==0 & days28_197==0
 	replace term = "days0_1" if days0_1==1 & days1_28==0 & days28_197==0
-	replace term = "days1_28" if days==0 & days1_28==1 & days28_197==0
-	replace term = "days28_197" if days==0 & days1_28==0 & days28_197==1
-	replace term = "days197_535" if days==0 & days1_28==0 & days28_197==0
+	replace term = "days1_28" if days0_1==0 & days1_28==1 & days28_197==0
+	replace term = "days28_197" if days0_1==0 & days1_28==0 & days28_197==1
+	replace term = "days197_535" if days0_1==0 & days1_28==0 & days28_197==0
 	replace follow_up = follow_up + 197 if term == "days197_535" 
 }
 

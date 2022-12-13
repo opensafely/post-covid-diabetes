@@ -33,10 +33,12 @@ args = commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
   event_name="t2dm"
-  cohort="vax"
+  cohort="prevax"
+  data_only="TRUE"
 }else{
   event_name  = args[[1]]
   cohort = args[[2]]
+  data_only = args[[3]]
 }
 
 # Specify directories ----------------------------------------------------------

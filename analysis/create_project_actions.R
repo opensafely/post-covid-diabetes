@@ -17,18 +17,32 @@ defaults_list <- list(
 )
 
 active_analyses <- read_rds("lib/active_analyses.rds")
-active_analyses_table <- subset(active_analyses, active_analyses$active =="TRUE")
+active_analyses <- subset(active_analyses, active_analyses$active =="TRUE")
 
-active_analyses_table_all <- active_analyses_table %>% dplyr::filter(cohort == "all")
-outcomes_model_all <- active_analyses_table_all$outcome_variable %>% str_replace("out_date_", "")
-outcomes_list <- as.data.frame(outcomes_model_all)
+analyses_to_run <- active_analyses[,c("outcome_variable","cohort")]
+analyses_to_run$cohort <- ifelse(analyses_to_run$cohort=="all","prevax;vax;unvax",analyses_to_run$cohort)
+analyses_to_run <- tidyr::separate_rows(analyses_to_run, cohort, sep = ";")
+analyses_to_run$outcome <- str_replace(analyses_to_run$outcome_variable,"out_date_", "")
 
-active_analyses_table_prevax <- active_analyses_table %>% dplyr::filter(cohort == "prevax")
-outcomes_model_prevax <- active_analyses_table_prevax$outcome_variable %>% str_replace("out_date_", "")
+# DATA ONLY ANALYSES WHERE MODELS ARE NOT CONVERGING
+
+analyses_to_run <- analyses_to_run %>%
+  mutate(data_only = ifelse(outcome_variable == "out_date_t2dm_extended_follow_up" & cohort == "prevax", "TRUE",
+                            ifelse(outcome_variable == "out_date_obes_no" & cohort == "prevax", "TRUE",
+                                   ifelse(outcome_variable == "out_date_t2dm_obes_no" & cohort == "vax", "TRUE",
+                                          ifelse(outcome_variable == "out_date_t2dm_pd_no" & cohort == "prevax", "TRUE",
+                                                 ifelse(outcome_variable == "out_date_t2dm_pd_no" & cohort == "vax", "TRUE",
+                                                        ifelse(outcome_variable == "out_date_t2dm_pre_rec" & cohort == "prevax", "TRUE",
+                                                               ifelse(outcome_variable == "out_date_t2dm_pre_rec" & cohort == "unvax", "TRUE",
+                                                                      ifelse(outcome_variable == "out_date_t2dm" & cohort == "prevax", "TRUE",
+                                                                             ifelse(outcome_variable == "out_date_t2dm" & cohort == "unvax", "TRUE",
+                                                                                    "FALSE"))))))))))
+
 
 cohort_to_run_all <- c("prevax", "vax", "unvax")
-cohort_to_run_prevax <- "prevax"
 
+data_only_all <- active_analyses_table_all$data_only
+  
 analyses <- c("main", "subgroups")
 
 # ANALYSES TO RUN STATA - REDUCED MAIN
@@ -117,13 +131,13 @@ convert_comment_actions <-function(yaml.txt){
 ## Function for typical actions to analyse data #
 #################################################
 # Updated to a typical action running Cox models for one outcome
-apply_model_function <- function(outcome, cohort){
+apply_model_function <- function(outcome, cohort, data_only){
   splice(
     comment(glue("Cox model for {outcome} - {cohort}")),
     action(
       name = glue("Analysis_cox_{outcome}_{cohort}"),
       run = "r:latest analysis/model/01_cox_pipeline.R",
-      arguments = c(outcome,cohort),
+      arguments = c(outcome,cohort,data_only),
       needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax", 
                    glue("stage1_end_date_table_{cohort}"),
                    glue("diabetes_post_hoc_{cohort}")),
@@ -144,25 +158,25 @@ apply_model_function <- function(outcome, cohort){
 }
 
 # Updated to a typical action running Cox models for one outcome
-apply_model_function_covariate_testing <- function(outcome, cohort){
-  splice(
-    comment(glue("Cox model {outcome} - {cohort}, covariate_testing")),
-    action(
-      name = glue("Analysis_cox_{outcome}_{cohort}_covariate_testing"),
-      run = "r:latest analysis/model/01_cox_pipeline.R",
-      arguments = c(outcome,cohort,"test_all"),
-      needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax", glue("stage1_end_date_table_{cohort}")),
-      moderately_sensitive = list(
-        analyses_not_run = glue("output/review/model/analyses_not_run_{outcome}_{cohort}_covariate_testing_test_all.csv"),
-        compiled_hrs_csv = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}_covariate_testing_test_all.csv"),
-        compiled_hrs_csv_to_release = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}_covariate_testing_test_all_to_release.csv"),
-        compiled_event_counts_csv = glue("output/review/model/suppressed_compiled_event_counts_{outcome}_{cohort}_covariate_testing_test_all.csv"),
-        compiled_event_counts_csv_non_supressed = glue("output/review/model/compiled_event_counts_{outcome}_{cohort}_covariate_testing_test_all.csv"),
-        describe_data_surv = glue("output/not-for-review/describe_data_surv_{outcome}_*_{cohort}_*_covariate_testing_test_all.txt")
-      )
-    )
-  )
-}
+# apply_model_function_covariate_testing <- function(outcome, cohort){
+#   splice(
+#     comment(glue("Cox model {outcome} - {cohort}, covariate_testing")),
+#     action(
+#       name = glue("Analysis_cox_{outcome}_{cohort}_covariate_testing"),
+#       run = "r:latest analysis/model/01_cox_pipeline.R",
+#       arguments = c(outcome,cohort,"test_all"),
+#       needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax", glue("stage1_end_date_table_{cohort}")),
+#       moderately_sensitive = list(
+#         analyses_not_run = glue("output/review/model/analyses_not_run_{outcome}_{cohort}_covariate_testing_test_all.csv"),
+#         compiled_hrs_csv = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}_covariate_testing_test_all.csv"),
+#         compiled_hrs_csv_to_release = glue("output/review/model/suppressed_compiled_HR_results_{outcome}_{cohort}_covariate_testing_test_all_to_release.csv"),
+#         compiled_event_counts_csv = glue("output/review/model/suppressed_compiled_event_counts_{outcome}_{cohort}_covariate_testing_test_all.csv"),
+#         compiled_event_counts_csv_non_supressed = glue("output/review/model/compiled_event_counts_{outcome}_{cohort}_covariate_testing_test_all.csv"),
+#         describe_data_surv = glue("output/not-for-review/describe_data_surv_{outcome}_*_{cohort}_*_covariate_testing_test_all.txt")
+#       )
+#     )
+#   )
+# }
 table2 <- function(cohort){
   splice(
     comment(glue("Stage 4 - Table 2 - {cohort} cohort")),
@@ -571,18 +585,12 @@ actions_list <- splice(
   ),
 
   #comment("Stage 5 - Apply models - outcomes ran on all cohorts"),
-  splice(
-    # over outcomes
-    unlist(lapply(outcomes_model_all, function(x) splice(unlist(lapply(cohort_to_run_all, function(y) apply_model_function(outcome = x, cohort = y)), recursive = FALSE))
-      ),recursive = FALSE)
-    ),
-  
-  #comment("Stage 5 - Apply models - outcomes ran on prevax only"),
-  splice(
-    # over outcomes
-    unlist(lapply(outcomes_model_prevax, function(x) splice(unlist(lapply(cohort_to_run_prevax, function(y) apply_model_function(outcome = x, cohort = y)), recursive = FALSE))
-    ),recursive = FALSE)
-  ),
+
+  splice(unlist(lapply(1:nrow(analyses_to_run), 
+                       function(i) apply_model_function(outcome = analyses_to_run[i, "outcome"],
+                                                        cohort = analyses_to_run[i, "cohort"],
+                                                        data_only = analyses_to_run[i, "data_only"])),
+                recursive = FALSE)),
 
   # STATA ANALYSES
   

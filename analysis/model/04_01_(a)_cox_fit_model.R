@@ -84,7 +84,10 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
   write.csv(sampled_data, paste0("output/input_sampled_data_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"), row.names = F )
   rm(sampled_data)
   
-
+  # ADD IF STATEMENT TO SKIP MODELING CODE BUT KEEP SAVING OF DATASET FOR STATA
+  
+  if (data_only=="FALSE") {
+    
     data.table::fwrite(data_surv, paste0("output/input_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"))
     
     #Fit model and prep output csv
@@ -98,7 +101,7 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
     fit_model$total_covid_cases <- total_covid_cases
     
     if(cohort == "prevax"){
-
+      
       write.csv(fit_model, paste0(output_dir_prevax,"/tbl_hr_" , event, "_",subgroup,"_", cohort,"_",time_point, "_time_periods.csv"), row.names = F)
       print(paste0("Hazard ratios saved: ", output_dir_prevax,"/tbl_hr_" , event, "_",subgroup,"_", cohort,"_",time_point,  "_time_periods.csv"))
       
@@ -108,14 +111,14 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
       print(paste0("Hazard ratios saved: ", output_dir_vax,"/tbl_hr_" , event, "_",subgroup,"_", cohort,"_",time_point,  "_time_periods.csv"))
       
     } else if (cohort == "unvax"){
-
+      
       write.csv(fit_model, paste0(output_dir_unvax,"/tbl_hr_" , event, "_",subgroup,"_", cohort,"_",time_point, "_time_periods.csv"), row.names = F)
       print(paste0("Hazard ratios saved: ", output_dir_unvax,"/tbl_hr_" , event, "_",subgroup,"_", cohort,"_",time_point,  "_time_periods.csv"))
       
     }
-}
-
-
+  }
+  
+  
   #------------------------ GET SURV FORMULA & COXPH() ---------------------------
   coxfit <- function(data_surv, interval_names, covar_names, mdl, subgroup,non_case_inverse_weight){
     print("Working on cox model")
@@ -249,4 +252,5 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
     
     print("Finised working on cox model")
     return(combined_results)
+  }
   }

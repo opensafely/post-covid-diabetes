@@ -1,6 +1,6 @@
 name: Test that the project is runnable
 
-on: [push, workflow_dispatch]
+on: [workflow_dispatch]
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   DOCKER_RO_TOKEN: ${{ secrets.DOCKER_RO_TOKEN }}

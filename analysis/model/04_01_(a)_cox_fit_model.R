@@ -118,7 +118,8 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
     }
   }
   
-  
+}
+
   #------------------------ GET SURV FORMULA & COXPH() ---------------------------
   coxfit <- function(data_surv, interval_names, covar_names, mdl, subgroup,non_case_inverse_weight){
     print("Working on cox model")
@@ -252,5 +253,5 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
     
     print("Finised working on cox model")
     return(combined_results)
-  }
+
   }

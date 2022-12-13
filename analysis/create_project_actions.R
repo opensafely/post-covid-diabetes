@@ -23,7 +23,21 @@ analyses_to_run <- active_analyses[,c("outcome_variable","cohort")]
 analyses_to_run$cohort <- ifelse(analyses_to_run$cohort=="all","prevax;vax;unvax",analyses_to_run$cohort)
 analyses_to_run <- tidyr::separate_rows(analyses_to_run, cohort, sep = ";")
 analyses_to_run$outcome <- str_replace(analyses_to_run$outcome_variable,"out_date_", "")
-analyses_to_run$data_only <- "FALSE" # KURT TO UPDATE TO RELEVANT ANALYSES
+
+# DATA ONLY ANALYSES WHERE MODELS ARE NOT CONVERGING
+
+analyses_to_run <- analyses_to_run %>%
+  mutate(data_only = ifelse(outcome_variable == "out_date_t2dm_extended_follow_up" & cohort == "prevax", "TRUE",
+                            ifelse(outcome_variable == "out_date_obes_no" & cohort == "prevax", "TRUE",
+                                   ifelse(outcome_variable == "out_date_t2dm_obes_no" & cohort == "vax", "TRUE",
+                                          ifelse(outcome_variable == "out_date_t2dm_pd_no" & cohort == "prevax", "TRUE",
+                                                 ifelse(outcome_variable == "out_date_t2dm_pd_no" & cohort == "vax", "TRUE",
+                                                        ifelse(outcome_variable == "out_date_t2dm_pre_rec" & cohort == "prevax", "TRUE",
+                                                               ifelse(outcome_variable == "out_date_t2dm_pre_rec" & cohort == "unvax", "TRUE",
+                                                                      ifelse(outcome_variable == "out_date_t2dm" & cohort == "prevax", "TRUE",
+                                                                             ifelse(outcome_variable == "out_date_t2dm" & cohort == "unvax", "TRUE",
+                                                                                    "FALSE"))))))))))
+
 
 cohort_to_run_all <- c("prevax", "vax", "unvax")
 

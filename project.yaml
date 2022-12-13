@@ -447,7 +447,7 @@ actions:
   ## Cox model for t2dm - prevax 
 
   Analysis_cox_t2dm_prevax:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm prevax FALSE
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm prevax TRUE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax
@@ -491,7 +491,7 @@ actions:
   ## Cox model for t2dm - unvax 
 
   Analysis_cox_t2dm_unvax:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm unvax FALSE
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm unvax TRUE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax
@@ -535,7 +535,7 @@ actions:
   ## Cox model for t2dm_pre_rec - prevax 
 
   Analysis_cox_t2dm_pre_rec_prevax:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pre_rec prevax FALSE
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pre_rec prevax TRUE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax
@@ -579,7 +579,7 @@ actions:
   ## Cox model for t2dm_pre_rec - unvax 
 
   Analysis_cox_t2dm_pre_rec_unvax:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pre_rec unvax FALSE
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pre_rec unvax TRUE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax
@@ -711,7 +711,7 @@ actions:
   ## Cox model for t2dm_pd_no - prevax 
 
   Analysis_cox_t2dm_pd_no_prevax:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no prevax FALSE
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no prevax TRUE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax
@@ -733,7 +733,7 @@ actions:
   ## Cox model for t2dm_pd_no - vax 
 
   Analysis_cox_t2dm_pd_no_vax:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no vax FALSE
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no vax TRUE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax
@@ -865,7 +865,7 @@ actions:
   ## Cox model for t2dm_obes_no - vax 
 
   Analysis_cox_t2dm_obes_no_vax:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes_no vax FALSE
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_obes_no vax TRUE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax
@@ -1065,7 +1065,7 @@ actions:
 
   Analysis_cox_t2dm_extended_follow_up_prevax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_extended_follow_up prevax
-      FALSE
+      TRUE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax

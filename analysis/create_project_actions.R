@@ -28,20 +28,21 @@ analyses_to_run$outcome <- str_replace(analyses_to_run$outcome_variable,"out_dat
 
 analyses_to_run <- analyses_to_run %>%
   mutate(data_only = ifelse(outcome_variable == "out_date_t2dm_extended_follow_up" & cohort == "prevax", "TRUE",
-                            ifelse(outcome_variable == "out_date_obes_no" & cohort == "prevax", "TRUE",
+                            ifelse(outcome_variable == "out_date_t2dm_obes_no" & cohort == "prevax", "TRUE",
                                    ifelse(outcome_variable == "out_date_t2dm_obes_no" & cohort == "vax", "TRUE",
                                           ifelse(outcome_variable == "out_date_t2dm_pd_no" & cohort == "prevax", "TRUE",
                                                  ifelse(outcome_variable == "out_date_t2dm_pd_no" & cohort == "vax", "TRUE",
-                                                        ifelse(outcome_variable == "out_date_t2dm_pre_rec" & cohort == "prevax", "TRUE",
-                                                               ifelse(outcome_variable == "out_date_t2dm_pre_rec" & cohort == "unvax", "TRUE",
-                                                                      ifelse(outcome_variable == "out_date_t2dm" & cohort == "prevax", "TRUE",
-                                                                             ifelse(outcome_variable == "out_date_t2dm" & cohort == "unvax", "TRUE",
-                                                                                    "FALSE"))))))))))
+                                                        ifelse(outcome_variable == "out_date_t2dm_pd_no" & cohort == "unvax", "TRUE",
+                                                          ifelse(outcome_variable == "out_date_t2dm_pre_rec" & cohort == "prevax", "TRUE",
+                                                                 ifelse(outcome_variable == "out_date_t2dm_pre_rec" & cohort == "unvax", "TRUE",
+                                                                        ifelse(outcome_variable == "out_date_t2dm" & cohort == "prevax", "TRUE",
+                                                                               ifelse(outcome_variable == "out_date_t2dm" & cohort == "unvax", "TRUE",
+                                                                                      "FALSE")))))))))))
 
 
 cohort_to_run_all <- c("prevax", "vax", "unvax")
 
-data_only_all <- active_analyses_table_all$data_only
+# data_only_all <- active_analyses_table_all$data_only
   
 analyses <- c("main", "subgroups")
 

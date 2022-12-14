@@ -69,7 +69,11 @@ unique(df$subgroup)
 df$model <- ifelse(df$model == "max", "mdl_max_adj","mdl_age_sex_region")
 
 #Fomat columns
-df$time_points <- "reduced"
+df <- df %>%
+  dplyr::mutate(time_points = ifelse(grepl("x_reduced_time_periods", source), "reduced",
+                                     ifelse(grepl("day_zero_reduced", source), "day_zero_reduced", NA)))
+
+# df$time_points <- "reduced"
 df$results_fitted <- "fitted_successfully"
 df$source <- NULL
 df$N_outcomes <- NULL

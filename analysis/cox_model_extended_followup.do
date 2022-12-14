@@ -232,12 +232,13 @@ if `prevax_cohort'==1 {
 	drop if days28_197==0 & days197_365==0 & days365_714==0
 	replace term = "days28_197" if days28_197==1 & days197_365==0 & & days365_714==0
 	replace term = "days197_365" if days28_197==0 & days197_365==1 & days365_714==0
-    replace term = "days0_28" if days28_197==0 & days197_365==0 & days365_714==1
+    replace term = "days365_714" if days28_197==0 & days197_365==0 & days365_714==1
 } 
 
 
 *Unsure if/how this line should be updated
 replace follow_up = follow_up + 28 if term == "days28_197" 
+replace follow_up = follow_up + 197 if term == "days197_365" 
 bysort term: egen medianfup = median(follow_up)
 
 keep term medianfup

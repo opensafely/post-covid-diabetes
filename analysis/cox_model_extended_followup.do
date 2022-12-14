@@ -244,4 +244,4 @@ bysort term: egen medianfup = median(follow_up)
 keep term medianfup
 duplicates drop
 
-export delimited using "output/`cpf'_stata_median_fup_extendedfup", replace
+export delimited using "output/`cpf'_stata_median_fup", replace

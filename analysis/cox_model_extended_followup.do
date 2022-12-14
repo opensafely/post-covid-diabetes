@@ -230,7 +230,7 @@ gen term = ""
 
 if `prevax_cohort'==1 {
 	drop if days28_197==0 & days197_365==0 & days365_714==0
-	replace term = "days28_197" if days28_197==1 & days197_365==0 & & days365_714==0
+	replace term = "days28_197" if days28_197==1 & days197_365==0 & days365_714==0
 	replace term = "days197_365" if days28_197==0 & days197_365==1 & days365_714==0
     replace term = "days365_714" if days28_197==0 & days197_365==0 & days365_714==1
 } 

@@ -83,6 +83,11 @@ df$conf_high <- exp(df$conf_high)
 #Only use results that are in the analyses_to_run_in_stata files
 
 stata_analyses <- read_csv("lib/analyses_to_run_in_stata.csv")
+stata_analyses_0 <- read_csv("lib/analyses_to_run_in_stata_day0.csv")
+stata_analyses_extend <- read_csv("lib/analyses_to_run_in_stata_extended.csv")
+
+stata_analyses <- do.call("rbind", list(stata_analyses, stata_analyses_0, stata_analyses_extend))
+
 stata_analyses <- stata_analyses %>% dplyr::rename(time_points=time_periods,
                                                    event = outcome)
 

@@ -1454,15 +1454,6 @@ actions:
         medianfup: output/input_sampled_data_t2dm_post_rec_main_prevax_day_zero_reduced_time_periods_stata_median_fup.csv
         stata_output: output/input_sampled_data_t2dm_post_rec_main_prevax_day_zero_reduced_time_periods_cox_model.txt
 
-  stata_cox_model_t2dm_extended_follow_up_main_prevax_normal:
-    run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_t2dm_extended_follow_up_main_prevax_normal_time_periods
-    needs:
-    - Analysis_cox_t2dm_extended_follow_up_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_extended_follow_up_main_prevax_normal_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_extended_follow_up_main_prevax_normal_time_periods_cox_model.txt
-
   stata_cox_model_t2dm_extended_follow_up_main_prevax_reduced:
     run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_t2dm_extended_follow_up_main_prevax_reduced_time_periods
     needs:
@@ -1472,15 +1463,6 @@ actions:
         medianfup: output/input_sampled_data_t2dm_extended_follow_up_main_prevax_reduced_time_periods_stata_median_fup.csv
         stata_output: output/input_sampled_data_t2dm_extended_follow_up_main_prevax_reduced_time_periods_cox_model.txt
 
-  stata_cox_model_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_normal:
-    run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_normal_time_periods
-    needs:
-    - Analysis_cox_t2dm_extended_follow_up_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_normal_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_normal_time_periods_cox_model.txt
-
   stata_cox_model_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced:
     run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods
     needs:
@@ -1489,15 +1471,6 @@ actions:
       moderately_sensitive:
         medianfup: output/input_sampled_data_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods_stata_median_fup.csv
         stata_output: output/input_sampled_data_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_normal:
-    run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_normal_time_periods
-    needs:
-    - Analysis_cox_t2dm_extended_follow_up_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_normal_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_normal_time_periods_cox_model.txt
 
   stata_cox_model_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced:
     run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_time_periods
@@ -1547,11 +1520,8 @@ actions:
     - stata_cox_model_t2dm_rec_main_prevax_day_zero_reduced
     - stata_cox_model_t2dm_pre_rec_main_prevax_day_zero_reduced
     - stata_cox_model_t2dm_post_rec_main_prevax_day_zero_reduced
-    - stata_cox_model_t2dm_extended_follow_up_main_prevax_normal
     - stata_cox_model_t2dm_extended_follow_up_main_prevax_reduced
-    - stata_cox_model_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_normal
     - stata_cox_model_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced
-    - stata_cox_model_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_normal
     - stata_cox_model_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced
     outputs:
       moderately_sensitive:

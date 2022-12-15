@@ -195,7 +195,12 @@ egen follow_up_total = total(follow_up)
 * Make days variables
 
 if `prevax_cohort'==1 {
-    gen days28_197 = 0
+    
+	gen days0_28 = 0
+    replace days0_28 = 1 if time==0
+    tab days0_28  
+
+	gen days28_197 = 0
     replace days28_197 = 1 if time==28
     tab days28_197
 
@@ -229,10 +234,12 @@ keep patient_id days* follow_up
 gen term = ""
 
 if `prevax_cohort'==1 {
-	drop if days28_197==0 & days197_365==0 & days365_714==0
-	replace term = "days28_197" if days28_197==1 & days197_365==0 & days365_714==0
-	replace term = "days197_365" if days28_197==0 & days197_365==1 & days365_714==0
-    replace term = "days365_714" if days28_197==0 & days197_365==0 & days365_714==1
+	drop if days0_28==0 & days28_197==0 & days197_365==0 & days365_714==0
+	replace term = "days0_28" if days0_28==1 & days28_197==0 & days197_365==0 & days365_714==0
+    replace term = "days28_197" if days0_28==0 & days28_197==1 & days197_365==0 & days365_714==0
+	replace term = "days197_365" if days0_28==0 & days28_197==0 & days197_365==1 & days365_714==0
+    replace term = "days365_714" if days0_28==0 & days28_197==0 & days197_365==0 & days365_714==1
+
 } 
 
 

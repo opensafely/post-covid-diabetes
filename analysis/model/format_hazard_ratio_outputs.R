@@ -162,11 +162,16 @@ estimates <- rbind(estimates, df, fill = TRUE)
 rm(df)
 
 #If any of the models has fitted unsuccessfully, class all models as fitted unsuccessfully
+# estimates <- estimates %>%
+#   group_by(event,cohort,subgroup,time_points, source) %>%
+#   dplyr::mutate(results_fitted = case_when(
+#     any(results_fitted == "fitted_unsuccessfully") ~ "fitted_unsuccessfully",
+#     TRUE ~ "fitted_successfully")) %>% ungroup()
+
+# remove any models that were not fitted 
+
 estimates <- estimates %>%
-  group_by(event,cohort,subgroup,time_points, source) %>%
-  dplyr::mutate(results_fitted = case_when(
-    any(results_fitted == "fitted_unsuccessfully") ~ "fitted_unsuccessfully",
-    TRUE ~ "fitted_successfully")) %>% ungroup()
+  dplyr::filter(results_fitted = "fitted_successfully")
 
 #Filter to columns and terms of interest
 estimates <- estimates %>% filter(term %in% term[grepl("^days",term)]

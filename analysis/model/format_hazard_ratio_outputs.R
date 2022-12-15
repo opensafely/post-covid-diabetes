@@ -171,7 +171,7 @@ rm(df)
 # remove any models that were not fitted 
 
 estimates <- estimates %>%
-  dplyr::filter(results_fitted = "fitted_successfully")
+  dplyr::filter(results_fitted == "fitted_successfully")
 
 #Filter to columns and terms of interest
 estimates <- estimates %>% filter(term %in% term[grepl("^days",term)]

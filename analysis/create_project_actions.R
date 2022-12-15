@@ -27,7 +27,8 @@ analyses_to_run$outcome <- str_replace(analyses_to_run$outcome_variable,"out_dat
 # DATA ONLY ANALYSES WHERE MODELS ARE NOT CONVERGING
 
 analyses_to_run <- analyses_to_run %>%
-  mutate(data_only = ifelse(outcome_variable == "out_date_t2dm_extended_follow_up" & cohort == "prevax", "TRUE",
+  mutate(data_only = 
+           # ifelse(outcome_variable == "out_date_t2dm_extended_follow_up" & cohort == "prevax", "TRUE",
                             ifelse(outcome_variable == "out_date_t2dm_obes_no" & cohort == "prevax", "TRUE",
                                    ifelse(outcome_variable == "out_date_t2dm_obes_no" & cohort == "vax", "TRUE",
                                           ifelse(outcome_variable == "out_date_t2dm_pd_no" & cohort == "prevax", "TRUE",
@@ -37,7 +38,7 @@ analyses_to_run <- analyses_to_run %>%
                                                                  ifelse(outcome_variable == "out_date_t2dm_pre_rec" & cohort == "unvax", "TRUE",
                                                                         ifelse(outcome_variable == "out_date_t2dm" & cohort == "prevax", "TRUE",
                                                                                ifelse(outcome_variable == "out_date_t2dm" & cohort == "unvax", "TRUE",
-                                                                                      "FALSE")))))))))))
+                                                                                      "FALSE"))))))))))
 
 
 cohort_to_run_all <- c("prevax", "vax", "unvax")

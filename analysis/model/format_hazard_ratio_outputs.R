@@ -206,18 +206,19 @@ df <- df[!(df$cohort == "vax" & df$subgroup == "covid_pheno_hospitalised"),]
 # estimates <- estimates %>% anti_join(df)
 
 #Left join event counts
-table2_pre_vax <- read.csv("output/review/descriptives/table2_prevax_diabetes.csv")
-table2_vax <- read.csv("output/review/descriptives/table2_vax_diabetes.csv")
-table2_unvax <- read.csv("output/review/descriptives/table2_unvax_diabetes.csv")
-
-# table2_pre_vax <- table2_pre_vax %>% rename(cohort_to_run = cohort_name)
-table2 <- rbind(table2_unvax,table2_vax,table2_pre_vax)
-table2 <- table2 %>% dplyr::rename(cohort = cohort_to_run)
-table2 <- table2 %>% dplyr::select(event, subgroup, cohort, post_exposure_event_count)
-table2$event <- gsub("out_date_","",table2$event)
+# table2_pre_vax <- read.csv("output/review/descriptives/table2_prevax_diabetes.csv")
+# table2_vax <- read.csv("output/review/descriptives/table2_vax_diabetes.csv")
+# table2_unvax <- read.csv("output/review/descriptives/table2_unvax_diabetes.csv")
+# 
+# # table2_pre_vax <- table2_pre_vax %>% rename(cohort_to_run = cohort_name)
+# table2 <- rbind(table2_unvax,table2_vax,table2_pre_vax)
+# table2 <- table2 %>% dplyr::rename(cohort = cohort_to_run)
+# table2 <- table2 %>% dplyr::select(event, subgroup, cohort, post_exposure_event_count)
+# table2$event <- gsub("out_date_","",table2$event)
 
 estimates$post_exposure_event_count <- NULL
-estimates <- estimates %>% left_join(table2) %>%
+# estimates <- estimates %>% left_join(table2) %>%
+estimates <- estimates %>%
   select(event, subgroup, cohort, model, time_points, source,term, estimate, conf_low, conf_high, post_exposure_event_count, median_follow_up)
 
 write.csv(estimates, file = paste0(output_dir,"/hr_output_formatted.csv"),row.names = FALSE)

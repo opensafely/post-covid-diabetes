@@ -216,9 +216,9 @@ df <- df[!(df$cohort == "vax" & df$subgroup == "covid_pheno_hospitalised"),]
 # table2 <- table2 %>% dplyr::select(event, subgroup, cohort, post_exposure_event_count)
 # table2$event <- gsub("out_date_","",table2$event)
 
-estimates$post_exposure_event_count <- NULL
+# estimates$post_exposure_event_count <- NULL
 # estimates <- estimates %>% left_join(table2) %>%
 estimates <- estimates %>%
-  select(event, subgroup, cohort, model, time_points, source,term, estimate, conf_low, conf_high, post_exposure_event_count, median_follow_up)
+  select(event, subgroup, cohort, model, time_points, source,term, estimate, conf_low, conf_high, median_follow_up)
 
 write.csv(estimates, file = paste0(output_dir,"/hr_output_formatted.csv"),row.names = FALSE)

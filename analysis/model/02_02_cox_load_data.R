@@ -39,19 +39,19 @@ if(event_name == "out_date_ami" | event_name == "out_date_stroke_isch" | event_n
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes.rds"))
   
-} else if (event_name == "t2dm_pd"){
+} else if (event_name == "t2dm_pd" | event_name == "t2dm_pd_extended_follow_up"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_prediabetes.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_prediabetes.rds"))
   
-} else if (event_name == "t2dm_pd_no"){
+} else if (event_name == "t2dm_pd_no" | event_name == "t2dm_pd_no_extended_follow_up"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_no_prediabetes.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_no_prediabetes.rds"))
   
-} else if (event_name == "t2dm_obes"){
+} else if (event_name == "t2dm_obes" | event_name == "t2dm_obes_extended_follow_up"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_obesity.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_obesity.rds"))
   
-} else if (event_name == "t2dm_obes_no"){
+} else if (event_name == "t2dm_obes_no" | event_name == "t2dm_obes_no_extended_follow_up"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_no_obesity.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_no_obesity.rds"))
   

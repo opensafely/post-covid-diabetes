@@ -34,7 +34,7 @@ if(event_name == "out_date_ami" | event_name == "out_date_stroke_isch" | event_n
   input <- read_rds(paste0("output/input_",cohort,"_stage1_CVD.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_CVD.rds"))
   
-} else if(event_name == "t1dm" | event_name == "t2dm" | event_name == "otherdm" | event_name == "t2dm_follow" |
+} else if(event_name == "t1dm" | event_name == "t2dm" | event_name == "otherdm" | event_name == "t2dm_follow" | event_name == "t2dm_follow_extended_follow_up" |
           event_name == "t1dm_extended_follow_up" | event_name == "t2dm_extended_follow_up" | event_name == "otherdm_extended_follow_up"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes.rds"))

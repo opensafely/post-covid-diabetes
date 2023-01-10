@@ -395,8 +395,9 @@ if (cohort_name == "prevax"){
   # rename t2dm variable to t2dm_follow 
   
   input_new_t2dm_cases <- input_new_t2dm_cases %>%
-    dplyr::rename(out_date_t2dm_follow = out_date_t2dm) %>%
-    dplyr::select(patient_id, out_date_t2dm_follow)
+    dplyr::rename(out_date_t2dm_follow = out_date_t2dm,
+                  out_date_t2dm_follow_extended_follow_up = out_date_t2dm_extended_follow_up) %>%
+    dplyr::select(patient_id, out_date_t2dm_follow, out_date_t2dm_follow_extended_follow_up)
   
   # merge and save input file back ready for cox analysis - the only change made is the addition of out_date_t2dm_follow variable 
   

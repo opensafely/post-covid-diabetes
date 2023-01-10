@@ -2,6 +2,9 @@
 t2dm_extended_follow_up,prevax,main,reduced
 t2dm_extended_follow_up,prevax,non_hospitalised,reduced
 t2dm_extended_follow_up,prevax,hospitalised,reduced
+t2dm_follow_extended_follow_up,prevax,main,reduced
+t2dm_follow_extended_follow_up,prevax,non_hospitalised,reduced
+t2dm_follow_extended_follow_up,prevax,hospitalised,reduced
 t1dm_extended_follow_up,prevax,main,reduced
 otherdm_extended_follow_up,prevax,main,reduced
 gestationaldm_extended_follow_up,prevax,main,reduced

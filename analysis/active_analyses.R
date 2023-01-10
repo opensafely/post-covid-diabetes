@@ -63,12 +63,13 @@ outcomes <- c("type 1 diabetes",
               "type 1 diabetes - extended follow up",
               "type 2 diabetes - extended follow up",
               "other or non-specific diabetes - extended follow up",
-              "gestational diabetes - extended follow up")
+              "gestational diabetes - extended follow up", 
+              "type 2 diabetes - 4_mnth_follow - extended follow up")
 
 outcome_group <- "diabetes"
 
 outcomes_short <- c("t1dm","t2dm", "t2dm_rec", "t2dm_pre_rec", "t2dm_post_rec", "t2dm_follow", "t2dm_pd","t2dm_pd_no", "t2dm_obes","t2dm_obes_no", "otherdm","gestationaldm",
-                    "t1dm_extended_follow_up","t2dm_extended_follow_up", "otherdm_extended_follow_up","gestationaldm_extended_follow_up")
+                    "t1dm_extended_follow_up","t2dm_extended_follow_up", "otherdm_extended_follow_up","gestationaldm_extended_follow_up", "t2dm_follow_extended_follow_up")
 outcome_venn <- c(TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)
 
 for (i in 1:length(outcomes)) {
@@ -118,12 +119,14 @@ df <- df %>% mutate(cohort = case_when(outcome == "type 2 diabetes - recovery" ~
                                        TRUE ~ as.character(cohort)),
                     cohort = case_when(outcome == "type 2 diabetes - 4_mnth_follow" ~ "prevax",
                                       TRUE ~ as.character(cohort)),
-                    cohort = case_when(outcomes_short == "t1dm_extended_follow_up" | outcomes_short == "t2dm_extended_follow_up" | outcomes_short == "otherdm_extended_follow_up" | outcomes_short == "gestationaldm_extended_follow_up" ~ "prevax",
+                    cohort = case_when(outcomes_short == "t1dm_extended_follow_up" | outcomes_short == "t2dm_extended_follow_up" | outcomes_short == "otherdm_extended_follow_up" | outcomes_short == "gestationaldm_extended_follow_up" | outcomes_short == "t2dm_follow_extended_follow_up" ~ "prevax",
                                        TRUE ~ as.character(cohort)))
 
 # turn on subgroups for main t2dm analyses
 
 df[2,c(11:22, 25:32)] <- TRUE
+df[14,c(11:22, 25:32)] <- TRUE
+
 
 # turn on t2dm
 

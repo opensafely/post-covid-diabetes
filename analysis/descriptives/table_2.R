@@ -54,7 +54,7 @@ table_2_subgroups_output <- function(cohort_name, group){
   analyses_of_interest <- as.data.frame(matrix(ncol = 8,nrow = 0))
   
   outcomes<-active_analyses$outcome_variable
-  outcomes <- outcomes[! outcomes %in% c("out_date_t2dm_follow")]
+  outcomes <- outcomes[! outcomes %in% c("out_date_t2dm_follow", "out_date_t2dm_follow_extended_follow_up")]
   
   #--------------------Load data and left join end dates------------------------
   survival_data <- read_rds(paste0("output/input_", cohort_name,"_stage1_", group,".rds"))

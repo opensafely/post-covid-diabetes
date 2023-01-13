@@ -87,10 +87,10 @@ rm(analyses_to_run_normal_timepoint)
 
 # Add day zero analyses
 
-# day_zero_analyses <- analyses_to_run %>% filter(subgroup %in% c("main","covid_pheno_hospitalised", "covid_pheno_non_hospitalised"))
-# day_zero_analyses$reduced_timepoint <- paste0("day_zero_",day_zero_analyses$reduced_timepoint)
-# analyses_to_run <- rbind(analyses_to_run, day_zero_analyses)
-# rm(day_zero_analyses)
+day_zero_analyses <- analyses_to_run %>% filter(subgroup %in% c("main","covid_pheno_hospitalised", "covid_pheno_non_hospitalised"))
+day_zero_analyses$reduced_timepoint <- paste0("day_zero_",day_zero_analyses$reduced_timepoint)
+analyses_to_run <- rbind(analyses_to_run, day_zero_analyses)
+rm(day_zero_analyses)
 
 # Source remainder of relevant files --------------------------------------------------------
 

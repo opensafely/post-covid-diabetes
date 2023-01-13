@@ -84,9 +84,10 @@ input <- input %>% select(all_of(read_in_cols))
 
 # RENAME END DATES FOR T2DM FOLLOW ANALYSIS -------------------------------
 
-if (event_name == "t2dm_follow") {
+if (event_name == "t2dm_follow" | event_name == "t2dm_follow_extended_follow_up") {
   
   colnames(end_dates) = gsub("t2dm", "t2dm_follow", colnames(end_dates))
+  colnames(end_dates) = gsub("t2dm_extended_follow_up", "t2dm_follow_extended_follow_up", colnames(end_dates))
   
 }
 

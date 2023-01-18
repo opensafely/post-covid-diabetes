@@ -14,7 +14,7 @@ fs::dir_create(here::here("output", "review", "model","vax"))
 fs::dir_create(here::here("output", "review", "model","unvax"))
 
 # Read in results from stata output
-
+proj_dir <- getwd()
 stata_results_dir <- "output"
 r_results_dir_prevax <- "output/review/model/prevax"
 r_results_dir_vax <- "output/review/model/prevax"
@@ -218,6 +218,8 @@ table2$event <- gsub("out_date_","",table2$event)
 
 estimates <- estimates %>% left_join(table2)
 
+setwd(proj_dir)
+
 # table2_pre_vax <- read.csv("output/review/descriptives/table2_prevax_diabetes.csv")
 # table2_vax <- read.csv("output/review/descriptives/table2_vax_diabetes.csv")
 # table2_unvax <- read.csv("output/review/descriptives/table2_unvax_diabetes.csv")
@@ -233,4 +235,4 @@ estimates <- estimates %>% left_join(table2)
 # estimates <- estimates %>%
 #   select(event, subgroup, cohort, model, time_points, source,term, estimate, conf_low, conf_high, median_follow_up)
 
-write.csv(estimates, file = paste0(output_dir,"/hr_output_formatted.csv"),row.names = FALSE)
+write.csv(estimates, file = paste0("output/review/model/hr_output_formatted.csv"),row.names = FALSE)

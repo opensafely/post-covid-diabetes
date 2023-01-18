@@ -281,6 +281,19 @@ actions:
       highly_sensitive:
         cohort_new: output/input_unvax_stage1_diabetes.rds
 
+  diabetes_post_hoc_prevax_extended_follow_up:
+    run: r:latest analysis/descriptives/diabetes-follow-up-analysis-extended-follow-up.R
+      prevax
+    needs:
+    - generate_study_population_prevax_diabetes_analyis
+    - generate_study_population_vax_diabetes_analyis
+    - generate_study_population_unvax_diabetes_analyis
+    - vax_eligibility_inputs
+    - stage1_data_cleaning_prevax
+    outputs:
+      moderately_sensitive:
+        res_table: output/review/descriptives/diabetes_posthoc_analysis_res_EXTENDED_*_prevax.csv
+
   stage2_missing_table1_all:
     run: r:latest analysis/descriptives/Stage2_missing_table1.R all
     needs:

@@ -511,6 +511,16 @@ actions_list <- splice(
       cohort_new = glue("output/input_unvax_stage1_diabetes.rds")
     )
     ),
+ 
+  #comment("Diabetes additional analysis - prevax - extended follow up"),
+  action(
+    name = "diabetes_post_hoc_prevax_extended_follow_up",
+    run = "r:latest analysis/descriptives/diabetes-follow-up-analysis-extended-follow-up.R prevax",
+    needs = list("generate_study_population_prevax_diabetes_analyis", "generate_study_population_vax_diabetes_analyis", "generate_study_population_unvax_diabetes_analyis", "vax_eligibility_inputs", "stage1_data_cleaning_prevax"),
+    moderately_sensitive = list(
+      res_table = glue("output/review/descriptives/diabetes_posthoc_analysis_res_EXTENDED_*_prevax.csv")
+    )
+  ),
   
   #comment("Stage 2 - Missing - Table 1 - all cohorts"),
   action(

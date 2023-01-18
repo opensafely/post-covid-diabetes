@@ -160,6 +160,7 @@ estimates$source <- "R"
 df <- df %>% select(intersect(colnames(estimates),colnames(df)))
 estimates <- rbind(estimates, df, fill = TRUE)
 rm(df)
+write.csv(estimates, file = paste0("output/review/model/hr_output_formatted_no_event_counts.csv"),row.names = FALSE)
 
 #If any of the models has fitted unsuccessfully, class all models as fitted unsuccessfully
 # estimates <- estimates %>%
@@ -174,8 +175,7 @@ estimates <- estimates %>%
   dplyr::filter(results_fitted == "fitted_successfully")
 
 #Filter to columns and terms of interest
-estimates <- estimates %>% filter(term %in% term[grepl("^days",term)]
-                                  & results_fitted == "fitted_successfully") %>%
+estimates <- estimates %>% filter(term %in% term[grepl("^days",term)]) %>%
   select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,median_follow_up, model, source)
 
 #Set any redacted values to NA
@@ -193,15 +193,16 @@ estimates$median_follow_up <- ((estimates$median_follow_up + estimates$add_to_me
 estimates$add_to_median <- NULL
 
 estimates <- as.data.frame(estimates)
-df <- estimates %>% select(term,event,subgroup,cohort, time_points,model)
-df <- as.data.frame(df)
-df <- df[duplicated(df),]
 
-df <- merge(estimates,df)
-df <- df %>% filter(source == "stata")
-
-df <- df[!(df$cohort == "vax" & df$subgroup == "covid_pheno_hospitalised"),] 
-
+# df <- estimates %>% select(term,event,subgroup,cohort, time_points,model)
+# df <- as.data.frame(df)
+# df <- df[duplicated(df),]
+# 
+# df <- merge(estimates,df)
+# df <- df %>% filter(source == "stata")
+# 
+# df <- df[!(df$cohort == "vax" & df$subgroup == "covid_pheno_hospitalised"),] 
+# 
 
 # estimates <- estimates %>% anti_join(df)
 
@@ -222,7 +223,7 @@ setwd(proj_dir)
 
 # save  table 2 and estimates to see whats going on
 
-write.csv(estimates, file = paste0("output/review/model/hr_output_formatted_no_event_counts.csv"),row.names = FALSE)
+# write.csv(estimates, file = paste0("output/review/model/hr_output_formatted_no_event_counts.csv"),row.names = FALSE)
 write.csv(table2, file = paste0("output/review/model/table2_output_formatted_no_hrs.csv"),row.names = FALSE)
 
 write.csv(estimates2, file = paste0("output/review/model/hr_output_formatted.csv"),row.names = FALSE)

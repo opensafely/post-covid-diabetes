@@ -216,23 +216,13 @@ table2 <- table2 %>% dplyr::rename(cohort = cohort_to_run)
 table2 <- table2 %>% dplyr::select(event, subgroup, cohort, post_exposure_event_count)
 table2$event <- gsub("out_date_","",table2$event)
 
-estimates <- estimates %>% left_join(table2)
+estimates2 <- estimates %>% left_join(table2)
 
 setwd(proj_dir)
 
-# table2_pre_vax <- read.csv("output/review/descriptives/table2_prevax_diabetes.csv")
-# table2_vax <- read.csv("output/review/descriptives/table2_vax_diabetes.csv")
-# table2_unvax <- read.csv("output/review/descriptives/table2_unvax_diabetes.csv")
-# 
-# # table2_pre_vax <- table2_pre_vax %>% rename(cohort_to_run = cohort_name)
-# table2 <- rbind(table2_unvax,table2_vax,table2_pre_vax)
-# table2 <- table2 %>% dplyr::rename(cohort = cohort_to_run)
-# table2 <- table2 %>% dplyr::select(event, subgroup, cohort, post_exposure_event_count)
-# table2$event <- gsub("out_date_","",table2$event)
-# 
-# # estimates$post_exposure_event_count <- NULL
-# # estimates <- estimates %>% left_join(table2) %>%
-# estimates <- estimates %>%
-#   select(event, subgroup, cohort, model, time_points, source,term, estimate, conf_low, conf_high, median_follow_up)
+# save  table 2 and estimates to see whats going on
 
-write.csv(estimates, file = paste0("output/review/model/hr_output_formatted.csv"),row.names = FALSE)
+write.csv(estimates, file = paste0("output/review/model/hr_output_formatted_no_event_counts.csv"),row.names = FALSE)
+write.csv(table2, file = paste0("output/review/model/table2_output_formatted_no_hrs.csv"),row.names = FALSE)
+
+write.csv(estimates2, file = paste0("output/review/model/hr_output_formatted.csv"),row.names = FALSE)

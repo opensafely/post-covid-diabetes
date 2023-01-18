@@ -647,7 +647,10 @@ action(
                   "Analysis_cox_gestationaldm_prevax", "Analysis_cox_gestationaldm_vax", "Analysis_cox_gestationaldm_unvax",
                   "Analysis_cox_t2dm_rec_prevax",
                   "Analysis_cox_t2dm_post_rec_prevax",
-                  "Analysis_cox_t2dm_follow_prevax"),
+                  "Analysis_cox_t2dm_follow_prevax",
+               "Analysis_cox_t1dm_extended_follow_up_prevax", "Analysis_cox_t2dm_extended_follow_up_prevax", "Analysis_cox_otherdm_extended_follow_up_prevax", "Analysis_cox_gestationaldm_extended_follow_up_prevax",
+               "Analysis_cox_t2dm_follow_extended_follow_up_prevax", "Analysis_cox_t2dm_pd_extended_follow_up_prevax", "Analysis_cox_t2dm_pd_no_extended_follow_up_prevax",
+               "Analysis_cox_t2dm_obes_extended_follow_up_prevax", "Analysis_cox_t2dm_obes_no_extended_follow_up_prevax"),
   moderately_sensitive = list(
     hr_output = "output/review/model/hr_output_formatted.csv",
     hr_output_no_events = "output/review/model/hr_output_formatted_no_event_counts.csv",

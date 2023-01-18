@@ -1723,6 +1723,15 @@ actions:
     - Analysis_cox_t2dm_rec_prevax
     - Analysis_cox_t2dm_post_rec_prevax
     - Analysis_cox_t2dm_follow_prevax
+    - Analysis_cox_t1dm_extended_follow_up_prevax
+    - Analysis_cox_t2dm_extended_follow_up_prevax
+    - Analysis_cox_otherdm_extended_follow_up_prevax
+    - Analysis_cox_gestationaldm_extended_follow_up_prevax
+    - Analysis_cox_t2dm_follow_extended_follow_up_prevax
+    - Analysis_cox_t2dm_pd_extended_follow_up_prevax
+    - Analysis_cox_t2dm_pd_no_extended_follow_up_prevax
+    - Analysis_cox_t2dm_obes_extended_follow_up_prevax
+    - Analysis_cox_t2dm_obes_no_extended_follow_up_prevax
     outputs:
       moderately_sensitive:
         hr_output: output/review/model/hr_output_formatted.csv

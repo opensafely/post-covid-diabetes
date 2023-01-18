@@ -79,12 +79,28 @@ population = patients.all(),
         returning_type = 'date', 
         date_format = 'YYYY-MM-DD',
     ),
+
+    t2dm_extended_follow_up_follow_up_end = patients.with_value_from_file(
+        f_path = 'output/follow_up_end_dates_prevax_diabetes.csv.gz', 
+        returning = 't2dm_extended_follow_up_follow_up_end', 
+        returning_type = 'date', 
+        date_format = 'YYYY-MM-DD',
+    ),
     
 # Get t2dm diagnosis date from stage 1 dataset
 
     out_date_t2dm = patients.with_value_from_file(
         f_path = 'output/input_prevax_stage1_diabetes.csv.gz', 
         returning = 'out_date_t2dm', 
+        returning_type = 'date', 
+        date_format = 'YYYY-MM-DD',
+    ),
+
+# Get t2dm EXTENDED diagnosis date from stage 1 dataset
+
+    out_date_t2dm_extended_follow_up = patients.with_value_from_file(
+        f_path = 'output/input_prevax_stage1_diabetes.csv.gz', 
+        returning = 'out_date_t2dm_extended_follow_up', 
         returning_type = 'date', 
         date_format = 'YYYY-MM-DD',
     ),

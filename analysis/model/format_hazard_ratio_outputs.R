@@ -157,10 +157,12 @@ estimates <- rbindlist(list(estimates, estimates_vax, estimates_unvax), fill = T
 
 estimates$source <- "R"
 
+write.csv(estimates, file = paste0("output/review/model/hr_output_formatted_no_event_counts.csv"),row.names = FALSE)
+
 df <- df %>% select(intersect(colnames(estimates),colnames(df)))
 estimates <- rbind(estimates, df, fill = TRUE)
 rm(df)
-write.csv(estimates, file = paste0("output/review/model/hr_output_formatted_no_event_counts.csv"),row.names = FALSE)
+
 
 #If any of the models has fitted unsuccessfully, class all models as fitted unsuccessfully
 # estimates <- estimates %>%

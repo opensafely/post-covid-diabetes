@@ -24,8 +24,8 @@ args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
   # use for interactive testing
-  cohort_name <- "vax"
-  #cohort_name = "electively_unvaccinated"
+  cohort_name <- "prevax"
+  group <- "diabetes"
 }else{
   cohort_name <- args[[1]]
 }
@@ -291,7 +291,7 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
   # calculate total person days of follow-up
   data_active = data_active %>% mutate(person_days = as.numeric((as.Date(follow_up_end) - as.Date(index_date)))+1)
   
-  if(cohort=="prevax" & group != "diabetes_recovery"){
+  if(cohort=="prevax" & group != "diabetes_recovery" & !grepl("extended_follow_up",event)){
     
     data_active = data_active %>% filter((person_days_unexposed >=0 & person_days_unexposed <= 535)
                                          & (person_days >=0 & person_days <= 535)) # filter out follow up period

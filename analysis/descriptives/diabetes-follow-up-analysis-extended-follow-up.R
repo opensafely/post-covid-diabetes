@@ -394,18 +394,18 @@ diabetes_post_hoc <- function(cohort_name){
     
     # rename t2dm variable to t2dm_follow 
     
-    input_new_t2dm_cases <- input_new_t2dm_cases %>%
-      dplyr::rename(out_date_t2dm_follow = out_date_t2dm,
-                    out_date_t2dm_follow_extended_follow_up = out_date_t2dm_extended_follow_up) %>%
-      dplyr::select(patient_id, out_date_t2dm_follow, out_date_t2dm_follow_extended_follow_up)
-    
-    # merge and save input file back ready for cox analysis - the only change made is the addition of out_date_t2dm_follow variable 
-    
-    input_main <- merge(input_main, input_new_t2dm_cases, all.x = TRUE)
-    input_main <- input_main %>%
-      mutate(across(c(contains("_date")),
-                    ~ floor_date(as.Date(., format="%Y-%m-%d"), unit = "days")))
-    
+    # input_new_t2dm_cases <- input_new_t2dm_cases %>%
+    #   dplyr::rename(out_date_t2dm_follow = out_date_t2dm,
+    #                 out_date_t2dm_follow_extended_follow_up = out_date_t2dm_extended_follow_up) %>%
+    #   dplyr::select(patient_id, out_date_t2dm_follow, out_date_t2dm_follow_extended_follow_up)
+    # 
+    # # merge and save input file back ready for cox analysis - the only change made is the addition of out_date_t2dm_follow variable 
+    # 
+    # input_main <- merge(input_main, input_new_t2dm_cases, all.x = TRUE)
+    # input_main <- input_main %>%
+    #   mutate(across(c(contains("_date")),
+    #                 ~ floor_date(as.Date(., format="%Y-%m-%d"), unit = "days")))
+    # 
     # # SAVE input file with new diabetes outcome added
     # 
     # saveRDS(input_main, file = file.path("output", paste0("input_prevax_stage1_diabetes.rds")))

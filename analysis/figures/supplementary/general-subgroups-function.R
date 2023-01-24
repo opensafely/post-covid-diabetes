@@ -11,7 +11,7 @@ active_analyses <- read_rds("lib/active_analyses.rds")
 
 #--------Load fully adjusted main and COVID phenotype results-------------------
 
-combined_hr <- read.csv(paste0(results_dir,"/hr_output_formatted.csv"))
+combined_hr <- read.csv(paste0(results_dir,"/hr_output_formatted_for_AER_extended.csv"))
 
 
 # Get estimates for subgroup analyses for t2dm
@@ -245,7 +245,7 @@ for(c in cohort){
       ggplot2::geom_line(position = ggplot2::position_dodge(width = 0)) +
       ggplot2::scale_y_continuous(lim = c(0.25,16), breaks = c(0.25,0.5,1,2,4,8,16), trans = "log") +
       # ggplot2::scale_x_continuous(lim = c(0,round_any(max(df$median_follow_up, na.rm = T),4, f= ceiling)), breaks = seq(0,round_any(max(df$median_follow_up, na.rm = T),4, f= ceiling),4)) +
-      ggplot2::scale_x_continuous(lim = c(0,56), breaks = seq(0,56,4)) +
+      ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
       ggplot2::scale_fill_manual(values = colour_levels, labels = sub_group_levels)+ 
       ggplot2::scale_color_manual(values = colour_levels, labels = sub_group_levels) +
       ggplot2::scale_shape_manual(values = c(rep(21,17)), labels = sub_group_levels) +
@@ -260,7 +260,7 @@ for(c in cohort){
                      panel.spacing.y = ggplot2::unit(0, "lines"),
                      plot.background = ggplot2::element_rect(fill = "white", colour = "white")) +
       ggtitle(ifelse(c == "prevax",
-                     paste0("Pre-Vaccinated \n1 Jan 2020 to 18 Jun 2021"),
+                     paste0("Pre-Vaccinated \n1 Jan 2020 to 14 Dec 2021"),
                      ifelse(df$cohort == "vax",
                             paste0("Vaccinated \n1 Jun 2021 to 14 Dec 2021"),
                             paste0("Unvaccinated \n1 Jun 2021 to 14 Dec 2021")))) +

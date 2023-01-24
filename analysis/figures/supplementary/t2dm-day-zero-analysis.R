@@ -10,7 +10,7 @@ library(grid)
 dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
 setwd(dir)
 
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/model-release-16-12-22/")
+results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/model")
 output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/")
 
 #-------------------------#
@@ -30,7 +30,7 @@ outcomes_to_plot <- "t2dm"
 #---------------------------------------------#
 
 # Load all estimates
-estimates <- read.csv(paste0(results_dir,"/hr_output_formatted.csv"))
+estimates <- read.csv(paste0(results_dir,"/hr_output_formatted_for_AER_extended.csv"))
 
 # keep only Stata results for all hosp analyses
 
@@ -44,8 +44,7 @@ estimates <- read.csv(paste0(results_dir,"/hr_output_formatted.csv"))
 main_estimates <- estimates %>% filter(event %in% outcomes_to_plot 
                                        & term %in% term[grepl("^days",term)]
                                        & model == "mdl_max_adj"
-                                       & time_points == "day_zero_reduced"
-                                       & source == "stata") %>%
+                                       & time_points == "day_zero_reduced") %>%
   select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,median_follow_up, source)
 
 
@@ -134,7 +133,7 @@ main_prevax <- ggplot2::ggplot(data=df_main,
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(-1,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$cohort)) +
@@ -173,7 +172,7 @@ main_vax <- ggplot2::ggplot(data=df_main_vax,
                                                             width = 0))+   
   ggplot2::geom_line(position = pd) +
   ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(-1,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = "#58764c")+ 
   ggplot2::scale_color_manual(values = "#58764c") +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df_main_vax$cohort)) +
@@ -210,7 +209,7 @@ main_unvax <- ggplot2::ggplot(data=df_main_unvax,
                                                             width = 0))+   
   ggplot2::geom_line(position = pd) +
   ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(-1,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = "#0018a8")+ 
   ggplot2::scale_color_manual(values = "#0018a8") +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df_main_unvax$cohort)) +
@@ -247,7 +246,7 @@ hosp_prevax <- ggplot2::ggplot(data=df_hosp,
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(-1,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$cohort)) +
@@ -285,7 +284,7 @@ hosp_vax <- ggplot2::ggplot(data=df_hosp_vax,
                                                             width = 0))+   
   ggplot2::geom_line(position = pd) +
   ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(-1,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = "#58764c")+ 
   ggplot2::scale_color_manual(values = "#58764c") +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df_hosp_vax$cohort)) +
@@ -319,7 +318,7 @@ hosp_unvax <- ggplot2::ggplot(data=df_hosp_unvax,
                                                             width = 0))+   
   ggplot2::geom_line(position = pd) +
   ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(-1,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = "#0018a8")+ 
   ggplot2::scale_color_manual(values = "#0018a8") +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df_hosp_unvax$cohort)) +
@@ -357,7 +356,7 @@ non_hosp_prevax <- ggplot2::ggplot(data=df_nonhosp,
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(-1,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$cohort)) +
@@ -396,7 +395,7 @@ nonhosp_vax <- ggplot2::ggplot(data=df_nonhosp_vax,
                                                             width = 0))+   
   ggplot2::geom_line(position = pd) +
   ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(-1,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = "#58764c")+ 
   ggplot2::scale_color_manual(values = "#58764c") +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df_nonhosp_vax$cohort)) +
@@ -431,7 +430,7 @@ nonhosp_unvax <- ggplot2::ggplot(data=df_nonhosp_unvax,
                                                             width = 0))+   
   ggplot2::geom_line(position = pd) +
   ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(-1,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = "#0018a8")+ 
   ggplot2::scale_color_manual(values = "#0018a8") +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df_nonhosp_unvax$cohort)) +
@@ -463,7 +462,7 @@ plot <- ggpubr::ggarrange(main_prevax, main_vax, main_unvax,
                           font.label = list(size = 12)) +
   theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"))
 
-png(paste0(output_dir,"t2dm_dayzero.png"),
+png(paste0(output_dir,"t2dm_dayzero_extended.png"),
     units = "mm", width=300, height=300, res = 1000)
 annotate_figure(plot, top = text_grob("Type 2 diabetes day zero analyses\n", 
                                       color = "black", face = "bold", size = 14))

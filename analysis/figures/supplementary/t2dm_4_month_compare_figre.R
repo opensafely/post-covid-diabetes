@@ -23,7 +23,7 @@ outcome_name_table <- active_analyses %>%
   mutate(outcome_name=active_analyses$outcome_variable %>% str_replace("out_date_", ""))
 
 outcomes_to_plot <- outcome_name_table$outcome_name
-outcomes_to_plot <- c("t2dm", "t2dm_follow")
+outcomes_to_plot <- c("t2dm_extended_follow_up", "t2dm_follow_extended_follow_up")
 
 #---------------------------------------------#
 # 3. Load all estimates #
@@ -34,11 +34,11 @@ estimates <- read.csv(paste0(results_dir,"/hr_output_formatted.csv"))
 
 # keep only Stata results for all hosp analyses
 
-# estimates <- estimates[!(estimates$source == "R" & estimates$subgroup == "covid_pheno_hospitalised"),] 
+estimates <- estimates[(estimates$subgroup == "covid_pheno_hospitalised"),]
 
 # KEep only stata results for full figure 
 
-estimates <- estimates[!(estimates$source == "R"),] 
+# estimates <- estimates[(estimates$source == "R"),] 
 
 # Get estimates for main analyses and list of outcomes from active analyses
 main_estimates <- estimates %>% filter(event %in% outcomes_to_plot 
@@ -134,7 +134,7 @@ main <- ggplot2::ggplot(data=df_main,
   ggplot2::geom_line() +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   ggplot2::scale_y_continuous(lim = c(0.5,64), breaks = c(0.5,1,2,4,8,16,32, 64), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$analysis))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$analysis)) +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$analysis)) +
@@ -175,7 +175,7 @@ hosp <- ggplot2::ggplot(data=df_hosp,
   ggplot2::geom_line() +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   ggplot2::scale_y_continuous(lim = c(0.5,64), breaks = c(0.5,1,2,4,8,16,32, 64), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$analysis))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$analysis)) +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$analysis)) +
@@ -218,7 +218,7 @@ non_hosp <- ggplot2::ggplot(data=df_nonhosp,
   ggplot2::geom_line() +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   ggplot2::scale_y_continuous(lim = c(0.5,64), breaks = c(0.5,1,2,4,8,16,32, 64), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$analysis))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$analysis)) +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$analysis)) +

@@ -284,7 +284,7 @@ table2 <- table2 %>%
   dplyr::rename(`Total events` = Total,
                 `Events after COVID-19` = `All COVID-19`) %>%
   dplyr::select(-c(`No COVID-19`)) %>%
-  mutate(`Number of people` = ifelse(Cohort == "Pre-vaccination (1 Jan 2020 to 18 Jun 2021)", 15211471,
+  mutate(`Number of people` = ifelse(Cohort == "Pre-vaccination (1 Jan 2020 to 14 Dec 2021)", 15211471,
                                      ifelse(Cohort == "Vaccinated (1 Jun 2021 to 14 Dec 2021)", 11822640,
                                             ifelse(Cohort == "Unvaccinated (1 Jun 2021 to 14 Dec 2021)", 2851183, NA)))) %>%
   relocate(`Total events`, .after = `Cohort`) %>%
@@ -409,7 +409,7 @@ p2 <- ggarrange(mylegend, tablesplot, ncol = 2, widths = c(0.07,1))
 # SAVE PLOT WITH TABLE
 
 png(paste0(output_dir,"Figure_2_other_3panel_with_table_EXTENDED.png"),
-    units = "mm", width=300, height=150, res = 1000)
+    units = "mm", width=315, height=150, res = 1000)
 ggpubr::ggarrange(p1, 
                   p2,
                   nrow = 2,

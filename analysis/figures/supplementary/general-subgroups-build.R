@@ -22,13 +22,13 @@ prevax_subgroup <- subgroup_fig("prevax")
 vax_subgroup <- subgroup_fig("vax")
 unvax_subgroup <- subgroup_fig("unvax")
 
-png(paste0(output_dir,"Figure-t2dm-subgroups.png"),
+png(paste0(output_dir,"Figure-t2dm-subgroups_extended.png"),
     units = "mm", width=470, height=380, res = 1000)
 ggpubr::ggarrange(prevax_subgroup, vax_subgroup, unvax_subgroup, ncol=3, nrow=1, common.legend = TRUE, legend="bottom",
                   font.label = list(size = 26, color = "black", face = "bold", family = NULL)) 
 dev.off() 
 
-tiff(paste0(output_dir,"Figure-t2dm-subgroups.tiff"),
+tiff(paste0(output_dir,"Figure-t2dm-subgroups_extended.tiff"),
     units = "mm", width=470, height=380, res = 200)
 ggpubr::ggarrange(prevax_subgroup, vax_subgroup, unvax_subgroup, ncol=3, nrow=1, common.legend = TRUE, legend="bottom",
                   font.label = list(size = 26, color = "black", face = "bold", family = NULL)) 

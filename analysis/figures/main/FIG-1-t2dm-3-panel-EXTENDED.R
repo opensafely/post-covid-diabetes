@@ -289,7 +289,7 @@ table2 <- table2 %>%
   dplyr::rename(`Total type 2 diabetes events` = Total,
                 `Events after COVID-19` = `All COVID-19`) %>%
   dplyr::select(-c(`No COVID-19`)) %>%
-  mutate(`Number of people` = ifelse(Cohort == "Pre-vaccination (1 Jan 2020 to 18 Jun 2021)", 15211471,
+  mutate(`Number of people` = ifelse(Cohort == "Pre-vaccination (1 Jan 2020 to 14 Dec 2021)", 15211471,
                                      ifelse(Cohort == "Vaccinated (1 Jun 2021 to 14 Dec 2021)", 11822640,
                                             ifelse(Cohort == "Unvaccinated (1 Jun 2021 to 14 Dec 2021)", 2851183, NA)))) %>%
   relocate(`Total type 2 diabetes events`, .after = `Cohort`) %>%

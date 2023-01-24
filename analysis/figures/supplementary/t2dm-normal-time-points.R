@@ -32,7 +32,7 @@ outcomes_to_plot <- "t2dm"
 #---------------------------------------------#
 
 # Load all estimates
-estimates <- read.csv(paste0(results_dir,"/hr_output_formatted.csv"))
+estimates <- read.csv(paste0(results_dir,"/hr_output_formatted_for_AER_extended.csv"))
 
 # keep only Stata results for all hosp analyses
 
@@ -108,6 +108,7 @@ main_estimates$outcome <- str_to_title(main_estimates$outcome)
 main_estimates <- main_estimates %>% 
   dplyr::filter(outcome == "Type 2 Diabetes")
 main_estimates$outcome <- factor(main_estimates$outcome, levels=c("Type 2 Diabetes"))
+main_estimates <- main_estimates[!duplicated(main_estimates), ]
 
 pd <- position_dodge2(width = 0.1)
 
@@ -133,7 +134,7 @@ for(i in c("any_position")){
     ggplot2::geom_line(position = pd) +
     #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
     ggplot2::scale_y_continuous(lim = c(0.5,16), breaks = c(0.5,1,2,4,8,16), trans = "log") +
-    ggplot2::scale_x_continuous(lim = c(0,56), breaks = seq(0,56,4)) +
+    ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
     ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
     ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
     ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$cohort)) +
@@ -150,7 +151,7 @@ for(i in c("any_position")){
                    plot.background = ggplot2::element_rect(fill = "white", colour = "white")) +    
     ggplot2::facet_wrap(outcome~., ncol = 2)
   
-  ggplot2::ggsave(paste0(output_dir,"t2dm_normal_timepoint",i,".png"), height = 297, width = 220, unit = "mm", dpi = 600, scale = 1)
+  ggplot2::ggsave(paste0(output_dir,"t2dm_normal_timepoint",i,"_extended.png"), height = 297, width = 220, unit = "mm", dpi = 600, scale = 1)
   
   
 }

@@ -1,6 +1,21 @@
 # List files to be combined
 
-files <- list.files(path = "output/", pattern = "_cox_model.txt")
+files <- list.files(path = "output/", pattern = "_cox_model_")
+
+analyses_to_run_stata <- read.csv("lib/analyses_to_run_in_stata.csv")
+analyses_to_run_stata$subgroup <- ifelse(analyses_to_run_stata$subgroup=="hospitalised","covid_pheno_hospitalised",analyses_to_run_stata$subgroup)
+analyses_to_run_stata$subgroup <- ifelse(analyses_to_run_stata$subgroup=="non_hospitalised","covid_pheno_non_hospitalised",analyses_to_run_stata$subgroup)
+
+tmp_files <- paste0("input_sampled_data_",
+                analyses_to_run_stata$outcome,"_",
+                analyses_to_run_stata$subgroup,"_",
+                analyses_to_run_stata$cohort,"_",
+                analyses_to_run_stata$time_periods,
+                "_time_periods_cox_model_day0",
+                analyses_to_run_stata$day0,
+                "_extf",analyses_to_run_stata$extf,".txt")
+
+files <- intersect(files, tmp_files)
 
 # Create empty master data frame
 
@@ -65,7 +80,8 @@ for (f in files) {
   
   ## Add median follow up
 
-  f <- gsub("_cox_model.txt","_stata_median_fup.csv",f)
+  f <- gsub("_cox_model_","_stata_median_fup_",f)
+  f <- gsub(".txt",".csv",f)
   fup <- readr::read_csv(file = paste0("output/",f))
   tmp <- merge(tmp, fup, by = "term", all.x = TRUE)
   
@@ -96,7 +112,8 @@ df <- tidyr::pivot_wider(df,
 
 # Make names match R output ----------------------------------------------------
 
-df <- df[df$model=="max" | (df$model=="min" & df$term %in% c("days0_28","days28_197","days197_535","1.sex","2.sex","age_spline1","age_spline2")),]
+df <- df[df$model=="max" | (df$model=="min" & df$term %in% c(unique(df$term)[grepl("days",unique(df$term))],
+                                                             "1.sex","2.sex","age_spline1","age_spline2")),]
 
 df <- df[order(df$source, df$model),
          c("source","term","model","b","lci","uci","se","medianfup","subjects","outcomes")]

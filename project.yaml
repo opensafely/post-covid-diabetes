@@ -1242,459 +1242,504 @@ actions:
         dataset: output/input_t2dm_obes_no_extended_follow_up_*_prevax_*_time_periods.csv
         sampled_dataset: output/input_sampled_data_t2dm_obes_no_extended_follow_up_*_prevax_*_time_periods.csv
 
-  stata_cox_model_t2dm_covid_pheno_hospitalised_prevax_reduced:
+  stata_cox_model_t2dm_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_covid_pheno_hospitalised_prevax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_covid_pheno_hospitalised_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_covid_pheno_hospitalised_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_covid_pheno_hospitalised_prevax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_covid_pheno_hospitalised_prevax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_covid_pheno_hospitalised_vax_reduced:
+  stata_cox_model_t2dm_covid_pheno_hospitalised_vax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_covid_pheno_hospitalised_vax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_vax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_covid_pheno_hospitalised_vax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_covid_pheno_hospitalised_vax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_covid_pheno_hospitalised_vax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_covid_pheno_hospitalised_vax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_covid_pheno_hospitalised_unvax_reduced:
+  stata_cox_model_t2dm_covid_pheno_hospitalised_unvax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_covid_pheno_hospitalised_unvax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_unvax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_covid_pheno_hospitalised_unvax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_covid_pheno_hospitalised_unvax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_covid_pheno_hospitalised_unvax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_covid_pheno_hospitalised_unvax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_main_prevax_reduced:
+  stata_cox_model_t2dm_main_prevax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_main_prevax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_main_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_main_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_main_prevax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_main_prevax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_main_vax_reduced:
+  stata_cox_model_t2dm_main_vax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_main_vax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_vax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_main_vax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_main_vax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_main_vax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_main_vax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_main_unvax_reduced:
+  stata_cox_model_t2dm_main_unvax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_main_unvax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_unvax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_main_unvax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_main_unvax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_main_unvax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_main_unvax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_covid_pheno_non_hospitalised_prevax_reduced:
+  stata_cox_model_t2dm_covid_pheno_non_hospitalised_prevax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_covid_pheno_non_hospitalised_prevax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_prevax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_prevax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_covid_pheno_non_hospitalised_vax_reduced:
+  stata_cox_model_t2dm_covid_pheno_non_hospitalised_vax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_covid_pheno_non_hospitalised_vax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_vax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_vax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_vax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_vax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_vax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_covid_pheno_non_hospitalised_unvax_reduced:
+  stata_cox_model_t2dm_covid_pheno_non_hospitalised_unvax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_covid_pheno_non_hospitalised_unvax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_unvax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_unvax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_unvax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_unvax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_unvax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_follow_covid_pheno_hospitalised_prevax_reduced:
+  stata_cox_model_t2dm_follow_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_follow_covid_pheno_hospitalised_prevax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_follow_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_follow_covid_pheno_hospitalised_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_follow_covid_pheno_hospitalised_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_follow_covid_pheno_hospitalised_prevax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_follow_covid_pheno_hospitalised_prevax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_follow_main_prevax_reduced:
+  stata_cox_model_t2dm_follow_main_prevax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_follow_main_prevax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_follow_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_follow_main_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_follow_main_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_follow_main_prevax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_follow_main_prevax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_follow_covid_pheno_non_hospitalised_prevax_reduced:
+  stata_cox_model_t2dm_follow_covid_pheno_non_hospitalised_prevax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_follow_covid_pheno_non_hospitalised_prevax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_follow_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_follow_covid_pheno_non_hospitalised_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_follow_covid_pheno_non_hospitalised_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_follow_covid_pheno_non_hospitalised_prevax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_follow_covid_pheno_non_hospitalised_prevax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_rec_covid_pheno_hospitalised_prevax_reduced:
+  stata_cox_model_t2dm_rec_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_rec_covid_pheno_hospitalised_prevax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_rec_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_rec_covid_pheno_hospitalised_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_rec_covid_pheno_hospitalised_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_rec_covid_pheno_hospitalised_prevax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_rec_covid_pheno_hospitalised_prevax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_pre_rec_covid_pheno_hospitalised_prevax_reduced:
+  stata_cox_model_t2dm_pre_rec_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_pre_rec_covid_pheno_hospitalised_prevax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_pre_rec_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_pre_rec_covid_pheno_hospitalised_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_pre_rec_covid_pheno_hospitalised_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_pre_rec_covid_pheno_hospitalised_prevax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_pre_rec_covid_pheno_hospitalised_prevax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_post_rec_covid_pheno_hospitalised_prevax_reduced:
+  stata_cox_model_t2dm_post_rec_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_post_rec_covid_pheno_hospitalised_prevax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_post_rec_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_post_rec_covid_pheno_hospitalised_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_post_rec_covid_pheno_hospitalised_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_post_rec_covid_pheno_hospitalised_prevax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_post_rec_covid_pheno_hospitalised_prevax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_rec_main_prevax_reduced:
+  stata_cox_model_t2dm_rec_main_prevax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_rec_main_prevax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_rec_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_rec_main_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_rec_main_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_rec_main_prevax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_rec_main_prevax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_pre_rec_main_prevax_reduced:
+  stata_cox_model_t2dm_pre_rec_main_prevax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_pre_rec_main_prevax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_pre_rec_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_pre_rec_main_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_pre_rec_main_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_pre_rec_main_prevax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_pre_rec_main_prevax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_post_rec_main_prevax_reduced:
+  stata_cox_model_t2dm_post_rec_main_prevax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_post_rec_main_prevax_reduced_time_periods
+      FALSE FALSE
     needs:
     - Analysis_cox_t2dm_post_rec_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_post_rec_main_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_post_rec_main_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_post_rec_main_prevax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_post_rec_main_prevax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
 
-  stata_cox_model_t2dm_covid_pheno_hospitalised_prevax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_covid_pheno_hospitalised_vax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_covid_pheno_hospitalised_vax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_vax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_covid_pheno_hospitalised_vax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_covid_pheno_hospitalised_vax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_covid_pheno_hospitalised_unvax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_covid_pheno_hospitalised_unvax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_unvax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_covid_pheno_hospitalised_unvax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_covid_pheno_hospitalised_unvax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_main_prevax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_main_prevax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_main_prevax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_main_prevax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_main_vax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_main_vax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_vax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_main_vax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_main_vax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_main_unvax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_main_unvax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_unvax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_main_unvax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_main_unvax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_covid_pheno_non_hospitalised_prevax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_covid_pheno_non_hospitalised_prevax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_prevax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_prevax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_covid_pheno_non_hospitalised_vax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_covid_pheno_non_hospitalised_vax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_vax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_vax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_vax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_covid_pheno_non_hospitalised_unvax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_covid_pheno_non_hospitalised_unvax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_unvax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_unvax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_unvax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_follow_covid_pheno_hospitalised_prevax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_follow_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_follow_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_follow_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_follow_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_follow_main_prevax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_follow_main_prevax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_follow_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_follow_main_prevax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_follow_main_prevax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_follow_covid_pheno_non_hospitalised_prevax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_follow_covid_pheno_non_hospitalised_prevax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_follow_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_follow_covid_pheno_non_hospitalised_prevax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_follow_covid_pheno_non_hospitalised_prevax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_rec_covid_pheno_hospitalised_prevax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_rec_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_pre_rec_covid_pheno_hospitalised_prevax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_pre_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_pre_rec_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_pre_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_pre_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_post_rec_covid_pheno_hospitalised_prevax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_post_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_post_rec_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_post_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_post_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_rec_main_prevax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_rec_main_prevax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_rec_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_rec_main_prevax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_rec_main_prevax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_pre_rec_main_prevax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_pre_rec_main_prevax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_pre_rec_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_pre_rec_main_prevax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_pre_rec_main_prevax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_post_rec_main_prevax_day_zero_reduced:
-    run: stata-mp:latest analysis/cox_model_day0.do input_sampled_data_t2dm_post_rec_main_prevax_day_zero_reduced_time_periods
-    needs:
-    - Analysis_cox_t2dm_post_rec_prevax
-    outputs:
-      moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_post_rec_main_prevax_day_zero_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_post_rec_main_prevax_day_zero_reduced_time_periods_cox_model.txt
-
-  stata_cox_model_t2dm_extended_follow_up_main_prevax_reduced:
-    run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_t2dm_extended_follow_up_main_prevax_reduced_time_periods
+  stata_cox_model_t2dm_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_extended_follow_up_main_prevax_reduced_time_periods
+      TRUE TRUE
     needs:
     - Analysis_cox_t2dm_extended_follow_up_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_extended_follow_up_main_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_extended_follow_up_main_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_extended_follow_up_main_prevax_reduced_time_periods_stata_median_fup_day0TRUE_extfTRUE.csv
+        stata_output: output/input_sampled_data_t2dm_extended_follow_up_main_prevax_reduced_time_periods_cox_model_day0TRUE_extfTRUE.txt
 
-  stata_cox_model_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced:
-    run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods
+  stata_cox_model_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_day0TRUE_extfTRUE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods
+      TRUE TRUE
     needs:
     - Analysis_cox_t2dm_extended_follow_up_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods_stata_median_fup_day0TRUE_extfTRUE.csv
+        stata_output: output/input_sampled_data_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods_cox_model_day0TRUE_extfTRUE.txt
 
-  stata_cox_model_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced:
-    run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_time_periods
+  stata_cox_model_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_day0TRUE_extfTRUE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_time_periods
+      TRUE TRUE
     needs:
     - Analysis_cox_t2dm_extended_follow_up_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_time_periods_stata_median_fup_day0TRUE_extfTRUE.csv
+        stata_output: output/input_sampled_data_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_time_periods_cox_model_day0TRUE_extfTRUE.txt
 
-  stata_cox_model_t2dm_follow_extended_follow_up_main_prevax_reduced:
-    run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_t2dm_follow_extended_follow_up_main_prevax_reduced_time_periods
+  stata_cox_model_t2dm_follow_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_follow_extended_follow_up_main_prevax_reduced_time_periods
+      TRUE TRUE
     needs:
     - Analysis_cox_t2dm_follow_extended_follow_up_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_follow_extended_follow_up_main_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_follow_extended_follow_up_main_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_follow_extended_follow_up_main_prevax_reduced_time_periods_stata_median_fup_day0TRUE_extfTRUE.csv
+        stata_output: output/input_sampled_data_t2dm_follow_extended_follow_up_main_prevax_reduced_time_periods_cox_model_day0TRUE_extfTRUE.txt
 
-  stata_cox_model_t2dm_follow_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced:
-    run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_t2dm_follow_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods
+  stata_cox_model_t2dm_follow_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_day0TRUE_extfTRUE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_follow_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods
+      TRUE TRUE
     needs:
     - Analysis_cox_t2dm_follow_extended_follow_up_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_follow_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_follow_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_follow_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods_stata_median_fup_day0TRUE_extfTRUE.csv
+        stata_output: output/input_sampled_data_t2dm_follow_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_time_periods_cox_model_day0TRUE_extfTRUE.txt
 
-  stata_cox_model_t2dm_follow_extended_follow_up_covid_pheno_hospitalised_prevax_reduced:
-    run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_t2dm_follow_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_time_periods
+  stata_cox_model_t2dm_follow_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_day0TRUE_extfTRUE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_follow_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_time_periods
+      TRUE TRUE
     needs:
     - Analysis_cox_t2dm_follow_extended_follow_up_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t2dm_follow_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t2dm_follow_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t2dm_follow_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_time_periods_stata_median_fup_day0TRUE_extfTRUE.csv
+        stata_output: output/input_sampled_data_t2dm_follow_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_time_periods_cox_model_day0TRUE_extfTRUE.txt
 
-  stata_cox_model_t1dm_extended_follow_up_main_prevax_reduced:
-    run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_t1dm_extended_follow_up_main_prevax_reduced_time_periods
+  stata_cox_model_t1dm_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t1dm_extended_follow_up_main_prevax_reduced_time_periods
+      TRUE TRUE
     needs:
     - Analysis_cox_t1dm_extended_follow_up_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_t1dm_extended_follow_up_main_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_t1dm_extended_follow_up_main_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_t1dm_extended_follow_up_main_prevax_reduced_time_periods_stata_median_fup_day0TRUE_extfTRUE.csv
+        stata_output: output/input_sampled_data_t1dm_extended_follow_up_main_prevax_reduced_time_periods_cox_model_day0TRUE_extfTRUE.txt
 
-  stata_cox_model_otherdm_extended_follow_up_main_prevax_reduced:
-    run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_otherdm_extended_follow_up_main_prevax_reduced_time_periods
+  stata_cox_model_otherdm_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_otherdm_extended_follow_up_main_prevax_reduced_time_periods
+      TRUE TRUE
     needs:
     - Analysis_cox_otherdm_extended_follow_up_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_otherdm_extended_follow_up_main_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_otherdm_extended_follow_up_main_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_otherdm_extended_follow_up_main_prevax_reduced_time_periods_stata_median_fup_day0TRUE_extfTRUE.csv
+        stata_output: output/input_sampled_data_otherdm_extended_follow_up_main_prevax_reduced_time_periods_cox_model_day0TRUE_extfTRUE.txt
 
-  stata_cox_model_gestationaldm_extended_follow_up_main_prevax_reduced:
-    run: stata-mp:latest analysis/cox_model_extended_followup.do input_sampled_data_gestationaldm_extended_follow_up_main_prevax_reduced_time_periods
+  stata_cox_model_gestationaldm_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_gestationaldm_extended_follow_up_main_prevax_reduced_time_periods
+      TRUE TRUE
     needs:
     - Analysis_cox_gestationaldm_extended_follow_up_prevax
     outputs:
       moderately_sensitive:
-        medianfup: output/input_sampled_data_gestationaldm_extended_follow_up_main_prevax_reduced_time_periods_stata_median_fup.csv
-        stata_output: output/input_sampled_data_gestationaldm_extended_follow_up_main_prevax_reduced_time_periods_cox_model.txt
+        medianfup: output/input_sampled_data_gestationaldm_extended_follow_up_main_prevax_reduced_time_periods_stata_median_fup_day0TRUE_extfTRUE.csv
+        stata_output: output/input_sampled_data_gestationaldm_extended_follow_up_main_prevax_reduced_time_periods_cox_model_day0TRUE_extfTRUE.txt
+
+  stata_cox_model_t2dm_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_prevax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_covid_pheno_hospitalised_vax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_covid_pheno_hospitalised_vax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_vax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_covid_pheno_hospitalised_vax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_covid_pheno_hospitalised_vax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_covid_pheno_hospitalised_unvax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_covid_pheno_hospitalised_unvax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_unvax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_covid_pheno_hospitalised_unvax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_covid_pheno_hospitalised_unvax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_main_prevax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_main_prevax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_prevax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_main_prevax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_main_prevax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_main_vax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_main_vax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_vax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_main_vax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_main_vax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_main_unvax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_main_unvax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_unvax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_main_unvax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_main_unvax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_covid_pheno_non_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_covid_pheno_non_hospitalised_prevax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_prevax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_prevax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_prevax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_covid_pheno_non_hospitalised_vax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_covid_pheno_non_hospitalised_vax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_vax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_vax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_vax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_covid_pheno_non_hospitalised_unvax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_covid_pheno_non_hospitalised_unvax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_unvax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_unvax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_covid_pheno_non_hospitalised_unvax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_follow_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_follow_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_follow_prevax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_follow_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_follow_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_follow_main_prevax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_follow_main_prevax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_follow_prevax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_follow_main_prevax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_follow_main_prevax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_follow_covid_pheno_non_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_follow_covid_pheno_non_hospitalised_prevax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_follow_prevax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_follow_covid_pheno_non_hospitalised_prevax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_follow_covid_pheno_non_hospitalised_prevax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_rec_prevax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_pre_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_pre_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_pre_rec_prevax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_pre_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_pre_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_post_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_post_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_post_rec_prevax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_post_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_post_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_rec_main_prevax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_rec_main_prevax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_rec_prevax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_rec_main_prevax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_rec_main_prevax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_pre_rec_main_prevax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_pre_rec_main_prevax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_pre_rec_prevax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_pre_rec_main_prevax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_pre_rec_main_prevax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
+
+  stata_cox_model_t2dm_post_rec_main_prevax_day_zero_reduced_day0TRUE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_post_rec_main_prevax_day_zero_reduced_time_periods
+      TRUE FALSE
+    needs:
+    - Analysis_cox_t2dm_post_rec_prevax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_post_rec_main_prevax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_post_rec_main_prevax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
 
   format_stata_output:
     run: r:latest analysis/format_stata_output.R
     needs:
-    - stata_cox_model_t2dm_covid_pheno_hospitalised_prevax_reduced
-    - stata_cox_model_t2dm_covid_pheno_hospitalised_vax_reduced
-    - stata_cox_model_t2dm_covid_pheno_hospitalised_unvax_reduced
-    - stata_cox_model_t2dm_main_prevax_reduced
-    - stata_cox_model_t2dm_main_vax_reduced
-    - stata_cox_model_t2dm_main_unvax_reduced
-    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_prevax_reduced
-    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_vax_reduced
-    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_unvax_reduced
-    - stata_cox_model_t2dm_follow_covid_pheno_hospitalised_prevax_reduced
-    - stata_cox_model_t2dm_follow_main_prevax_reduced
-    - stata_cox_model_t2dm_follow_covid_pheno_non_hospitalised_prevax_reduced
-    - stata_cox_model_t2dm_rec_covid_pheno_hospitalised_prevax_reduced
-    - stata_cox_model_t2dm_pre_rec_covid_pheno_hospitalised_prevax_reduced
-    - stata_cox_model_t2dm_post_rec_covid_pheno_hospitalised_prevax_reduced
-    - stata_cox_model_t2dm_rec_main_prevax_reduced
-    - stata_cox_model_t2dm_pre_rec_main_prevax_reduced
-    - stata_cox_model_t2dm_post_rec_main_prevax_reduced
-    - stata_cox_model_t2dm_covid_pheno_hospitalised_prevax_day_zero_reduced
-    - stata_cox_model_t2dm_covid_pheno_hospitalised_vax_day_zero_reduced
-    - stata_cox_model_t2dm_covid_pheno_hospitalised_unvax_day_zero_reduced
-    - stata_cox_model_t2dm_main_prevax_day_zero_reduced
-    - stata_cox_model_t2dm_main_vax_day_zero_reduced
-    - stata_cox_model_t2dm_main_unvax_day_zero_reduced
-    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_prevax_day_zero_reduced
-    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_vax_day_zero_reduced
-    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_unvax_day_zero_reduced
-    - stata_cox_model_t2dm_follow_covid_pheno_hospitalised_prevax_day_zero_reduced
-    - stata_cox_model_t2dm_follow_main_prevax_day_zero_reduced
-    - stata_cox_model_t2dm_follow_covid_pheno_non_hospitalised_prevax_day_zero_reduced
-    - stata_cox_model_t2dm_rec_covid_pheno_hospitalised_prevax_day_zero_reduced
-    - stata_cox_model_t2dm_pre_rec_covid_pheno_hospitalised_prevax_day_zero_reduced
-    - stata_cox_model_t2dm_post_rec_covid_pheno_hospitalised_prevax_day_zero_reduced
-    - stata_cox_model_t2dm_rec_main_prevax_day_zero_reduced
-    - stata_cox_model_t2dm_pre_rec_main_prevax_day_zero_reduced
-    - stata_cox_model_t2dm_post_rec_main_prevax_day_zero_reduced
-    - stata_cox_model_t2dm_extended_follow_up_main_prevax_reduced
-    - stata_cox_model_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced
-    - stata_cox_model_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced
-    - stata_cox_model_t2dm_follow_extended_follow_up_main_prevax_reduced
-    - stata_cox_model_t2dm_follow_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced
-    - stata_cox_model_t2dm_follow_extended_follow_up_covid_pheno_hospitalised_prevax_reduced
-    - stata_cox_model_t1dm_extended_follow_up_main_prevax_reduced
-    - stata_cox_model_otherdm_extended_follow_up_main_prevax_reduced
-    - stata_cox_model_gestationaldm_extended_follow_up_main_prevax_reduced
+    - stata_cox_model_t2dm_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_hospitalised_vax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_hospitalised_unvax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_main_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_main_vax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_main_unvax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_vax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_unvax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_follow_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_follow_main_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_follow_covid_pheno_non_hospitalised_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_rec_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_pre_rec_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_post_rec_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_rec_main_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_pre_rec_main_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_post_rec_main_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_t2dm_follow_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_t2dm_follow_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_t2dm_follow_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_t1dm_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_otherdm_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_gestationaldm_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_t2dm_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_hospitalised_vax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_hospitalised_unvax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_main_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_main_vax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_main_unvax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_vax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_unvax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_follow_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_follow_main_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_follow_covid_pheno_non_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_pre_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_post_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_rec_main_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_pre_rec_main_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_post_rec_main_prevax_day_zero_reduced_day0TRUE_extfFALSE
     outputs:
       moderately_sensitive:
         stata_output: output/stata_output.csv

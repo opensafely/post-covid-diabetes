@@ -2,7 +2,10 @@
 
 files <- list.files(path = "output/", pattern = "_cox_model_")
 
-analyses_to_run_stata <- read.csv("lib/analyses_to_run_in_stata.csv")
+analyses_to_run_stata <- read.csv("lib/analyses_to_run_in_stata.csv", header=TRUE,
+                                  col.names = c("outcome","cohort","subgroup","time_periods","day0","extf"),
+                                  colClasses = c("character","character","character","character","character","character"))
+
 analyses_to_run_stata$subgroup <- ifelse(analyses_to_run_stata$subgroup=="hospitalised","covid_pheno_hospitalised",analyses_to_run_stata$subgroup)
 analyses_to_run_stata$subgroup <- ifelse(analyses_to_run_stata$subgroup=="non_hospitalised","covid_pheno_non_hospitalised",analyses_to_run_stata$subgroup)
 

@@ -71,7 +71,7 @@ df$model <- ifelse(df$model == "max", "mdl_max_adj","mdl_age_sex_region")
 #Fomat columns
 df <- df %>%
   dplyr::mutate(time_points = ifelse(grepl("x_reduced_time_periods", source), "reduced",
-                                     ifelse(grepl("day_zero_reduced", source), "day_zero_reduced", NA)))
+                                     ifelse(grepl("day0TRUE", source), "day_zero_reduced", NA)))
 
 # df$time_points <- "reduced"
 df$results_fitted <- "fitted_successfully"
@@ -87,10 +87,10 @@ df$conf_high <- exp(df$conf_high)
 #Only use results that are in the analyses_to_run_in_stata files
 
 stata_analyses <- read_csv("lib/analyses_to_run_in_stata.csv")
-stata_analyses_0 <- read_csv("lib/analyses_to_run_in_stata_day0.csv")
-stata_analyses_extend <- read_csv("lib/analyses_to_run_in_stata_extended.csv")
-
-stata_analyses <- do.call("rbind", list(stata_analyses, stata_analyses_0, stata_analyses_extend))
+# stata_analyses_0 <- read_csv("lib/analyses_to_run_in_stata_day0.csv")
+# stata_analyses_extend <- read_csv("lib/analyses_to_run_in_stata_extended.csv")
+# 
+# stata_analyses <- do.call("rbind", list(stata_analyses, stata_analyses_0, stata_analyses_extend))
 
 stata_analyses <- stata_analyses %>% dplyr::rename(time_points=time_periods,
                                                    event = outcome)

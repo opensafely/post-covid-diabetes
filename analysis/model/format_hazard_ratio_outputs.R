@@ -160,7 +160,10 @@ estimates$source <- "R"
 write.csv(estimates, file = paste0("output/review/model/hr_output_formatted_no_event_counts.csv"),row.names = FALSE)
 
 df <- df %>% select(intersect(colnames(estimates),colnames(df)))
-estimates <- rbind(estimates, df, fill = TRUE)
+# Don't add Stata results for now'
+
+# estimates <- rbind(estimates, df, fill = TRUE)
+
 rm(df)
 
 

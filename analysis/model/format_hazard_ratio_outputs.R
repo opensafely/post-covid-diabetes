@@ -70,7 +70,7 @@ df$model <- ifelse(df$model == "max", "mdl_max_adj","mdl_age_sex_region")
 
 #Fomat columns
 df <- df %>%
-  dplyr::mutate(time_points = ifelse(grepl("x_reduced_time_periods", source), "reduced",
+  dplyr::mutate(time_points = ifelse(grepl("day0FALSE", source), "reduced",
                                      ifelse(grepl("day0TRUE", source), "day_zero_reduced", NA)))
 
 # df$time_points <- "reduced"

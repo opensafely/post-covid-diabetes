@@ -132,4 +132,4 @@ df <- dplyr::rename(df,
 
 # Save output ------------------------------------------------------------------
 
-write.csv(df, "output/stata_output.csv")
+readr::write_csv(df, "output/stata_output.csv")

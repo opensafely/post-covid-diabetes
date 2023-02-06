@@ -1242,6 +1242,95 @@ actions:
         dataset: output/input_t2dm_obes_no_extended_follow_up_*_prevax_*_time_periods.csv
         sampled_dataset: output/input_sampled_data_t2dm_obes_no_extended_follow_up_*_prevax_*_time_periods.csv
 
+  ## Cox model for t2dm_unvax_sens - unvax 
+
+  Analysis_cox_t2dm_unvax_sens_unvax:
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_unvax_sens unvax FALSE
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    - diabetes_post_hoc_unvax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/*/analyses_not_run_t2dm_unvax_sens_unvax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t2dm_unvax_sens_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t2dm_unvax_sens_unvax_to_release.csv
+        compiled_event_counts_csv: output/review/model/*/suppressed_compiled_event_counts_t2dm_unvax_sens_unvax.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/*/compiled_event_counts_t2dm_unvax_sens_unvax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t2dm_unvax_sens_*_unvax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t2dm_unvax_sens_*_unvax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t2dm_unvax_sens_*_unvax_*_time_periods.csv
+
+  ## Cox model for t1dm_unvax_sens - unvax 
+
+  Analysis_cox_t1dm_unvax_sens_unvax:
+    run: r:latest analysis/model/01_cox_pipeline.R t1dm_unvax_sens unvax FALSE
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    - diabetes_post_hoc_unvax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/*/analyses_not_run_t1dm_unvax_sens_unvax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_t1dm_unvax_sens_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_t1dm_unvax_sens_unvax_to_release.csv
+        compiled_event_counts_csv: output/review/model/*/suppressed_compiled_event_counts_t1dm_unvax_sens_unvax.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/*/compiled_event_counts_t1dm_unvax_sens_unvax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_t1dm_unvax_sens_*_unvax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_t1dm_unvax_sens_*_unvax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_t1dm_unvax_sens_*_unvax_*_time_periods.csv
+
+  ## Cox model for otherdm_unvax_sens - unvax 
+
+  Analysis_cox_otherdm_unvax_sens_unvax:
+    run: r:latest analysis/model/01_cox_pipeline.R otherdm_unvax_sens unvax FALSE
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    - diabetes_post_hoc_unvax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/*/analyses_not_run_otherdm_unvax_sens_unvax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_otherdm_unvax_sens_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_otherdm_unvax_sens_unvax_to_release.csv
+        compiled_event_counts_csv: output/review/model/*/suppressed_compiled_event_counts_otherdm_unvax_sens_unvax.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/*/compiled_event_counts_otherdm_unvax_sens_unvax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_otherdm_unvax_sens_*_unvax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_otherdm_unvax_sens_*_unvax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_otherdm_unvax_sens_*_unvax_*_time_periods.csv
+
+  ## Cox model for gestationaldm_unvax_sens - unvax 
+
+  Analysis_cox_gestationaldm_unvax_sens_unvax:
+    run: r:latest analysis/model/01_cox_pipeline.R gestationaldm_unvax_sens unvax
+      FALSE
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    - diabetes_post_hoc_unvax
+    outputs:
+      moderately_sensitive:
+        analyses_not_run: output/review/model/*/analyses_not_run_gestationaldm_unvax_sens_unvax.csv
+        compiled_hrs_csv: output/review/model/*/suppressed_compiled_HR_results_gestationaldm_unvax_sens_unvax.csv
+        compiled_hrs_csv_to_release: output/review/model/*/suppressed_compiled_HR_results_gestationaldm_unvax_sens_unvax_to_release.csv
+        compiled_event_counts_csv: output/review/model/*/suppressed_compiled_event_counts_gestationaldm_unvax_sens_unvax.csv
+        compiled_event_counts_csv_non_supressed: output/review/model/*/compiled_event_counts_gestationaldm_unvax_sens_unvax.csv
+        describe_data_surv: output/not-for-review/describe_data_surv_gestationaldm_unvax_sens_*_unvax_*_time_periods.txt
+      highly_sensitive:
+        dataset: output/input_gestationaldm_unvax_sens_*_unvax_*_time_periods.csv
+        sampled_dataset: output/input_sampled_data_gestationaldm_unvax_sens_*_unvax_*_time_periods.csv
+
   stata_cox_model_t2dm_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE:
     run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_covid_pheno_hospitalised_prevax_reduced_time_periods
       FALSE FALSE
@@ -1782,6 +1871,36 @@ actions:
         medianfup: output/input_sampled_data_t2dm_post_rec_main_prevax_day_zero_reduced_time_periods_stata_median_fup_day0TRUE_extfFALSE.csv
         stata_output: output/input_sampled_data_t2dm_post_rec_main_prevax_day_zero_reduced_time_periods_cox_model_day0TRUE_extfFALSE.txt
 
+  stata_cox_model_t2dm_unvax_sens_covid_pheno_hospitalised_unvax_reduced_day0FALSE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_unvax_sens_covid_pheno_hospitalised_unvax_reduced_time_periods
+      FALSE FALSE
+    needs:
+    - Analysis_cox_t2dm_unvax_sens_unvax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_unvax_sens_covid_pheno_hospitalised_unvax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_unvax_sens_covid_pheno_hospitalised_unvax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
+
+  stata_cox_model_t2dm_unvax_sens_main_unvax_reduced_day0FALSE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_unvax_sens_main_unvax_reduced_time_periods
+      FALSE FALSE
+    needs:
+    - Analysis_cox_t2dm_unvax_sens_unvax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_unvax_sens_main_unvax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_unvax_sens_main_unvax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
+
+  stata_cox_model_t2dm_unvax_sens_covid_pheno_non_hospitalised_unvax_reduced_day0FALSE_extfFALSE:
+    run: stata-mp:latest analysis/cox_model.do input_sampled_data_t2dm_unvax_sens_covid_pheno_non_hospitalised_unvax_reduced_time_periods
+      FALSE FALSE
+    needs:
+    - Analysis_cox_t2dm_unvax_sens_unvax
+    outputs:
+      moderately_sensitive:
+        medianfup: output/input_sampled_data_t2dm_unvax_sens_covid_pheno_non_hospitalised_unvax_reduced_time_periods_stata_median_fup_day0FALSE_extfFALSE.csv
+        stata_output: output/input_sampled_data_t2dm_unvax_sens_covid_pheno_non_hospitalised_unvax_reduced_time_periods_cox_model_day0FALSE_extfFALSE.txt
+
   format_stata_output:
     run: r:latest analysis/format_stata_output.R
     needs:
@@ -1839,6 +1958,9 @@ actions:
     - stata_cox_model_t2dm_rec_main_prevax_day_zero_reduced_day0TRUE_extfFALSE
     - stata_cox_model_t2dm_pre_rec_main_prevax_day_zero_reduced_day0TRUE_extfFALSE
     - stata_cox_model_t2dm_post_rec_main_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_unvax_sens_covid_pheno_hospitalised_unvax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_unvax_sens_main_unvax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_unvax_sens_covid_pheno_non_hospitalised_unvax_reduced_day0FALSE_extfFALSE
     outputs:
       moderately_sensitive:
         stata_output: output/stata_output.csv
@@ -1889,6 +2011,10 @@ actions:
     - Analysis_cox_t2dm_pd_no_extended_follow_up_prevax
     - Analysis_cox_t2dm_obes_extended_follow_up_prevax
     - Analysis_cox_t2dm_obes_no_extended_follow_up_prevax
+    - Analysis_cox_t2dm_unvax_sens_unvax
+    - Analysis_cox_t1dm_unvax_sens_unvax
+    - Analysis_cox_otherdm_unvax_sens_unvax
+    - Analysis_cox_gestationaldm_unvax_sens_unvax
     outputs:
       moderately_sensitive:
         hr_output: output/review/model/hr_output_formatted.csv

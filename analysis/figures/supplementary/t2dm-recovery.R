@@ -23,7 +23,7 @@ outcome_name_table <- active_analyses %>%
   mutate(outcome_name=active_analyses$outcome_variable %>% str_replace("out_date_", ""))
 
 outcomes_to_plot <- outcome_name_table$outcome_name
-outcomes_to_plot <- c("t2dm", "t2dm_rec")
+outcomes_to_plot <- c("t2dm_extended_follow_up", "t2dm_rec_extended_follow_up")
 
 #---------------------------------------------#
 # 3. Load all estimates #
@@ -34,11 +34,11 @@ estimates <- read.csv(paste0(results_dir,"/hr_output_formatted.csv"))
 
 # keep only Stata results for all hosp analyses
 
-# estimates <- estimates[!(estimates$source == "R" & estimates$subgroup == "covid_pheno_hospitalised"),] 
+# estimates <- estimates[!(estimates$source == "R"),] 
 
 # KEep only stata results for full figure 
 
-estimates <- estimates[!(estimates$source == "R"),] 
+# estimates <- estimates[!(estimates$source == "R"),] 
 
 # Get estimates for main analyses and list of outcomes from active analyses
 main_estimates <- estimates %>% filter(event %in% outcomes_to_plot 
@@ -53,7 +53,7 @@ main_estimates <- main_estimates %>% dplyr::mutate(across(c(estimate,conf_low,co
 
 main_estimates$analysis <- NA
 main_estimates$analysis[main_estimates$event == "t2dm"] <- "Type 2 diabetes - main analysis"
-main_estimates$analysis[main_estimates$event == "t2dm_follow"] <- "Type 2 diabetes - COVID censored 16th June"
+main_estimates$analysis[main_estimates$event == "t2dm_rec"] <- "Type 2 diabetes - COVID censored 16th June"
 
 # We want to plot the figures using the same time-points across all cohorts so that they can be compared
 # If any cohort uses reduced time points then all cohorts will be plotted with reduced time points

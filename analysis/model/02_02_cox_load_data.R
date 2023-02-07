@@ -35,7 +35,8 @@ if(event_name == "out_date_ami" | event_name == "out_date_stroke_isch" | event_n
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_CVD.rds"))
   
 } else if(event_name == "t1dm" | event_name == "t2dm" | event_name == "otherdm" | event_name == "t2dm_follow" | event_name == "t2dm_follow_extended_follow_up" |
-          event_name == "t1dm_extended_follow_up" | event_name == "t2dm_extended_follow_up" | event_name == "otherdm_extended_follow_up"){
+          event_name == "t1dm_extended_follow_up" | event_name == "t2dm_extended_follow_up" | event_name == "otherdm_extended_follow_up" |
+          event_name == "t1dm_unvax_sens" | event_name == "t2dm_unvax_sens" | event_name == "otherdm_unvax_sens"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes.rds"))
   
@@ -67,7 +68,7 @@ if(event_name == "out_date_ami" | event_name == "out_date_stroke_isch" | event_n
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_post_recovery.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_post_recovery.rds"))
   
-} else if (event_name == "gestationaldm" | event_name == "gestationaldm_extended_follow_up"){
+} else if (event_name == "gestationaldm" | event_name == "gestationaldm_extended_follow_up" | event_name == "gestationaldm_unvax_sens"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_gestational.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_gestational.rds"))
   

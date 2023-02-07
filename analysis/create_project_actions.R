@@ -587,7 +587,8 @@ actions_list <- splice(
                  "Analysis_cox_t2dm_follow_prevax",
                  "Analysis_cox_t1dm_extended_follow_up_prevax", "Analysis_cox_t2dm_extended_follow_up_prevax", "Analysis_cox_otherdm_extended_follow_up_prevax", "Analysis_cox_gestationaldm_extended_follow_up_prevax",
                  "Analysis_cox_t2dm_follow_extended_follow_up_prevax", "Analysis_cox_t2dm_pd_extended_follow_up_prevax", "Analysis_cox_t2dm_pd_no_extended_follow_up_prevax",
-                 "Analysis_cox_t2dm_obes_extended_follow_up_prevax", "Analysis_cox_t2dm_obes_no_extended_follow_up_prevax"),
+                 "Analysis_cox_t2dm_obes_extended_follow_up_prevax", "Analysis_cox_t2dm_obes_no_extended_follow_up_prevax",
+                 "Analysis_cox_t2dm_unvax_sens_unvax", "Analysis_cox_t1dm_unvax_sens_unvax", "Analysis_cox_otherdm_unvax_sens_unvax", "Analysis_cox_gestationaldm_unvax_sens_unvax"),
     moderately_sensitive = list(
       hr_output = "output/review/model/hr_output_formatted.csv",
       hr_output_no_events = "output/review/model/hr_output_formatted_no_event_counts.csv",

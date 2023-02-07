@@ -68,13 +68,18 @@ outcomes <- c("type 1 diabetes",
               "type 2 diabetes - pre diabetes - extended follow up",
               "type 2 diabetes - no pre diabetes - extended follow up",
               "type 2 diabetes - obesity - extended follow up",
-              "type 2 diabetes - no obesity - extended follow up")
+              "type 2 diabetes - no obesity - extended follow up",
+              "type 2 diabetes - unvax sensitivity",
+              "type 1 diabetes - unvax sensitivity",
+              "other or non-specific diabetes - unvax sensitivity",
+              "gestational diabetes - unvax sensitivity")
 
 outcome_group <- "diabetes"
 
 outcomes_short <- c("t1dm","t2dm", "t2dm_rec", "t2dm_pre_rec", "t2dm_post_rec", "t2dm_follow", "t2dm_pd","t2dm_pd_no", "t2dm_obes","t2dm_obes_no", "otherdm","gestationaldm",
                     "t1dm_extended_follow_up","t2dm_extended_follow_up", "otherdm_extended_follow_up","gestationaldm_extended_follow_up", "t2dm_follow_extended_follow_up",
-                    "t2dm_pd_extended_follow_up","t2dm_pd_no_extended_follow_up", "t2dm_obes_extended_follow_up","t2dm_obes_no_extended_follow_up")
+                    "t2dm_pd_extended_follow_up","t2dm_pd_no_extended_follow_up", "t2dm_obes_extended_follow_up","t2dm_obes_no_extended_follow_up",
+                    "t2dm_unvax_sens", "t1dm_unvax_sens", "otherdm_unvax_sens", "gestationaldm_unvax_sens")
 outcome_venn <- c(TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)
 
 for (i in 1:length(outcomes)) {
@@ -97,6 +102,9 @@ df <- df %>% mutate(outcome_group = case_when(outcome_variable == "out_date_gest
                                               TRUE ~ as.character(outcome_group)))
 
 df <- df %>% mutate(outcome_group = case_when(outcome_variable == "out_date_gestationaldm_extended_follow_up" ~ "diabetes_gestational",
+                                              TRUE ~ as.character(outcome_group)))
+
+df <- df %>% mutate(outcome_group = case_when(outcome_variable == "out_date_gestationaldm_unvax_sens" ~ "diabetes_gestational",
                                               TRUE ~ as.character(outcome_group)))
 
 # change outcome groups
@@ -125,7 +133,10 @@ df <- df %>% mutate(cohort = case_when(outcome == "type 2 diabetes - recovery" ~
                     cohort = case_when(outcome == "type 2 diabetes - 4_mnth_follow" ~ "prevax",
                                       TRUE ~ as.character(cohort)),
                     cohort = case_when(grepl("extended_follow_up", outcome_variable) ~ "prevax",
-                                       TRUE ~ as.character(cohort)))
+                                       TRUE ~ as.character(cohort))) %>%
+  # unvax sensitivity
+  mutate(cohort = case_when(grepl("unvax_sens", outcome_variable) ~ "unvax",
+                                                TRUE ~ as.character(cohort)))
 
 # turn on subgroups for main t2dm analyses
 
@@ -143,6 +154,9 @@ df <- df %>% mutate(covariates = case_when(outcome_variable == "out_date_gestati
                                            TRUE ~ as.character(covariates)))
 
 df <- df %>% mutate(covariates = case_when(outcome_variable == "out_date_gestationaldm_extended_follow_up" ~ "cov_num_age;cov_cat_ethnicity;cov_cat_deprivation;cov_cat_region;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_num_tc_hdl_ratio;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational",
+                                           TRUE ~ as.character(covariates)))
+
+df <- df %>% mutate(covariates = case_when(outcome_variable == "out_date_gestationaldm_unvax_sens" ~ "cov_num_age;cov_cat_ethnicity;cov_cat_deprivation;cov_cat_region;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_num_tc_hdl_ratio;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational",
                                            TRUE ~ as.character(covariates)))
 
 # remove BMI for obesity subgroup analysis

@@ -53,3 +53,6 @@ t2dm_post_rec,prevax,hospitalised,day_zero_reduced,TRUE,FALSE
 t2dm_rec,prevax,main,day_zero_reduced,TRUE,FALSE
 t2dm_pre_rec,prevax,main,day_zero_reduced,TRUE,FALSE
 t2dm_post_rec,prevax,main,day_zero_reduced,TRUE,FALSE
+t2dm_unvax_sens,unvax,hospitalised,reduced,FALSE,FALSE
+t2dm_unvax_sens,unvax,main,reduced,FALSE,FALSE
+t2dm_unvax_sens,unvax,non_hospitalised,reduced,FALSE,FALSE

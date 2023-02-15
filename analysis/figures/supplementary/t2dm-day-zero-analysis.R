@@ -10,7 +10,7 @@ library(grid)
 dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
 setwd(dir)
 
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/model")
+results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/release-31-01-2023/")
 output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/")
 
 #-------------------------#
@@ -30,7 +30,7 @@ outcomes_to_plot <- "t2dm"
 #---------------------------------------------#
 
 # Load all estimates
-estimates <- read.csv(paste0(results_dir,"/hr_output_formatted_for_AER_extended.csv"))
+estimates <- read.csv(paste0(results_dir,"/hr_output_formatted_for_day0_extended.csv"))
 
 # keep only Stata results for all hosp analyses
 
@@ -44,7 +44,8 @@ estimates <- read.csv(paste0(results_dir,"/hr_output_formatted_for_AER_extended.
 main_estimates <- estimates %>% filter(event %in% outcomes_to_plot 
                                        & term %in% term[grepl("^days",term)]
                                        & model == "mdl_max_adj"
-                                       & time_points == "day_zero_reduced") %>%
+                                       & time_points == "day_zero_reduced"
+                                       & source == "stata") %>%
   select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,median_follow_up, source)
 
 
@@ -450,13 +451,13 @@ nonhosp_unvax <- ggplot2::ggplot(data=df_nonhosp_unvax,
 
 # PLOT MULTI PANEL ------------------------------------------------------
 
-plot <- ggpubr::ggarrange(main_prevax, main_vax, main_unvax,
-                          hosp_prevax, hosp_vax, hosp_unvax,
-                          non_hosp_prevax, nonhosp_vax, nonhosp_unvax,
+plot <- ggpubr::ggarrange(main_prevax, hosp_prevax, non_hosp_prevax,
+                          main_vax, hosp_vax, nonhosp_vax,
+                          main_unvax, hosp_unvax, nonhosp_unvax,
                           ncol=3, nrow=3, legend="none",
-                          labels = c("All COVID-19 - Prevaccination", "All COVID-19 - Vaccinated", "All COVID-19 - Unvaccinated", 
-                                     "Hospitalised-COVID-19 - Prevaccination", "Hospitalised-COVID-19 - Vaccinated", "Hospitalised-COVID-19 - Unvaccinated", 
-                                     "Non-Hospitalised-COVID-19 - Prevaccination", "Non-Hospitalised-COVID-19 - Vaccinated", "Non-Hospitalised-COVID-19 - Unvaccinated"),
+                          labels = c("All COVID-19 - Pre-vaccination", "Hospitalised-COVID-19 - Pre-vaccination", "Non-Hospitalised COVID-19 - Pre-vaccination", 
+                                     "All COVID-19 - Vaccinated", "Hospitalised-COVID-19 - Vaccinated", "Non-Hospitalised-COVID-19 - Vaccinated", 
+                                     "All COVID-19 - Unvaccinated", "Hospitalised-COVID-19 - Unvaccinated", "Non-Hospitalised-COVID-19 - Unvaccinated"),
                           hjust = -0.1,
                           vjust = -0.2,
                           font.label = list(size = 12)) +

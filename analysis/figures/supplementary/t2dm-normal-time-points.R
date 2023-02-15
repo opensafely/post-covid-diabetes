@@ -98,7 +98,7 @@ main_estimates$cohort <- factor(main_estimates$cohort, levels=c("prevax","vax","
 main_estimates$colour <- factor(main_estimates$colour, levels=c("#d2ac47","#58764c","#0018a8"))
 
 # Rename adjustment groups
-levels(main_estimates$cohort) <- list("Pre-vaccination (2020-01-01 - 2021-06-18)"="prevax", "Vaccinated (2021-06-01 - 2021-12-14)"="vax","Unvaccinated (2021-06-01 - 2021-12-14)"="unvax")
+levels(main_estimates$cohort) <- list("Pre-vaccination (2020-01-01 - 2021-12-14)"="prevax", "Vaccinated (2021-06-01 - 2021-12-14)"="vax","Unvaccinated (2021-06-01 - 2021-12-14)"="unvax")
 
 # Order outcomes for plotting
 # Use the nice names from active_analyses table i.e. outcome_name_table

@@ -52,8 +52,8 @@ main_estimates <- estimates %>% filter(event %in% outcomes_to_plot
 main_estimates <- main_estimates %>% dplyr::mutate(across(c(estimate,conf_low,conf_high,median_follow_up),as.numeric))
 
 main_estimates$analysis <- NA
-main_estimates$analysis[main_estimates$event == "t2dm_extended_follow_up"] <- "Type 2 diabetes - main analysis"
-main_estimates$analysis[main_estimates$event == "t2dm_follow_extended_follow_up"] <- "Type 2 diabetes - still treated after 4 months"
+main_estimates$analysis[main_estimates$event == "t2dm_extended_follow_up"] <- "Type 2 diabetes - main analysis (Pre-vaccination cohort)"
+main_estimates$analysis[main_estimates$event == "t2dm_follow_extended_follow_up"] <- "Type 2 diabetes - still treated after 4 months (Pre-vaccination cohort)"
 
 # We want to plot the figures using the same time-points across all cohorts so that they can be compared
 # If any cohort uses reduced time points then all cohorts will be plotted with reduced time points
@@ -89,8 +89,8 @@ main_estimates <- main_estimates %>%
 #------------------------------------------#
 # Specify colours
 main_estimates$colour <- ""
-main_estimates$colour <- ifelse(main_estimates$analysis=="Type 2 diabetes - main analysis","#d2ac47",main_estimates$colour)
-main_estimates$colour <- ifelse(main_estimates$analysis=="Type 2 diabetes - still treated after 4 months","#009999",main_estimates$colour) # Black
+main_estimates$colour <- ifelse(main_estimates$analysis=="Type 2 diabetes - main analysis (Pre-vaccination cohort)","#d2ac47",main_estimates$colour)
+main_estimates$colour <- ifelse(main_estimates$analysis=="Type 2 diabetes - still treated after 4 months (Pre-vaccination cohort)","#009999",main_estimates$colour) # Black
 
 #Specify lines
 main_estimates$linetype <- ""
@@ -98,7 +98,7 @@ main_estimates$linetype <- ifelse(main_estimates$subgroup=="covid_pheno_hospital
 main_estimates$linetype <- ifelse(main_estimates$subgroup=="covid_pheno_non_hospitalised","dashed",main_estimates$linetype)
 
 # Factor variables for ordering
-main_estimates$analysis <- factor(main_estimates$analysis, levels=c("Type 2 diabetes - main analysis","Type 2 diabetes - still treated after 4 months")) 
+main_estimates$analysis <- factor(main_estimates$analysis, levels=c("Type 2 diabetes - main analysis (Pre-vaccination cohort)","Type 2 diabetes - still treated after 4 months (Pre-vaccination cohort)")) 
 main_estimates$colour <- factor(main_estimates$colour, levels=c("#d2ac47","#009999"))
 main_estimates$linetype <- factor(main_estimates$linetype,levels = c("solid","dashed"))
 main_estimates$subgroup <- factor(main_estimates$subgroup,levels = c("main", "covid_pheno_hospitalised","covid_pheno_non_hospitalised"))
@@ -268,7 +268,7 @@ dev.off()
 
 # ADD EVENT COUNTS TO PLOT TABLE  -------------------------------------------------------
 
-table2 <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/4-month-follow-table-for-figure.csv",
+table2 <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/4-month-wide-follow-table-for-figure.csv",
                    check.names = FALSE)
 
 # table2 <- table2 %>%
@@ -298,15 +298,19 @@ table2 <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - 
 
 table.p <- ggtexttable(table2, rows = NULL,
                        theme = ttheme(
-                         tbody.style = tbody_style(hjust=0, x=0.01, fill = "white", size = 9.8),
-                         colnames.style = colnames_style(hjust=0, x=0.01, fill = "white", size = 9.8))) 
+                         tbody.style = tbody_style(hjust=0, x=0.01, fill = "white", size = 8),
+                         colnames.style = colnames_style(hjust=0, x=0.01, fill = "white", size = 8)))
 
-table.p <- table_cell_font(table.p, row = 2, column = 1, 
-                       face = "bold.italic", size = 9.8)
-table.p <- table_cell_font(table.p, row = 6, column = 1, 
-                           face = "bold.italic", size = 9.8)
-table.p <- table_cell_font(table.p, row = 10, column = 1, 
-                           face = "bold.italic", size = 9.8)
+# table.p <- table.p %>% tab_add_vline(at.column = 2, column.side = "left", linetype = 2) %>%
+#   tab_add_vline(at.column = 5, column.side = "left", linetype = 2) %>%
+#   tab_add_vline(at.column = 8, column.side = "left", linetype = 2)
+
+# table.p <- table_cell_font(table.p, row = 2, column = 1, 
+#                        face = "bold.italic", size = 9.8)
+# table.p <- table_cell_font(table.p, row = 6, column = 1, 
+#                            face = "bold.italic", size = 9.8)
+# table.p <- table_cell_font(table.p, row = 10, column = 1, 
+#                            face = "bold.italic", size = 9.8)
 # tab_add_footnote(text = "Pre-vaccinated (1 Jan 2020 to 18 June 2021), Vaccinated (1 Jun 2021 to 14 Dec 2021), Unvaccinated (1 Jun 2021 to 14 Dec 2021)", size = 7, face = "italic", hjust = 1.25)
 # levels(table2_merged$Cohort) <- list("Pre-vaccinated (2020-01-01 - 2021-06-18)"="Pre-Vaccination", "Vaccinated (2021-06-01 - 2021-12-14)"="Vaccinated","Unvaccinated (2021-06-01 - 2021-12-14)"="Unvaccinated")
 
@@ -337,16 +341,16 @@ mylegend<- g_legend(non_hosp)
 
 blank <- grid.rect(gp=gpar(col="white"))
 p2 <- ggarrange(mylegend,table.p, ncol = 1, nrow = 2,
-                heights = c(0.15, 1))
+                heights = c(0.8, 1))
 
 # SAVE PLOT WITH TABLE
 
 png(paste0(output_dir,"Figure_4_t2dm_4_month_follow_3panel-with-table.png"),
-    units = "mm", width=370, height=250, res = 1000)
+    units = "mm", width=330, height=200, res = 1000)
 ggpubr::ggarrange(p1, 
                   p2,
                   nrow = 2,
-                  heights = c(1, 0.7)) 
+                  heights = c(1, 0.4)) 
 # annotation_custom(ggplotGrob(table.p),
 #                   xmin = 5.5, ymin = 20,
 #                   xmax = 8)

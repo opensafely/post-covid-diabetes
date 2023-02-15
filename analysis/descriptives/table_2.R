@@ -58,7 +58,7 @@ table_2_subgroups_output <- function(cohort_name, group){
   unvax_sens <- c("out_date_t2dm_unvax_sens", "out_date_t1dm_unvax_sens", "out_date_otherdm_unvax_sens", "out_date_gestationaldm_unvax_sens")
   outcomes <- outcomes[! outcomes %in% unvax_sens]
   
-  if (cohort_name == "unvax"){
+  if (cohort_name == "unvax"| cohort_name == "vax"){
   outcomes <- outcomes[! outcomes %in% c("out_date_t2dm_follow", "out_date_t2dm_follow_extended_follow_up")]
   }
   #--------------------Load data and left join end dates------------------------

@@ -90,19 +90,18 @@ table_2_subgroups_output <- function(cohort_name, group){
     
     if (i == "out_date_t2dm_follow" | i == "out_date_t2dm_follow_extended_follow_up") {
       
-      survival_data <- survival_data %>%
-        dplyr::mutate("t2dm_follow_follow_up_end_unexposed" = "t2dm_follow_up_end_unexposed",
-                      "t2dm_follow_follow_up_end" = "t2dm_follow_up_end",
-                      "t2dm_follow_hospitalised_follow_up_end" = "t2dm_hospitalised_follow_up_end",
-                      "t2dm_follow_non_hospitalised_follow_up_end" = "t2dm_non_hospitalised_follow_up_end",
-                      "t2dm_follow_hospitalised_date_expo_censor" = "t2dm_hospitalised_date_expo_censor",
-                      "t2dm_follow_non_hospitalised_date_expo_censor" = "t2dm_non_hospitalised_date_expo_censor",
-                      "t2dm_follow_extended_follow_up_follow_up_end_unexposed" = "t2dm_extended_follow_up_follow_up_end_unexposed",
-                      "t2dm_follow_extended_follow_up_follow_up_end" = "t2dm_extended_follow_up_follow_up_end",
-                      "t2dm_follow_extended_follow_up_hospitalised_follow_up_end" = "t2dm_extended_follow_up_hospitalised_follow_up_end",
-                      "t2dm_follow_extended_follow_up_non_hospitalised_follow_up_end" = "t2dm_extended_follow_up_non_hospitalised_follow_up_end",
-                      "t2dm_follow_extended_follow_up_hospitalised_date_expo_censor" = "t2dm_extended_follow_up_hospitalised_date_expo_censor",
-                      "t2dm_follow_extended_follow_up_non_hospitalised_date_expo_censor" = "t2dm_extended_follow_up_non_hospitalised_date_expo_censor")
+      survival_data$t2dm_follow_follow_up_end_unexposed <- survival_data$t2dm_follow_up_end_unexposed
+      survival_data$t2dm_follow_follow_up_end <- survival_data$t2dm_follow_up_end
+      survival_data$t2dm_follow_hospitalised_follow_up_end <- survival_data$t2dm_hospitalised_follow_up_end
+      survival_data$t2dm_follow_non_hospitalised_follow_up_end <- survival_data$t2dm_non_hospitalised_follow_up_end
+      survival_data$t2dm_follow_hospitalised_date_expo_censor <- survival_data$t2dm_hospitalised_date_expo_censor
+      survival_data$t2dm_follow_non_hospitalised_date_expo_censor <- survival_data$t2dm_non_hospitalised_date_expo_censor
+      survival_data$t2dm_follow_extended_follow_up_follow_up_end_unexposed <- survival_data$t2dm_extended_follow_up_follow_up_end_unexposed
+      survival_data$t2dm_follow_extended_follow_up_follow_up_end <- survival_data$t2dm_extended_follow_up_follow_up_end
+      survival_data$t2dm_follow_extended_follow_up_hospitalised_follow_up_end <- survival_data$t2dm_extended_follow_up_hospitalised_follow_up_end
+      survival_data$t2dm_follow_extended_follow_up_non_hospitalised_follow_up_end <- survival_data$t2dm_extended_follow_up_non_hospitalised_follow_up_end
+      survival_data$t2dm_follow_extended_follow_up_hospitalised_date_expo_censor <- survival_data$t2dm_extended_follow_up_hospitalised_date_expo_censor
+      survival_data$t2dm_follow_extended_follow_up_non_hospitalised_date_expo_censor <- survival_data$t2dm_extended_follow_up_non_hospitalised_date_expo_censor
       
     }
     

@@ -345,6 +345,10 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_prevax
+    - diabetes_post_hoc_prevax
+    - diabetes_post_hoc_vax
+    - diabetes_post_hoc_unvax
+    - diabetes_post_hoc_prevax_extended_follow_up
     outputs:
       moderately_sensitive:
         input_table_2: output/review/descriptives/table2_prevax_*.csv
@@ -358,6 +362,10 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_vax
+    - diabetes_post_hoc_prevax
+    - diabetes_post_hoc_vax
+    - diabetes_post_hoc_unvax
+    - diabetes_post_hoc_prevax_extended_follow_up
     outputs:
       moderately_sensitive:
         input_table_2: output/review/descriptives/table2_vax_*.csv
@@ -371,6 +379,10 @@ actions:
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - diabetes_post_hoc_prevax
+    - diabetes_post_hoc_vax
+    - diabetes_post_hoc_unvax
+    - diabetes_post_hoc_prevax_extended_follow_up
     outputs:
       moderately_sensitive:
         input_table_2: output/review/descriptives/table2_unvax_*.csv

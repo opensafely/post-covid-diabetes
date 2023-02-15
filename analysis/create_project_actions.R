@@ -165,7 +165,8 @@ table2 <- function(cohort){
       name = glue("stage4_table_2_{cohort}"),
       run = "r:latest analysis/descriptives/table_2.R",
       arguments = c(cohort),
-      needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax",glue("stage1_end_date_table_{cohort}")),
+      needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax",glue("stage1_end_date_table_{cohort}"),
+                   "diabetes_post_hoc_prevax", "diabetes_post_hoc_vax", "diabetes_post_hoc_unvax", "diabetes_post_hoc_prevax_extended_follow_up"),
       moderately_sensitive = list(
         input_table_2 = glue("output/review/descriptives/table2_{cohort}_*.csv")
       )

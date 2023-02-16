@@ -10,8 +10,8 @@ library(grid)
 dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
 setwd(dir)
 
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/model-release-16-12-22/")
-output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/")
+results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/")
+output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/supplementary/")
 
 #-------------------------#
 # 2. Get outcomes to plot #
@@ -49,7 +49,7 @@ estimates$add_to_median <- NULL
 
 # GET ESTIMATES FROM NORMAL T2DM ANALYSES
 
-estimates_other <- read.csv(paste0(results_dir,"hr_output_formatted.csv"))
+estimates_other <- read.csv(paste0(results_dir,"hr_output_formatted-fig1.csv"))
 
 outcomes_other <- c("t2dm")
 

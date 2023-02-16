@@ -10,8 +10,8 @@ library(RColorBrewer)
 library(gridExtra)
 #library(plyr)
 
-aer_output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/AER/"
-aer_output_fig <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/"
+aer_output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/AER/"
+aer_output_fig <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/"
 
 event_of_interest <- c("t2dm")
 cohort_name <- c("prevax", "vax","unvax")
@@ -184,7 +184,7 @@ ggplot2::ggplot(data = df,
   geom_blank(aes(x = x_min)) +
   geom_blank(aes(x = x_max))
 
-ggsave(paste0(aer_output_fig, "/AER_Figure_Extended_Follow_Up.png"), height = 210, width = 297, unit = "mm", dpi = 600, scale = 1)
+ggsave(paste0(aer_output_fig, "/FIG-3-AER.png"), height = 210, width = 297, unit = "mm", dpi = 600, scale = 1)
 
 
 

@@ -10,8 +10,8 @@ library(grid)
 dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
 setwd(dir)
 
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/")
-output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/")
+results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/model/")
+output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/")
 
 #-------------------------#
 # 2. Get outcomes to plot #
@@ -23,60 +23,31 @@ outcome_name_table <- active_analyses %>%
   mutate(outcome_name=active_analyses$outcome_variable %>% str_replace("out_date_", ""))
 
 outcomes_to_plot <- outcome_name_table$outcome_name
-outcomes_to_plot <- c("t2dm_extended_follow_up")
+outcomes_to_plot <- "t2dm"
 
 #---------------------------------------------#
 # 3. Load all estimates #
 #---------------------------------------------#
 
-hr_files=list.files(path = results_dir, pattern = "extended")
-hr_files=hr_files[endsWith(hr_files,".csv")]
-hr_files=paste0(results_dir,"/", hr_files)
-hr_file_paths <- pmap(list(hr_files),
-                      function(fpath){
-                        df <- fread(fpath)
-                        return(df)
-                      })
-estimates <- rbindlist(hr_file_paths, fill=TRUE)
+# Load all estimates
+estimates <- read.csv(paste0(results_dir,"/hr_output_formatted.csv"))
 
-#Calculate median follow-up for plotting
-estimates$median_follow_up <- as.numeric(estimates$median_follow_up)
-estimates$add_to_median <- sub("days","",estimates$term)
-estimates$add_to_median <- as.numeric(sub("\\_.*","",estimates$add_to_median))
+# keep only Stata results for all hosp analyses
 
-estimates$median_follow_up <- ((estimates$median_follow_up + estimates$add_to_median)-1)/7
-estimates$add_to_median <- NULL
+# estimates <- estimates[!(estimates$source == "R" & estimates$subgroup == "covid_pheno_hospitalised"),] 
 
-# GET ESTIMATES FROM VAX / UNVAX AND RBIND
+# KEep only stata results for full figure 
 
-estimates_other <- read.csv(paste0(results_dir,"hr_output_formatted-fig1.csv"))
-
-outcomes_other <- c("t2dm")
-
-estimates_other <- estimates_other %>% filter(event %in% outcomes_other 
-                                              & term %in% term[grepl("^days",term)]
-                                              & model == "mdl_max_adj"
-                                              & time_points == "reduced"
-                                              & source == "stata"
-                                              & (cohort == "vax" | cohort == "unvax")) %>%
-  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,median_follow_up)
+estimates <- estimates[!(estimates$source == "R"),] 
 
 # Get estimates for main analyses and list of outcomes from active analyses
-
 main_estimates <- estimates %>% filter(event %in% outcomes_to_plot 
-                                       & term %in% term[grepl("^days",term)]
-                                       & model == "mdl_max_adj"
-                                       & time_points == "reduced") %>%
-  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,median_follow_up)
+                                  & term %in% term[grepl("^days",term)]
+                                  & model == "mdl_max_adj") %>%
+  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,median_follow_up, source)
 
-main_estimates$event <- gsub('_extended_follow_up', '', main_estimates$event)
-
-main_estimates <- rbind(main_estimates, estimates_other)
 
 main_estimates <- main_estimates %>% dplyr::mutate(across(c(estimate,conf_low,conf_high,median_follow_up),as.numeric))
-
-# remove duplicate rows
-main_estimates <- main_estimates[!duplicated(main_estimates), ]
 
 # We want to plot the figures using the same time-points across all cohorts so that they can be compared
 # If any cohort uses reduced time points then all cohorts will be plotted with reduced time points
@@ -91,7 +62,6 @@ main_estimates <- main_estimates %>%
   dplyr::mutate(time_period_to_plot = case_when(
     any(time_period_to_plot == "reduced") ~ "reduced",
     TRUE ~ "normal"))
-
 
 #---------------------------Specify time to plot--------------------------------
 # main_estimates$add_to_median <- sub("days","",main_estimates$term)
@@ -162,7 +132,7 @@ main <- ggplot2::ggplot(data=df_main,
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
+  ggplot2::scale_x_continuous(lim = c(0,56), breaks = seq(0,56,4)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$cohort)) +
@@ -197,12 +167,13 @@ hosp <- ggplot2::ggplot(data=df_hosp,
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
   ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
                                                             ymax = ifelse(conf_high>64,64,conf_high),  
-                                                            width = 0))+   
+                                                            width = 0), 
+                         position = pd)+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
+  ggplot2::scale_x_continuous(lim = c(0,56), breaks = seq(0,56,4)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$cohort)) +
@@ -239,12 +210,13 @@ non_hosp <- ggplot2::ggplot(data=df_nonhosp,
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
   ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
                                                             ymax = ifelse(conf_high>64,64,conf_high),  
-                                                            width = 0))+   
+                                                            width = 0), 
+                         position = pd)+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
+  ggplot2::scale_x_continuous(lim = c(0,56), breaks = seq(0,56,4)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$cohort)) +
@@ -280,7 +252,7 @@ non_hosp <- ggplot2::ggplot(data=df_nonhosp,
 
 # ADD EVENT COUNTS TO PLOT TABLE  -------------------------------------------------------
 
-table2 <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-tables/formatted_table_2.csv",
+table2 <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/formatted_table_2.csv",
                    check.names = FALSE)
 
 table2 <- table2 %>%
@@ -289,11 +261,11 @@ table2 <- table2 %>%
   dplyr::rename(`Total type 2 diabetes events` = Total,
                 `Events after COVID-19` = `All COVID-19`) %>%
   dplyr::select(-c(`No COVID-19`)) %>%
-  mutate(`Number of people` = ifelse(Cohort == "Pre-vaccination (1 Jan 2020 to 14 Dec 2021)", 15211471,
-                                     ifelse(Cohort == "Vaccinated (1 Jun 2021 to 14 Dec 2021)", 11822640,
-                                            ifelse(Cohort == "Unvaccinated (1 Jun 2021 to 14 Dec 2021)", 2851183, NA)))) %>%
+  mutate(`Number of people` = ifelse(Cohort == "Pre-vaccination (1 Jan 2020 to 18 Jun 2021)", 15211471,
+                                   ifelse(Cohort == "Vaccinated (1 Jun 2021 to 14 Dec 2021)", 11822640,
+                                          ifelse(Cohort == "Unvaccinated (1 Jun 2021 to 14 Dec 2021)", 2851183, NA)))) %>%
   relocate(`Total type 2 diabetes events`, .after = `Cohort`) %>%
-  relocate(`Number of people`, .after = `Cohort`) %>%
+    relocate(`Number of people`, .after = `Cohort`) %>%
   relocate(`Events after COVID-19`, .after = `Total type 2 diabetes events`)
 table2[,3:6] <- format(table2[,3:6], big.mark = ",", scientific = FALSE)
 
@@ -310,9 +282,9 @@ table2$Total <- NULL
 
 table.p <- ggtexttable(table2, rows = NULL,
                        theme = ttheme(
-                         tbody.style = tbody_style(hjust=0, x=0.01, fill = "white", size = 9.8),
-                         colnames.style = colnames_style(hjust=0, x=0.01, fill = "white", size = 9.8))) 
-# tab_add_footnote(text = "Pre-vaccinated (1 Jan 2020 to 18 June 2021), Vaccinated (1 Jun 2021 to 14 Dec 2021), Unvaccinated (1 Jun 2021 to 14 Dec 2021)", size = 7, face = "italic", hjust = 1.25)
+                                      tbody.style = tbody_style(hjust=0, x=0.01, fill = "white", size = 9.8),
+                                      colnames.style = colnames_style(hjust=0, x=0.01, fill = "white", size = 9.8))) 
+  # tab_add_footnote(text = "Pre-vaccinated (1 Jan 2020 to 18 June 2021), Vaccinated (1 Jun 2021 to 14 Dec 2021), Unvaccinated (1 Jun 2021 to 14 Dec 2021)", size = 7, face = "italic", hjust = 1.25)
 # levels(table2_merged$Cohort) <- list("Pre-vaccinated (2020-01-01 - 2021-06-18)"="Pre-Vaccination", "Vaccinated (2021-06-01 - 2021-12-14)"="Vaccinated","Unvaccinated (2021-06-01 - 2021-12-14)"="Unvaccinated")
 
 # PLOTTING ----------------------------------------------------------------
@@ -320,9 +292,9 @@ table.p <- ggtexttable(table2, rows = NULL,
 # MAIN PLOT 
 
 p1 <- ggpubr::ggarrange(main, hosp, non_hosp, ncol=3, nrow=1, common.legend = FALSE, legend = "none",
-                        labels = c("A: All COVID-19", "B: Hospitalised COVID-19", "C: Non-Hospitalised COVID-19"),
-                        hjust = -0.1,
-                        font.label = list(size = 12)) 
+                  labels = c("A: All COVID-19", "B: Hospitalised COVID-19", "C: Non-Hospitalised COVID-19"),
+                  hjust = -0.1,
+                  font.label = list(size = 12)) 
 
 # EXTRACT LEGEND
 
@@ -349,9 +321,9 @@ ggpubr::ggarrange(p1,
                   p2,
                   nrow = 2,
                   heights = c(1, 0.2)) 
-# annotation_custom(ggplotGrob(table.p),
-#                   xmin = 5.5, ymin = 20,
-#                   xmax = 8)
+  # annotation_custom(ggplotGrob(table.p),
+  #                   xmin = 5.5, ymin = 20,
+  #                   xmax = 8)
 dev.off() 
 
 

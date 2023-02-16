@@ -11,7 +11,7 @@ active_analyses <- read_rds("lib/active_analyses.rds")
 
 #--------Load fully adjusted main and COVID phenotype results-------------------
 
-combined_hr <- read.csv(paste0(results_dir,"/hr_output_formatted_for_AER_extended.csv"))
+combined_hr <- read.csv(paste0(results_dir,"/hr_output_formatted_for_AER_extend.csv"))
 
 
 # Get estimates for subgroup analyses for t2dm

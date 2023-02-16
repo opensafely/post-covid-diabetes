@@ -10,8 +10,8 @@ library(grid)
 dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
 setwd(dir)
 
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/model/")
-output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/")
+results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/")
+output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/")
 
 #-------------------------#
 # 2. Get outcomes to plot #
@@ -23,29 +23,61 @@ outcome_name_table <- active_analyses %>%
   mutate(outcome_name=active_analyses$outcome_variable %>% str_replace("out_date_", ""))
 
 outcomes_to_plot <- outcome_name_table$outcome_name
-outcomes_to_plot <- c("t1dm", "gestationaldm", "otherdm")
+outcomes_to_plot <- c("t1dm_extended_follow_up", "gestationaldm_extended_follow_up", "otherdm_extended_follow_up")
 
 #---------------------------------------------#
 # 3. Load all estimates #
 #---------------------------------------------#
 
-# Load all estimates
-estimates <- read.csv(paste0(results_dir,"hr_output_formatted.csv"))
+hr_files=list.files(path = results_dir, pattern = "extended")
+hr_files=hr_files[endsWith(hr_files,".csv")]
+hr_files=paste0(results_dir,"/", hr_files)
+hr_file_paths <- pmap(list(hr_files),
+                      function(fpath){
+                        df <- fread(fpath)
+                        return(df)
+                      })
+estimates <- rbindlist(hr_file_paths, fill=TRUE)
+
+#Calculate median follow-up for plotting
+estimates$median_follow_up <- as.numeric(estimates$median_follow_up)
+estimates$add_to_median <- sub("days","",estimates$term)
+estimates$add_to_median <- as.numeric(sub("\\_.*","",estimates$add_to_median))
+
+estimates$median_follow_up <- ((estimates$median_follow_up + estimates$add_to_median)-1)/7
+estimates$add_to_median <- NULL
+
+# GET ESTIMATES FROM VAX / UNVAX AND RBIND
+
+estimates_other <- read.csv(paste0(results_dir,"hr_output_formatted-fig1.csv"))
+
+outcomes_other <- c("t1dm", "gestationaldm", "otherdm")
+
+estimates_other <- estimates_other %>% filter(subgroup %in% c("main") 
+                                              & event %in% outcomes_other 
+                                              & term %in% term[grepl("^days",term)]
+                                              & model == "mdl_max_adj"
+                                              & time_points == "reduced"
+                                              & (cohort == "vax" | cohort == "unvax")) %>%
+  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,median_follow_up)
 
 # Get estimates for main analyses and list of outcomes from active analyses
+
 main_estimates <- estimates %>% filter(subgroup %in% c("main") 
                                        & event %in% outcomes_to_plot 
                                        & term %in% term[grepl("^days",term)]
-                                       & model == "mdl_max_adj") %>%
+                                       & model == "mdl_max_adj"
+                                       & time_points == "reduced") %>%
   select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,median_follow_up)
 
+main_estimates$event <- gsub('_extended_follow_up', '', main_estimates$event)
+
+main_estimates <- rbind(main_estimates, estimates_other)
 
 main_estimates <- main_estimates %>% dplyr::mutate(across(c(estimate,conf_low,conf_high,median_follow_up),as.numeric))
 
 # remove duplicate rows
 main_estimates <- main_estimates[!duplicated(main_estimates), ]
-# 
-# main_estimates <- main_estimates %>% mutate(across(c(estimate,conf_low,conf_high,median_follow_up),as.numeric))
 
 # We want to plot the figures using the same time-points across all cohorts so that they can be compared
 # If any cohort uses reduced time points then all cohorts will be plotted with reduced time points
@@ -60,7 +92,6 @@ main_estimates <- main_estimates %>%
   dplyr::mutate(time_period_to_plot = case_when(
     any(time_period_to_plot == "reduced") ~ "reduced",
     TRUE ~ "normal"))
-
 
 #---------------------------Specify time to plot--------------------------------
 # main_estimates$add_to_median <- sub("days","",main_estimates$term)
@@ -118,13 +149,12 @@ t1dm <- ggplot2::ggplot(data=df_t1dm,
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
   ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
                                                             ymax = ifelse(conf_high>64,64,conf_high),  
-                                                            width = 0), 
-                         position = pd)+   
+                                                            width = 0))+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$cohort)) +
@@ -160,13 +190,12 @@ gest <- ggplot2::ggplot(data=df_gest,
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
   ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
                                                             ymax = ifelse(conf_high>64,64,conf_high),  
-                                                            width = 0), 
-                         position = pd)+   
+                                                            width = 0))+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$cohort)) +
@@ -196,19 +225,18 @@ df_other <- df %>%
   dplyr::filter(event=="otherdm")
 
 other <- ggplot2::ggplot(data=df_other,
-                            mapping = ggplot2::aes(x=median_follow_up, y = estimate, color = cohort, shape= cohort, fill= cohort))+
+                         mapping = ggplot2::aes(x=median_follow_up, y = estimate, color = cohort, shape= cohort, fill= cohort))+
   #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
   ggplot2::geom_point(aes(), size = 2, position = pd) +
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
   ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
                                                             ymax = ifelse(conf_high>64,64,conf_high),  
-                                                            width = 0), 
-                         position = pd)+   
+                                                            width = 0))+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,56), breaks = seq(0,56,4)) +
+  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$cohort)) +
@@ -244,7 +272,7 @@ other <- ggplot2::ggplot(data=df_other,
 
 # ADD EVENT COUNTS TO PLOT TABLE  -------------------------------------------------------
 
-table2 <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/formatted_table_2.csv",
+table2 <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-tables/formatted_table_2.csv",
                    check.names = FALSE)
 
 # temporarily use type 2 diabetes as gestational results until I get table 2 gestational diabetes results out
@@ -256,7 +284,7 @@ table2 <- table2 %>%
   dplyr::rename(`Total events` = Total,
                 `Events after COVID-19` = `All COVID-19`) %>%
   dplyr::select(-c(`No COVID-19`)) %>%
-  mutate(`Number of people` = ifelse(Cohort == "Pre-vaccination (1 Jan 2020 to 18 Jun 2021)", 15211471,
+  mutate(`Number of people` = ifelse(Cohort == "Pre-vaccination (1 Jan 2020 to 14 Dec 2021)", 15211471,
                                      ifelse(Cohort == "Vaccinated (1 Jun 2021 to 14 Dec 2021)", 11822640,
                                             ifelse(Cohort == "Unvaccinated (1 Jun 2021 to 14 Dec 2021)", 2851183, NA)))) %>%
   relocate(`Total events`, .after = `Cohort`) %>%
@@ -297,24 +325,24 @@ table_otherdm <- table2 %>%
   dplyr::rename(`Total Other Diabetes events` = `Total events`)
 
 table.p_cohort <- ggtexttable(table_cohort, rows = NULL,
-                       theme = ttheme(
-                         tbody.style = tbody_style(hjust=0, x=0.01, fill = "white", size = 8),
-                         colnames.style = colnames_style(hjust=0, x=0.01, fill = "white", size = 7))) 
+                              theme = ttheme(
+                                tbody.style = tbody_style(hjust=0, x=0.01, fill = "white", size = 8),
+                                colnames.style = colnames_style(hjust=0, x=0.01, fill = "white", size = 7))) 
 
 table.p_t1dm <- ggtexttable(table_t1dm, rows = NULL,
-                       theme = ttheme(
-                         tbody.style = tbody_style(hjust=0, x=0.01, fill = "white", size = 8),
-                         colnames.style = colnames_style(hjust=0, x=0.01, fill = "white", size = 7))) 
+                            theme = ttheme(
+                              tbody.style = tbody_style(hjust=0, x=0.01, fill = "white", size = 8),
+                              colnames.style = colnames_style(hjust=0, x=0.01, fill = "white", size = 7))) 
 
 table.p_gdm <- ggtexttable(table_gdm, rows = NULL,
-                       theme = ttheme(
-                         tbody.style = tbody_style(hjust=0, x=0.01, fill = "white", size = 8),
-                         colnames.style = colnames_style(hjust=0, x=0.01, fill = "white", size = 7))) 
+                           theme = ttheme(
+                             tbody.style = tbody_style(hjust=0, x=0.01, fill = "white", size = 8),
+                             colnames.style = colnames_style(hjust=0, x=0.01, fill = "white", size = 7))) 
 
 table.p_otherdm <- ggtexttable(table_otherdm, rows = NULL,
-                       theme = ttheme(
-                         tbody.style = tbody_style(hjust=0, x=0.01, fill = "white", size = 8),
-                         colnames.style = colnames_style(hjust=0, x=0.01, fill = "white", size = 7))) 
+                               theme = ttheme(
+                                 tbody.style = tbody_style(hjust=0, x=0.01, fill = "white", size = 8),
+                                 colnames.style = colnames_style(hjust=0, x=0.01, fill = "white", size = 7))) 
 
 # tab_add_footnote(text = "Pre-vaccinated (1 Jan 2020 to 18 June 2021), Vaccinated (1 Jun 2021 to 14 Dec 2021), Unvaccinated (1 Jun 2021 to 14 Dec 2021)", size = 7, face = "italic", hjust = 1.25)
 # levels(table2_merged$Cohort) <- list("Pre-vaccinated (2020-01-01 - 2021-06-18)"="Pre-Vaccination", "Vaccinated (2021-06-01 - 2021-12-14)"="Vaccinated","Unvaccinated (2021-06-01 - 2021-12-14)"="Unvaccinated")
@@ -324,16 +352,16 @@ table.p_otherdm <- ggtexttable(table_otherdm, rows = NULL,
 # T1DM 
 
 t1dm_plot <- ggpubr::ggarrange(t1dm, table.p_t1dm, ncol=1, nrow=2, 
-                        heights = c(1, 0.2),
-                        legend = "none") 
+                               heights = c(1, 0.2),
+                               legend = "none") 
 
 gdm_plot <- ggpubr::ggarrange(gest, table.p_gdm, ncol=1, nrow=2, 
-                               heights = c(1, 0.2),
+                              heights = c(1, 0.2),
                               legend = "none") 
 
 otherdm_plot <- ggpubr::ggarrange(other, table.p_otherdm, ncol=1, nrow=2, 
-                               heights = c(1, 0.2),
-                               legend = "none") 
+                                  heights = c(1, 0.2),
+                                  legend = "none") 
 
 # ADD BLANK TO GET SPACING CORRECT
 
@@ -380,8 +408,8 @@ p2 <- ggarrange(mylegend, tablesplot, ncol = 2, widths = c(0.07,1))
 
 # SAVE PLOT WITH TABLE
 
-png(paste0(output_dir,"Figure_2_other_3panel_with_table_.png"),
-    units = "mm", width=300, height=150, res = 1000)
+png(paste0(output_dir,"Figure_2_other_3panel_with_table.png"),
+    units = "mm", width=315, height=150, res = 1000)
 ggpubr::ggarrange(p1, 
                   p2,
                   nrow = 2,

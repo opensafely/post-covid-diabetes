@@ -24,8 +24,8 @@ args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
   # use for interactive testing
-  cohort_name <- "vax"
-  #cohort_name = "electively_unvaccinated"
+  cohort_name <- "prevax"
+  group <- "diabetes"
 }else{
   cohort_name <- args[[1]]
 }
@@ -37,6 +37,7 @@ fs::dir_create(here::here("output", "review", "descriptives"))
 
 cohort_start_date_prevax <- as.Date("2020-01-01")
 cohort_end_date_prevax <- as.Date("2021-06-18")
+cohort_end_date_prevax_extended <- as.Date("2021-12-14")
 
 cohort_start_date_delta <- as.Date("2021-06-01")
 cohort_end_date_delta <- as.Date("2021-12-14")
@@ -53,8 +54,13 @@ table_2_subgroups_output <- function(cohort_name, group){
   analyses_of_interest <- as.data.frame(matrix(ncol = 8,nrow = 0))
   
   outcomes<-active_analyses$outcome_variable
-  outcomes <- outcomes[! outcomes %in% c("out_date_t2dm_follow")]
   
+  unvax_sens <- c("out_date_t2dm_unvax_sens", "out_date_t1dm_unvax_sens", "out_date_otherdm_unvax_sens", "out_date_gestationaldm_unvax_sens")
+  outcomes <- outcomes[! outcomes %in% unvax_sens]
+  
+  if (cohort_name == "unvax"| cohort_name == "vax"){
+  outcomes <- outcomes[! outcomes %in% c("out_date_t2dm_follow", "out_date_t2dm_follow_extended_follow_up")]
+  }
   #--------------------Load data and left join end dates------------------------
   survival_data <- read_rds(paste0("output/input_", cohort_name,"_stage1_", group,".rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort_name,"_",group,".rds")) 
@@ -63,13 +69,13 @@ table_2_subgroups_output <- function(cohort_name, group){
   survival_data<- survival_data %>% left_join(end_dates, by="patient_id")
   rm(end_dates)
   
-  survival_data<-survival_data[,c("patient_id","index_date","cov_cat_sex",
+  survival_data<-survival_data[,unique(c("patient_id","index_date","cov_cat_sex",
                                   "cov_num_age","cov_cat_ethnicity",
                                   "sub_bin_covid19_confirmed_history","exp_date_covid19_confirmed","sub_cat_covid19_hospital",
                                   colnames(survival_data)[grepl("out_",colnames(survival_data))],
                                   colnames(survival_data)[grepl("follow_up",colnames(survival_data))],
                                   colnames(survival_data)[grepl("_expo_",colnames(survival_data))],
-                                  unique(active_analyses$prior_history_var[active_analyses$prior_history_var !=""]))]
+                                  unique(active_analyses$prior_history_var[active_analyses$prior_history_var !=""])))]
   
   setnames(survival_data, 
            old = c("cov_cat_sex", 
@@ -84,6 +90,26 @@ table_2_subgroups_output <- function(cohort_name, group){
                                           labels = agelabels)]
   
   for(i in outcomes){
+    
+    # RENAME END DATES FOR T2DM FOLLOW ANALYSIS -------------------------------
+    
+    if (i == "out_date_t2dm_follow" | i == "out_date_t2dm_follow_extended_follow_up") {
+      
+      survival_data$t2dm_follow_follow_up_end_unexposed <- survival_data$t2dm_follow_up_end_unexposed
+      survival_data$t2dm_follow_follow_up_end <- survival_data$t2dm_follow_up_end
+      survival_data$t2dm_follow_hospitalised_follow_up_end <- survival_data$t2dm_hospitalised_follow_up_end
+      survival_data$t2dm_follow_non_hospitalised_follow_up_end <- survival_data$t2dm_non_hospitalised_follow_up_end
+      survival_data$t2dm_follow_hospitalised_date_expo_censor <- survival_data$t2dm_hospitalised_date_expo_censor
+      survival_data$t2dm_follow_non_hospitalised_date_expo_censor <- survival_data$t2dm_non_hospitalised_date_expo_censor
+      survival_data$t2dm_follow_extended_follow_up_follow_up_end_unexposed <- survival_data$t2dm_extended_follow_up_follow_up_end_unexposed
+      survival_data$t2dm_follow_extended_follow_up_follow_up_end <- survival_data$t2dm_extended_follow_up_follow_up_end
+      survival_data$t2dm_follow_extended_follow_up_hospitalised_follow_up_end <- survival_data$t2dm_extended_follow_up_hospitalised_follow_up_end
+      survival_data$t2dm_follow_extended_follow_up_non_hospitalised_follow_up_end <- survival_data$t2dm_extended_follow_up_non_hospitalised_follow_up_end
+      survival_data$t2dm_follow_extended_follow_up_hospitalised_date_expo_censor <- survival_data$t2dm_extended_follow_up_hospitalised_date_expo_censor
+      survival_data$t2dm_follow_extended_follow_up_non_hospitalised_date_expo_censor <- survival_data$t2dm_extended_follow_up_non_hospitalised_date_expo_censor
+      
+    }
+    
     analyses_to_run <- active_analyses %>% filter(outcome_variable==i)
     
     ##Set which cohorts are required
@@ -268,8 +294,7 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
   }
   
   if(startsWith(subgroup,"covid_pheno_")){
-    data_active <- data_active %>% mutate(exp_date_covid19_confirmed = replace(exp_date_covid19_confirmed, which(!is.na(date_expo_censor) & (exp_date_covid19_confirmed >= date_expo_censor)), NA) )%>%
-      mutate(event_date = replace(event_date, which(!is.na(date_expo_censor) & (event_date >= date_expo_censor)), NA)) %>%
+    data_active <- data_active %>% mutate(exp_date_covid19_confirmed = replace(exp_date_covid19_confirmed, which(!is.na(date_expo_censor) & (exp_date_covid19_confirmed >= date_expo_censor)), NA) )%>%      mutate(event_date = replace(event_date, which(!is.na(date_expo_censor) & (event_date >= date_expo_censor)), NA)) %>%
       filter((index_date != date_expo_censor)|is.na(date_expo_censor))
     
     data_active[follow_up_end == date_expo_censor, follow_up_end := follow_up_end-1]
@@ -291,7 +316,7 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
   # calculate total person days of follow-up
   data_active = data_active %>% mutate(person_days = as.numeric((as.Date(follow_up_end) - as.Date(index_date)))+1)
   
-  if(cohort=="prevax" & group != "diabetes_recovery"){
+  if(cohort=="prevax" & group != "diabetes_recovery" & !grepl("extended_follow_up",event)){
     
     data_active = data_active %>% filter((person_days_unexposed >=0 & person_days_unexposed <= 535)
                                          & (person_days >=0 & person_days <= 535)) # filter out follow up period
@@ -305,8 +330,11 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
     
     data_active = data_active %>% filter((person_days_unexposed >=0 & person_days_unexposed <= 197)
                                          & (person_days >=0 & person_days <= 197)) # filter out follow up period
+    
+  } else if(grepl("extended_follow_up",event)){
+    data_active = data_active %>% filter((person_days_unexposed >=0 & person_days_unexposed <= 714)
+                                         & (person_days >=0 & person_days <= 714)) # filter out follow up period
   }
-  
   
   person_days_total_unexposed  = round(sum(data_active$person_days_unexposed, na.rm = TRUE),1)
   person_days_total = round(sum(data_active$person_days, na.rm = TRUE),1)

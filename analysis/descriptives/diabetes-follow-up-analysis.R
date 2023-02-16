@@ -55,12 +55,13 @@ input <- arrow::read_feather(file = paste0("output/input_",cohort_name,"_diabete
 summary(input)
 
 # Restrict data only to those that had a diagnosis of type 2 diabetes following a COVID-19 infection
+# This should then give the same number as the Table 2 event counts
 
 input_4 <- input %>%
   dplyr::filter( !is.na(out_date_t2dm) &  !is.na(exp_date_covid19_confirmed)) %>%
   # keep those where t2dm is after infection
   rowwise() %>%
-  mutate(keep = ifelse(out_date_t2dm < exp_date_covid19_confirmed, FALSE, TRUE)) %>%
+  mutate(keep = ifelse((out_date_t2dm >= index_date_copy) & (out_date_t2dm >= exp_date_covid19_confirmed) & (out_date_t2dm <= t2dm_follow_up_end), TRUE, FALSE)) %>%
   ungroup() %>%
   dplyr::filter(keep == TRUE) %>%
   dplyr::select(-c(keep))
@@ -68,13 +69,13 @@ input_4 <- input %>%
 # summarise df
 summary(input_4)
 
-# calculate new end date
+# New end date to check follow up 
 
 input_4$cohort_end_date <- cohort_end_date
 input_4$end_date <- apply(input_4[,c("death_date", "dereg_date", "cohort_end_date")],1, min,na.rm=TRUE)
 input_4$end_date <- as.Date(input_4$end_date)
 
-# Get N with 4 months follow up (those with an end date >= 4 months from t2dm)
+# Get N with 4 months follow up (those with a new end date >= 4 months from t2dm)
 
 input_4 <- input_4 %>% 
   rowwise() %>%
@@ -151,7 +152,98 @@ results$N_non_hosp_COVID_still_treated <- paste0(results$N_non_hosp_COVID_still_
 
 readr::write_csv(results, paste0("output/review/descriptives/diabetes_posthoc_analysis_res_4mnths_",cohort_name,".csv"))
 
+########################################################################
+# HISTOGRAM PLOTS ---------------------------------------------------------
+########################################################################
+
+# Type 2 diabetes, histograms x axis time-since covid, y-axis no. of events for each cohort, main and stratified by hospitalised status 
+# Get time since diagnosis variable 
+
+input_hist <- input_4 %>% 
+  mutate(days_t2dm_diag_post_covid = difftime(out_date_t2dm, exp_date_covid19_confirmed, units = "days")) %>%
+  mutate(days_t2dm_diag_post_covid = as.numeric(days_t2dm_diag_post_covid))
+
+# Do it for hospitalised as well 
+
+input_hist_hosp <- input_hist %>% 
+  dplyr::filter(sub_cat_covid19_hospital == "hospitalised")
+
+# non hosp
+
+input_hist_nonhosp <- input_hist %>% 
+  dplyr::filter(sub_cat_covid19_hospital == "non_hospitalised")
+
+# PLOT MAIN
+
+ggplot(input_hist, aes(x=days_t2dm_diag_post_covid)) + geom_histogram(binwidth=1, colour="gray2") +
+  ylab("Number of type 2 diabetes events") + xlab("Days between date of confirmed COVID-19 and type 2 diabetes diagnosis") +
+  ggtitle("Number of type 2 diabetes events by days since COVID-19 diagnosis (main)") +
+  theme_light() +
+  theme(plot.title = element_text(face = "bold")) 
+ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_covid_histogram_", cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
+
+# PLOT HOSPITALISED
+
+ggplot(input_hist_hosp, aes(x=days_t2dm_diag_post_covid)) + geom_histogram(binwidth=1, colour="gray2") +
+  ylab("Number of type 2 diabetes events") + xlab("Days between date of confirmed COVID-19 and type 2 diabetes diagnosis") +
+  ggtitle("Number of type 2 diabetes events by days since COVID-19 diagnosis (hospitalised)") +
+  theme_light() +
+  theme(plot.title = element_text(face = "bold")) 
+ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_hosp_covid_histogram_",cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
+
+# PLOT NON-HOSPITALISED
+
+ggplot(input_hist_nonhosp, aes(x=days_t2dm_diag_post_covid)) + geom_histogram(binwidth=1, colour="gray2") +
+  ylab("Number of type 2 diabetes events") + xlab("Days between date of confirmed COVID-19 and type 2 diabetes diagnosis") +
+  ggtitle("Number of type 2 diabetes events by days since COVID-19 diagnosis (non-hospitalised)") +
+  theme_light() +
+  theme(plot.title = element_text(face = "bold")) 
+ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_non_hosp_covid_histogram_",cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
+
+
+# Add plots with minimum counts set to 6 ----------------------------------
+
+input_hist_plot <- input_hist %>%
+  dplyr::count(bin = floor(days_t2dm_diag_post_covid)) %>%
+  mutate(n = pmax(6, n))
+
+input_hist_hosp_plot <- input_hist %>% 
+  dplyr::filter(sub_cat_covid19_hospital == "hospitalised") %>%
+  dplyr::count(bin = floor(days_t2dm_diag_post_covid)) %>%
+  mutate(n = pmax(6, n))
+
+input_hist_nonhosp_plot <- input_hist %>% 
+  dplyr::filter(sub_cat_covid19_hospital == "non_hospitalised") %>%
+  dplyr::count(bin = floor(days_t2dm_diag_post_covid)) %>%
+  mutate(n = pmax(6, n))
+
+ggplot(input_hist_plot, aes(bin, n)) +
+  geom_col() +
+  ylab("Number of type 2 diabetes events") + xlab("Days between date of confirmed COVID-19 and type 2 diabetes diagnosis") +
+  ggtitle("Number of type 2 diabetes events by days since COVID-19 diagnosis (main)") +
+  theme_light() +
+  theme(plot.title = element_text(face = "bold")) 
+ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_covid_histogram_to_release_",cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
+
+ggplot(input_hist_hosp_plot, aes(bin, n)) +
+  geom_col() +
+  ylab("Number of type 2 diabetes events") + xlab("Days between date of confirmed COVID-19 and type 2 diabetes diagnosis") +
+  ggtitle("Number of type 2 diabetes events by days since COVID-19 diagnosis (hospitalised)") +
+  theme_light() +
+  theme(plot.title = element_text(face = "bold")) 
+ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_hosp_covid_histogram_to_release_",cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
+
+ggplot(input_hist_nonhosp_plot, aes(bin, n)) +
+  geom_col() +
+  ylab("Number of type 2 diabetes events") + xlab("Days between date of confirmed COVID-19 and type 2 diabetes diagnosis") +
+  ggtitle("Number of type 2 diabetes events by days since COVID-19 diagnosis (non-hospitalised)") +
+  theme_light() +
+  theme(plot.title = element_text(face = "bold")) 
+ggplot2::ggsave(paste0("output/review/descriptives/days_t2dm_diag_post_non_hosp_covid_histogram_to_release_",cohort_name,".png"), height = 200, width = 300, unit = "mm", dpi = 600, scale = 1)
+
+###################################################################################################
 # REPEAT ABOVE BUT FOR 12 MONTHS INSTEAD OF 4 MONTHS FOR PREVAX ONLY ------------------------------
+###################################################################################################
 
 if (cohort_name == "prevax"){
 
@@ -161,7 +253,7 @@ if (cohort_name == "prevax"){
     dplyr::filter( !is.na(out_date_t2dm) &  !is.na(exp_date_covid19_confirmed)) %>%
     # keep those where t2dm is after infection
     rowwise() %>%
-    mutate(keep = ifelse(out_date_t2dm < exp_date_covid19_confirmed, FALSE, TRUE)) %>%
+    mutate(keep = ifelse((out_date_t2dm >= cohort_start_date) & (out_date_t2dm >= exp_date_covid19_confirmed) & (out_date_t2dm <= t2dm_follow_up_end), TRUE, FALSE)) %>%
     ungroup() %>%
     dplyr::filter(keep == TRUE) %>%
     dplyr::select(-c(keep))
@@ -289,8 +381,8 @@ if (cohort_name == "prevax"){
   # read in main input file 
   
   input_main <- readr::read_rds(file.path("output", paste0("input_prevax_stage1_diabetes.rds")))
-
-  # get list of IDs that will be t2dm cases post covid that are not being treated after 4 months (i.e., suspected stress/steroid induced cases)
+  input_main$out_date_t2dm_follow <- NULL
+    # get list of IDs that will be t2dm cases post covid that are not being treated after 4 months (i.e., suspected stress/steroid induced cases)
   
   remove <- input %>%
     dplyr::filter(N_follow_prescribe == FALSE)
@@ -303,8 +395,9 @@ if (cohort_name == "prevax"){
   # rename t2dm variable to t2dm_follow 
   
   input_new_t2dm_cases <- input_new_t2dm_cases %>%
-    dplyr::rename(out_date_t2dm_follow = out_date_t2dm) %>%
-    dplyr::select(patient_id, out_date_t2dm_follow)
+    dplyr::rename(out_date_t2dm_follow = out_date_t2dm,
+                  out_date_t2dm_follow_extended_follow_up = out_date_t2dm_extended_follow_up) %>%
+    dplyr::select(patient_id, out_date_t2dm_follow, out_date_t2dm_follow_extended_follow_up)
   
   # merge and save input file back ready for cox analysis - the only change made is the addition of out_date_t2dm_follow variable 
   

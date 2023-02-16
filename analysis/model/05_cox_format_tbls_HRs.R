@@ -298,7 +298,7 @@ if(length(results_done)>0){
   supressed_df_hr <- supressed_df_hr[order(supressed_df_hr$redacted_results),]
   
   supressed_df_hr=supressed_df_hr%>%select(event,cohort,subgroup,model,time_points,term,estimate,conf_low,conf_high,se_ln_hr,robust_se_ln_hr,
-                                           events_total, median_follow_up, N_sample_size, results_fitted,covariates_removed,cat_covars_collapsed,redacted_results,data_sampled)
+                                           events_total, median_follow_up, N_sample_size, total_covid_cases,results_fitted,covariates_removed,cat_covars_collapsed,redacted_results,data_sampled)
   
   if(cohort == "prevax"){
     

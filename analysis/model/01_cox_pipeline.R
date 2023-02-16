@@ -34,9 +34,11 @@ args = commandArgs(trailingOnly=TRUE)
 if(length(args)==0){
   event_name="t2dm"
   cohort="prevax"
+  data_only="TRUE"
 }else{
   event_name  = args[[1]]
   cohort = args[[2]]
+  data_only = args[[3]]
 }
 
 # Specify directories ----------------------------------------------------------
@@ -72,7 +74,7 @@ analyses_to_run$reduced_timepoint <- lapply(split(analyses_to_run,seq(nrow(analy
                                                 subgroup=analyses_to_run$subgroup,
                                                 stratify_by_subgroup=analyses_to_run$stratify_by_subgroup,
                                                 stratify_by=analyses_to_run$strata,
-                                                input, cuts_days_since_expo,cuts_days_since_expo_reduced)
+                                                input)
 )
 
 analyses_to_run$reduced_timepoint <-  as.character(analyses_to_run$reduced_timepoint)
@@ -82,6 +84,13 @@ analyses_to_run$reduced_timepoint <- "reduced"
 analyses_to_run <- rbind(analyses_to_run, analyses_to_run_normal_timepoint)
 
 rm(analyses_to_run_normal_timepoint)
+
+# Add day zero analyses
+
+day_zero_analyses <- analyses_to_run %>% filter(subgroup %in% c("main","covid_pheno_hospitalised", "covid_pheno_non_hospitalised"))
+day_zero_analyses$reduced_timepoint <- paste0("day_zero_",day_zero_analyses$reduced_timepoint)
+analyses_to_run <- rbind(analyses_to_run, day_zero_analyses)
+rm(day_zero_analyses)
 
 # Source remainder of relevant files --------------------------------------------------------
 
@@ -98,7 +107,9 @@ if(nrow(analyses_to_run>0)){
              stratify_by=analyses_to_run$strata,           
              time_point=analyses_to_run$reduced_timepoint,       
              input,covar_names,
-             cuts_days_since_expo,cuts_days_since_expo_reduced,mdl))
+             cuts_days_since_expo,cuts_days_since_expo_reduced,
+             cuts_days_since_expo_day_zero,cuts_days_since_expo_reduced_day_zero,
+             mdl))
 }
 
 if(cohort == "prevax"){

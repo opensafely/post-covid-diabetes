@@ -16,7 +16,7 @@ args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
   # use for interactive testing
-  cohort_name <- "all"
+  cohort_name <- "prevax"
   group <- "diabetes"
 } else {
   cohort_name <- args[[1]]
@@ -25,14 +25,14 @@ if(length(args)==0){
 #json file containing vax study dates
 study_dates <- fromJSON("output/study_dates.json")
 
-if (cohort_name %in% c("vax","unvax"))
-{
+if (cohort_name %in% c("vax","unvax")){
   #These are the study start and end dates for the Delta era
   cohort_start_date <- as.Date(study_dates$delta_date)
   cohort_end_date <- as.Date(study_dates$omicron_date)
 }else if (cohort_name == "prevax") {
   cohort_start_date <- as.Date(study_dates$pandemic_start)
   cohort_end_date <- as.Date(study_dates$all_eligible)
+  cohort_end_date_extended <- as.Date("2021-12-14")
   
 }
 
@@ -47,14 +47,16 @@ follow_up_end_dates <- function(cohort_name, group){
   active_analyses <- active_analyses %>% 
     filter(active == "TRUE" & outcome_group == group) %>% 
     select(outcome_variable, outcome_group) %>%
-    filter(outcome_variable != "out_date_t2dm_follow")
+    filter(outcome_variable != "out_date_t2dm_follow" & outcome_variable != "out_date_t2dm_follow_extended_follow_up")
   
   input <- input[,c("patient_id","death_date","index_date","sub_cat_covid19_hospital",active_analyses$outcome_variable,
                     colnames(input)[grepl("exp_",colnames(input))], 
                     colnames(input)[grepl("vax_date_",colnames(input))])] 
   
   input$cohort_end_date<- cohort_end_date
-  
+  if (cohort_name == "prevax") {
+  input$cohort_end_date_extended<- cohort_end_date_extended
+  }
   for(event in active_analyses$outcome_variable){
     print(paste0("Working on ",event))
     
@@ -73,6 +75,7 @@ follow_up_end_dates <- function(cohort_name, group){
       
       input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
       input$follow_up_end <- as.Date(input$follow_up_end)
+      
     }else if(cohort_name=="prevax" & group == "diabetes_recovery"){
       
       cohort_end_date <- as.Date(as.Date("2020-06-15"))
@@ -90,15 +93,29 @@ follow_up_end_dates <- function(cohort_name, group){
       input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
       input$follow_up_end <- as.Date(input$follow_up_end)
       
-    }else if(cohort_name=="unvax"){
+    }else if(cohort_name=="unvax" & !grepl("unvax_sens",event)){
       input$follow_up_end_unexposed <- apply(input[,c("vax_date_covid_1","event_date", "expo_date", "death_date","cohort_end_date")],1, min,na.rm=TRUE)
       input$follow_up_end <- apply(input[,c("vax_date_covid_1","event_date", "death_date","cohort_end_date")],1, min, na.rm=TRUE)
       
       input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
       input$follow_up_end <- as.Date(input$follow_up_end)
+      
+    } else if(cohort_name=="unvax" & grepl("unvax_sens",event)){
+      input$follow_up_end_unexposed <- apply(input[,c("event_date", "expo_date", "death_date","cohort_end_date")],1, min,na.rm=TRUE)
+      input$follow_up_end <- apply(input[,c("event_date", "death_date","cohort_end_date")],1, min, na.rm=TRUE)
+      
+      input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
+      input$follow_up_end <- as.Date(input$follow_up_end)
+      
     }
     
-    
+    if(cohort_name=="prevax" & grepl("extended_follow_up",event)){
+      input$follow_up_end_unexposed <- apply(input[,c("event_date", "expo_date", "death_date","cohort_end_date_extended")],1, min,na.rm=TRUE)
+      input$follow_up_end <- apply(input[,c("event_date", "death_date","cohort_end_date_extended")],1, min, na.rm=TRUE)
+      
+      input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
+      input$follow_up_end <- as.Date(input$follow_up_end)
+    }
     # Calculate date_expo_censor which is the COVID exposure date for the phenotype  not of interest
     # in the phenotype analyses. This is needed to re-calculate follow-up end for pheno anlayses
     
@@ -162,10 +179,17 @@ follow_up_end_dates <- function(cohort_name, group){
   }
   
   input <- input[,c("patient_id","index_date",
-                    colnames(input)[grepl("follow_up",colnames(input))],
+                    colnames(input)[grepl("follow_up_end",colnames(input))],
                     colnames(input)[grepl("censor",colnames(input))])] 
   
   saveRDS(input, paste0("output/follow_up_end_dates_",cohort_name, "_",group, ".rds"))
+  
+  # Save as CSV as well only for diabetes group to save time
+  
+  if (group == "diabetes"){
+    readr::write_csv(input, paste0("output/follow_up_end_dates_",cohort_name, "_",group,".csv.gz"))
+  }
+  
 }
 
 # Run function using specified commandArgs and active analyses for group

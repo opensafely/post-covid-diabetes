@@ -9,7 +9,7 @@ source(file.path(scripts_dir,"04_01_(b)_cox_format_survival_data.R"))
 
 #------------------FORMAT SURVIVAL DATASET AND RUN COX MODEL--------------------
 
-fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stratify_by,mdl, survival_data,input,cuts_days_since_expo,cuts_days_since_expo_reduced,covar_names,time_point){
+fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stratify_by,mdl, survival_data,input,cuts_days_since_expo,covar_names,time_point,total_covid_cases){
   list_data_surv_noncase_ids_interval_names <- fit_get_data_surv(event,subgroup, stratify_by_subgroup, stratify_by,survival_data,cuts_days_since_expo,time_point)
   
   if(length(list_data_surv_noncase_ids_interval_names)==1){
@@ -83,10 +83,13 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
   
   write.csv(sampled_data, paste0("output/input_sampled_data_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"), row.names = F )
   rm(sampled_data)
-  
-
+    
     data.table::fwrite(data_surv, paste0("output/input_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"))
     
+  # ADD IF STATEMENT TO SKIP MODELING CODE BUT KEEP SAVING OF DATASET FOR STATA
+    
+  if (data_only=="FALSE") {
+      
     #Fit model and prep output csv
     fit_model <- coxfit(data_surv, interval_names, covar_names, mdl, subgroup,non_case_inverse_weight)
     fit_model$subgroup <- subgroup
@@ -95,9 +98,10 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
     fit_model$time_points <- time_point
     fit_model$data_sampled <- ifelse(non_case_inverse_weight == 1, "FALSE", "TRUE")
     fit_model$N_sample_size <- length(unique(data_surv$patient_id))
+    fit_model$total_covid_cases <- total_covid_cases
     
     if(cohort == "prevax"){
-
+      
       write.csv(fit_model, paste0(output_dir_prevax,"/tbl_hr_" , event, "_",subgroup,"_", cohort,"_",time_point, "_time_periods.csv"), row.names = F)
       print(paste0("Hazard ratios saved: ", output_dir_prevax,"/tbl_hr_" , event, "_",subgroup,"_", cohort,"_",time_point,  "_time_periods.csv"))
       
@@ -107,13 +111,14 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
       print(paste0("Hazard ratios saved: ", output_dir_vax,"/tbl_hr_" , event, "_",subgroup,"_", cohort,"_",time_point,  "_time_periods.csv"))
       
     } else if (cohort == "unvax"){
-
+      
       write.csv(fit_model, paste0(output_dir_unvax,"/tbl_hr_" , event, "_",subgroup,"_", cohort,"_",time_point, "_time_periods.csv"), row.names = F)
       print(paste0("Hazard ratios saved: ", output_dir_unvax,"/tbl_hr_" , event, "_",subgroup,"_", cohort,"_",time_point,  "_time_periods.csv"))
       
     }
+  }
+  
 }
-
 
   #------------------------ GET SURV FORMULA & COXPH() ---------------------------
   coxfit <- function(data_surv, interval_names, covar_names, mdl, subgroup,non_case_inverse_weight){
@@ -166,7 +171,7 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
       }
       
       #If subgroup is not sex then add sex into formula - also do not add sex if event name is gestational dm (analyses performed in women only)
-      if (!startsWith(subgroup,"sex") & !startsWith(subgroup,"aer") & (!"sex" %in% covariates_excl_region_sex_age) & (event_name != "gestationaldm")){
+      if (!startsWith(subgroup,"sex") & !startsWith(subgroup,"aer") & (!"sex" %in% covariates_excl_region_sex_age) & (event_name != "gestationaldm") & (event_name != "gestationaldm_extended_follow_up") & (event_name != "gestationaldm_unvax_sens")){
         surv_formula <- paste(surv_formula, "sex", sep="+")
       }
       
@@ -248,4 +253,5 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
     
     print("Finised working on cox model")
     return(combined_results)
+
   }

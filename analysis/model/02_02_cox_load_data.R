@@ -34,23 +34,25 @@ if(event_name == "out_date_ami" | event_name == "out_date_stroke_isch" | event_n
   input <- read_rds(paste0("output/input_",cohort,"_stage1_CVD.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_CVD.rds"))
   
-} else if(event_name == "t1dm" | event_name == "t2dm" | event_name == "otherdm" | event_name == "t2dm_follow"){
+} else if(event_name == "t1dm" | event_name == "t2dm" | event_name == "otherdm" | event_name == "t2dm_follow" | event_name == "t2dm_follow_extended_follow_up" |
+          event_name == "t1dm_extended_follow_up" | event_name == "t2dm_extended_follow_up" | event_name == "otherdm_extended_follow_up" |
+          event_name == "t1dm_unvax_sens" | event_name == "t2dm_unvax_sens" | event_name == "otherdm_unvax_sens"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes.rds"))
   
-} else if (event_name == "t2dm_pd"){
+} else if (event_name == "t2dm_pd" | event_name == "t2dm_pd_extended_follow_up"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_prediabetes.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_prediabetes.rds"))
   
-} else if (event_name == "t2dm_pd_no"){
+} else if (event_name == "t2dm_pd_no" | event_name == "t2dm_pd_no_extended_follow_up"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_no_prediabetes.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_no_prediabetes.rds"))
   
-} else if (event_name == "t2dm_obes"){
+} else if (event_name == "t2dm_obes" | event_name == "t2dm_obes_extended_follow_up"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_obesity.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_obesity.rds"))
   
-} else if (event_name == "t2dm_obes_no"){
+} else if (event_name == "t2dm_obes_no" | event_name == "t2dm_obes_no_extended_follow_up"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_no_obesity.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_no_obesity.rds"))
   
@@ -66,7 +68,7 @@ if(event_name == "out_date_ami" | event_name == "out_date_stroke_isch" | event_n
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_post_recovery.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_post_recovery.rds"))
   
-} else if (event_name == "gestationaldm"){
+} else if (event_name == "gestationaldm" | event_name == "gestationaldm_extended_follow_up" | event_name == "gestationaldm_unvax_sens"){
   input <- read_rds(paste0("output/input_",cohort,"_stage1_diabetes_gestational.rds"))
   end_dates <- read_rds(paste0("output/follow_up_end_dates_",cohort,"_diabetes_gestational.rds"))
   
@@ -83,20 +85,21 @@ input <- input %>% select(all_of(read_in_cols))
 
 # RENAME END DATES FOR T2DM FOLLOW ANALYSIS -------------------------------
 
-if (event_name == "t2dm_follow") {
+if (event_name == "t2dm_follow" | event_name == "t2dm_follow_extended_follow_up") {
   
   colnames(end_dates) = gsub("t2dm", "t2dm_follow", colnames(end_dates))
+  colnames(end_dates) = gsub("t2dm_extended_follow_up", "t2dm_follow_extended_follow_up", colnames(end_dates))
   
 }
 
 # ADD END DATES -----------------------------------------------------------
 
 end_dates <- end_dates[,c("patient_id",
-                          colnames(end_dates)[grepl(paste0(event_name,"_follow_up_end"),colnames(end_dates))],
-                          colnames(end_dates)[grepl(paste0(event_name,"_hospitalised_follow_up_end"),colnames(end_dates))],
-                          colnames(end_dates)[grepl(paste0(event_name,"_non_hospitalised_follow_up_end"),colnames(end_dates))],
-                          colnames(end_dates)[grepl(paste0(event_name,"_hospitalised_date_expo_censor"),colnames(end_dates))],
-                          colnames(end_dates)[grepl(paste0(event_name,"_non_hospitalised_date_expo_censor"),colnames(end_dates))])] 
+                          paste0(event_name,"_follow_up_end"),
+                          paste0(event_name,"_hospitalised_follow_up_end"),
+                          paste0(event_name,"_non_hospitalised_follow_up_end"),
+                          paste0(event_name,"_hospitalised_date_expo_censor"),
+                          paste0(event_name,"_non_hospitalised_date_expo_censor"))]
 
 input <- input %>% left_join(end_dates, by = "patient_id")
 
@@ -123,6 +126,8 @@ if(cohort=="prevax" & event_name == "t2dm_rec"){
   
   cuts_days_since_expo <- c(7, 14, 28, 56, 84, 166) 
   cuts_days_since_expo_reduced <- c(28, 166) 
+  cuts_days_since_expo_day_zero <- c(7, 14, 28, 56, 84, 166) 
+  cuts_days_since_expo_reduced_day_zero <- c(28, 166) 
   
 }else if(cohort=="prevax" & event_name == "t2dm_post_rec"){
   
@@ -134,6 +139,8 @@ if(cohort=="prevax" & event_name == "t2dm_rec"){
   
   cuts_days_since_expo <- c(7, 14, 28, 56, 84, 197, 367) 
   cuts_days_since_expo_reduced <- c(28, 197, 367) 
+  cuts_days_since_expo_day_zero <- c(7, 14, 28, 56, 84, 197, 367) 
+  cuts_days_since_expo_reduced_day_zero <- c(28, 197, 367) 
   
 } else if(cohort=="prevax" & (event_name != "t2dm_rec" | event_name != "t2dm_post_rec")){
   
@@ -146,6 +153,8 @@ if(cohort=="prevax" & event_name == "t2dm_rec"){
   
   cuts_days_since_expo <- c(7, 14, 28, 56, 84, 197, 365, 535) 
   cuts_days_since_expo_reduced <- c(28, 197, 535) 
+  cuts_days_since_expo_day_zero <- c(1,7, 14, 28, 56, 84, 197,535) 
+  cuts_days_since_expo_reduced_day_zero <- c(1,28,197,535)
   
 } else if (cohort == "vax" | cohort == "unvax"){
   
@@ -158,6 +167,19 @@ if(cohort=="prevax" & event_name == "t2dm_rec"){
   
   cuts_days_since_expo <- c(7, 14, 28, 56, 84, 197) 
   cuts_days_since_expo_reduced <- c(28,197) 
+  cuts_days_since_expo_day_zero <- c(1, 7, 14, 28, 56, 84, 197) 
+  cuts_days_since_expo_reduced_day_zero <- c(1, 28,197)
+}
+
+if(grepl("extended_follow_up",event_name)){
+  
+  cohort_end_date_extended <- as.Date("2021-12-14")
+  
+  cuts_days_since_expo <- c(7, 14, 28, 56, 84, 197,365,714) 
+  cuts_days_since_expo_reduced <- c(28,197,365,714)
+  cuts_days_since_expo_day_zero <- c(1,7, 14, 28, 56, 84, 197,365,714) 
+  cuts_days_since_expo_reduced_day_zero <- c(1,28,197,365,714)
+  
 }
 
 #Rename input variable names (by renaming here it means that these scripts can be used for other datasets without
@@ -171,12 +193,12 @@ setnames(input,
                  "cov_cat_region",
                  "index_date",
                  "cov_cat_ethnicity",
-                 c(paste0("out_date_", event_name)),
-                 c(paste0(event_name,"_follow_up_end")),
-                 c(paste0(event_name,"_hospitalised_follow_up_end")),
-                 c(paste0(event_name,"_non_hospitalised_follow_up_end")),
-                 c(paste0(event_name,"_hospitalised_date_expo_censor")),
-                 c(paste0(event_name,"_non_hospitalised_date_expo_censor"))),
+                 paste0("out_date_", event_name),
+                 paste0(event_name,"_follow_up_end"),
+                 paste0(event_name,"_hospitalised_follow_up_end"),
+                 paste0(event_name,"_non_hospitalised_follow_up_end"),
+                 paste0(event_name,"_hospitalised_date_expo_censor"),
+                 paste0(event_name,"_non_hospitalised_date_expo_censor")),
          
          new = c("DATE_OF_DEATH", 
                  "sex",

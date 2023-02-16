@@ -1,16 +1,17 @@
 /*----------------------------------------------------------------------------
-Do file name: 			cox_models
-Project: 				Project 12: Post covid CVD events
-Date:					08/09/2022
-Author:					Venexia Walker and Rachel Denholm
-                        Adapted from post-covid-vaccinated cox_model.do
-Description:			Reformating of CSV file and running cox models
-Datasets used:			csv outcome files
-Datasets created:		*_cox_model.txt
-Other output:			logfiles
------------------------------------------------------------------------------*/
+	   Do file name: 			cox_model.do
+	   Project: 				12
+	   Date:					08/09/2022
+	   Author:					Venexia Walker and Rachel Denholm
+	   Description:			Reformating of CSV file and running cox models
+	   Datasets used:			csv outcome files
+	   Datasets created:		*_cox_model_* , *_stata_median_fup_*
+	   Other output:			logfiles
+   -----------------------------------------------------------------------------*/
 
 local cpf "`1'"
+local day0 "`2'"
+local extf "`3'"
 
 * Set file paths
 
@@ -61,6 +62,7 @@ foreach var of varlist exposure_date outcome_date follow_up_start follow_up_end 
 }
 
 * Shorten covariate names
+
 capture confirm variable cov_bin_other_arterial_embolism 
 if !_rc {
 	rename cov_bin_other_arterial_embolism cov_bin_other_art_embol
@@ -138,10 +140,31 @@ lab val cov_cat_smoking_status_tmp cov_cat_smoking_status_tmp
 drop cov_cat_smoking_status
 rename cov_cat_smoking_status_tmp cov_cat_smoking_status 
 
+*Recode BMI capture
+
+gen cov_cat_bmi_groups_tmp = .
+replace cov_cat_bmi_groups_tmp = 1 if cov_cat_bmi_groups=="Healthy_weight"  
+replace cov_cat_bmi_groups_tmp = 2 if cov_cat_bmi_groups=="Underweight"  
+replace cov_cat_bmi_groups_tmp = 3 if cov_cat_bmi_groups=="Overweight"  
+replace cov_cat_bmi_groups_tmp = 4 if cov_cat_bmi_groups=="Obese"  
+replace cov_cat_bmi_groups_tmp = 5 if cov_cat_bmi_groups=="Missing"  
+lab def cov_cat_bmi_groups_tmp 1 "Healthy_weight" 2 "Underweight" 3 "Overweight" 4 "Obese" 5 "Missing" 
+lab var cov_cat_bmi_groups_tmp cov_cat_bmi_groups_tmp
+drop cov_cat_bmi_groups
+rename cov_cat_bmi_groups_tmp cov_cat_bmi_groups
+
+* Recode HDL ratio
+
+gen cov_num_tc_hdl_ratio_tmp = cov_num_tc_hdl_ratio
+replace cov_num_tc_hdl_ratio_tmp = "." if cov_num_tc_hdl_ratio=="NA"
+destring cov_num_tc_hdl_ratio_tmp, replace
+drop cov_num_tc_hdl_ratio
+rename cov_num_tc_hdl_ratio_tmp cov_num_tc_hdl_ratio
+
 * Summarize missingness following recoding
 
 misstable summarize
-	
+
 * Make failure variable
 
 gen outcome_status = 0
@@ -157,17 +180,45 @@ format follow_up_end %td
 centile age, centile(10 50 90)
 mkspline age_spline = age, cubic knots(`r(c_1)' `r(c_2)' `r(c_3)')
 
-* Apply stset // including IPW here as if unsampled dataset will be 1
+* Apply stset including IPW here as unsampled datasets will be provided with cox_weights set to 1
 
 if `prevax_cohort'==1 {
-	stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,01,2020))
-	stsplit time, after(exposure_date) at(0 28 197 535)
-	replace time = 535 if time==-1
+	if "`extf'"=="TRUE" {
+		if "`day0'"=="TRUE" {
+			stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,01,2020))
+			stsplit time, after(exposure_date) at(0 1 28 197 365 714)
+			replace time = 714 if time==-1
+		}
+		else {
+			stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,01,2020))
+			stsplit time, after(exposure_date) at(0 28 197 365 714)
+			replace time = 714 if time==-1
+		}
+	} 
+	else {
+		if "`day0'"=="TRUE" {
+			stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,01,2020))
+			stsplit time, after(exposure_date) at(0 1 28 197 535)
+			replace time = 535 if time==-1
+		}
+		else {
+			stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,01,2020))
+			stsplit time, after(exposure_date) at(0 28 197 535)
+			replace time = 535 if time==-1
+		}
+	}
 } 
 else {
-	stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,06,2021))
-	stsplit time, after(exposure_date) at(0 28 197)
-	replace time = 197 if time==-1
+	if "`day0'"=="TRUE" {
+		stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,06,2021))
+		stsplit time, after(exposure_date) at(0 1 28 197)
+		replace time = 197 if time==-1
+	} 
+	else {
+		stset follow_up_end [pweight=cox_weights], failure(outcome_status) id(patient_id) enter(follow_up_start) origin(time mdy(01,06,2021))
+		stsplit time, after(exposure_date) at(0 28 197)
+		replace time = 197 if time==-1
+	}
 }
 
 * Calculate study follow up
@@ -177,18 +228,38 @@ egen follow_up_total = total(follow_up)
 
 * Make days variables
 
-gen days0_28 = 0
-replace days0_28 = 1 if time==0
-tab days0_28
+if "`day0'"=="TRUE" {
+	gen days0_1 = 0
+	replace days0_1 = 1 if time==0
+	tab days0_1
+	gen days1_28 = 0
+	replace days1_28 = 1 if time==1
+	tab days1_28
+} 
+else {
+	gen days0_28 = 0
+	replace days0_28 = 1 if time==0
+	tab days0_28
+}
 
 gen days28_197 = 0
 replace days28_197 = 1 if time==28
 tab days28_197
 
 if `prevax_cohort'==1 {
-	gen days197_535 = 0 
-	replace days197_535 = 1 if time==197
-	tab days197_535
+	if "`extf'"=="TRUE" {
+		gen days197_365 = 0 
+		replace days197_365 = 1 if time==197
+		tab days197_365
+		gen days365_714 = 0 
+		replace days365_714 = 1 if time==365
+		tab days365_714
+	} 
+	else {
+		gen days197_535 = 0 
+		replace days197_535 = 1 if time==197
+		tab days197_535
+	}
 }
 
 * Run models and save output [Note: cannot use efron method with weights]
@@ -200,36 +271,74 @@ bysort time: summarize(follow_up), detail
 
 stcox days* i.sex age_spline1 age_spline2, strata(region) vce(r)
 est store min, title(Age_Sex)
-stcox days* i.sex age_spline1 age_spline2 i.cov_cat_ethnicity i.cov_cat_deprivation i.cov_cat_smoking_status cov_num_consulation_rate cov_bin_*, strata(region) vce(r)
+stcox days* i.sex age_spline1 age_spline2 i.cov_cat_ethnicity i.cov_cat_deprivation i.cov_cat_smoking_status i.cov_cat_bmi_groups cov_num_consulation_rate cov_num_tc_hdl_ratio cov_bin_*, strata(region) vce(r)
 est store max, title(Maximal)
 
-estout * using "output/`cpf'_cox_model.txt", cells("b se t ci_l ci_u p") stats(risk N_fail N_sub N N_clust) replace 
+estout * using "output/`cpf'_cox_model_day0`day0'_extf`extf'.txt", cells("b se t ci_l ci_u p") stats(risk N_fail N_sub N N_clust) replace 
 
-* Calculate median follow-up
+* Calculate median follow-up among individuals with the outcome
 
 keep if outcome_status==1
 keep patient_id days* follow_up
 gen term = ""
 
 if `prevax_cohort'==1 {
-	drop if days0_28==0 & days28_197==0 & days197_535==0	
-	replace term = "days0_28" if days0_28==1 & days28_197==0 & days197_535==0
-	replace term = "days28_197" if days0_28==0 & days28_197==1 & days197_535==0
-	replace term = "days197_535" if days0_28==0 & days28_197==0 & days197_535==1 
-
+	if "`extf'"=="TRUE" {
+		if "`day0'"=="TRUE" {
+			drop if days0_1==0 & days1_28==0 & days28_197==0 & days197_365==0 & days365_714==0
+			replace term = "days0_1" if days0_1==1 & days1_28==0 & days28_197==0 & days197_365==0 & days365_714==0
+			replace term = "days1_28" if days0_1==0 & days1_28==1 & days28_197==0 & days197_365==0 & days365_714==0
+			replace term = "days28_197" if days0_1==0 & days1_28==0 & days28_197==1 & days197_365==0 & days365_714==0
+			replace term = "days197_365" if days0_1==0 & days1_28==0 & days28_197==0 & days197_365==1 & days365_714==0
+			replace term = "days365_714" if days0_1==0 & days1_28==0 & days28_197==0 & days197_365==0 & days365_714==1
+		}
+		else {
+			drop if days0_28==0 & days28_197==0 & days197_365==0 & days365_714==0
+			replace term = "days0_28" if days0_28==1 & days28_197==0 & days197_365==0 & days365_714==0
+			replace term = "days28_197" if days0_28==0 & days28_197==1 & days197_365==0 & days365_714==0
+			replace term = "days197_365" if days0_28==0 & days28_197==0 & days197_365==1 & days365_714==0
+			replace term = "days365_714" if days0_28==0 & days28_197==0 & days197_365==0 & days365_714==1
+		}
+	} 
+	else {
+		if "`day0'"=="TRUE" {
+			drop if days0_1==0 & days1_28==0 & days28_197==0 & days197_535==0
+			replace term = "days0_1" if days0_1==1 & days1_28==0 & days28_197==0 & days197_535==0	
+			replace term = "days1_28" if days0_1==0 & days1_28==1 & days28_197==0 & days197_535==0	
+			replace term = "days28_197" if days0_1==0 & days1_28==0 & days28_197==1 & days197_535==0	
+			replace term = "days197_365" if days0_1==0 & days1_28==0 & days28_197==0 & days197_535==1	
+		}
+		else {
+			drop if days0_28==0 & days28_197==0 & days197_535==0	
+			replace term = "days0_28" if days0_28==1 & days28_197==0 & days197_535==0
+			replace term = "days28_197" if days0_28==0 & days28_197==1 & days197_535==0
+			replace term = "days197_535" if days0_28==0 & days28_197==0 & days197_535==1 
+		}
+	}
 } 
 else {
-	drop if days0_28==0 & days28_197==0
-	replace term = "days0_28" if days0_28==1 & days28_197==0
-	replace term = "days28_197" if days0_28==0 & days28_197==1
-	replace term = "days197_535" if days0_28==0 & days28_197==0
-	replace follow_up = follow_up + 197 if term == "days197_535" 
+	if "`day0'"=="TRUE" {
+		drop if days0_1==0 & days1_28==0 & days28_197==0
+		replace term = "days0_1" if days0_1==1 & days1_28==0 & days28_197==0
+		replace term = "days1_28" if days0_1==0 & days1_28==1 & days28_197==0	
+		replace term = "days28_197" if days0_1==0 & days1_28==0 & days28_197==1
+	}
+	else {
+		drop if days0_28==0 & days28_197==0
+		replace term = "days0_28" if days0_28==1 & days28_197==0
+		replace term = "days28_197" if days0_28==0 & days28_197==1
+		replace term = "days197_535" if days0_28==0 & days28_197==0
+		replace follow_up = follow_up + 197 if term == "days197_535" 
+	}
 }
 
-replace follow_up = follow_up + 28 if term == "days128_197" 
+replace follow_up = follow_up + 28 if term == "days28_197"
+replace follow_up = follow_up + 197 if term == "days197_365"
+replace follow_up = follow_up + 365 if term == "days365_714"
+replace follow_up = follow_up + 197 if term == "days197_535"
 bysort term: egen medianfup = median(follow_up)
 
 keep term medianfup
 duplicates drop
 
-export delimited using "output/`cpf'_stata_median_fup", replace
+export delimited using "output/`cpf'_stata_median_fup_day0`day0'_extf`extf'", replace

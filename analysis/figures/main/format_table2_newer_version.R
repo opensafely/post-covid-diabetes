@@ -2,8 +2,8 @@ library(dplyr)
 library(broman)
 # Load data --------------------------------------------------------------------
 
-results_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/descriptive/"
-output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/"
+results_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/"
+output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/"
 dir.create(file.path(output_dir), recursive =TRUE, showWarnings = FALSE)
 
 
@@ -32,12 +32,12 @@ format_table_2_short<- function(df, cohort){
   
   table2_pre_expo <- table2_raw %>% select(subgroup, event, unexposed_event_count, unexposed_person_days)
   table2_pre_expo$period <- "unexposed"
-  table2_pre_expo <- table2_pre_expo %>% rename(event_count = unexposed_event_count,
+  table2_pre_expo <- table2_pre_expo %>% dplyr::rename(event_count = unexposed_event_count,
                                                 person_days = unexposed_person_days)
   
   table2_post_expo <- table2_raw %>% select(subgroup, event, post_exposure_event_count, post_exposure_person_days)
   table2_post_expo$period <- "post_expo"
-  table2_post_expo <- table2_post_expo %>% rename(event_count = post_exposure_event_count,
+  table2_post_expo <- table2_post_expo %>% dplyr::rename(event_count = post_exposure_event_count,
                                                   person_days = post_exposure_person_days )
   
   table2 <- rbind(table2_pre_expo,table2_post_expo)
@@ -63,7 +63,7 @@ format_table_2_short<- function(df, cohort){
   table2$event <- NULL
   
   #Split primary position event
-  table2 <- table2 %>% rename(Outcome = outcome)
+  table2 <- table2 %>% dplyr::rename(Outcome = outcome)
   
   # table2 <- table2 %>% filter(!grepl('Primary position',Outcome))
   
@@ -129,4 +129,4 @@ table2_transposed$period <- factor(table2_transposed$period, levels = c("No COVI
 
 table2_transposed <- table2_transposed[order(table2_transposed$Outcome, table2_transposed$period),]
 
-write.csv(table2_transposed, paste0(output_dir,"formatted_table_2_cohorts_in_columns_updated.csv"),row.names = F)
+write.csv(table2_transposed, paste0(output_dir,"formatted_table_2_cohorts_in_columns_updated-persistent.csv"),row.names = F)

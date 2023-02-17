@@ -232,3 +232,80 @@ setwd(proj_dir)
 write.csv(table2, file = paste0("output/review/model/table2_output_formatted_no_hrs.csv"),row.names = FALSE)
 
 write.csv(estimates2, file = paste0("output/review/model/hr_output_formatted.csv"),row.names = FALSE)
+
+
+# EVENT COUNTS ------------------------------------------------------------
+
+# Read in event count files
+
+#prevax 
+
+event_counts_prevax=list.files(path = "output/review/model/prevax", pattern = "suppressed_compiled_event_counts")
+event_counts_prevax=event_counts_prevax[endsWith(event_counts_prevax,".csv")]
+event_counts_prevax=paste0(output_dir,"/", event_counts_prevax)
+event_counts_prevax_file_paths <- pmap(list(event_counts_prevax),
+                                function(fpath){
+                                  df <- fread(fpath)
+                                  return(df)
+                                })
+event_counts_prevax_df <- rbindlist(event_counts_prevax_file_paths, fill=TRUE)
+
+# vax
+
+event_counts_vax=list.files(path = "output/review/model/vax", pattern = "suppressed_compiled_event_counts")
+event_counts_vax=event_counts_vax[endsWith(event_counts_vax,".csv")]
+event_counts_vax=paste0(output_dir,"/", event_counts_vax)
+event_counts_vax_file_paths <- pmap(list(event_counts_vax),
+                                       function(fpath){
+                                         df <- fread(fpath)
+                                         return(df)
+                                       })
+event_counts_vax_df <- rbindlist(event_counts_vax_file_paths, fill=TRUE)
+
+# unvax
+
+event_counts_unvax=list.files(path = "output/review/model/unvax", pattern = "suppressed_compiled_event_counts")
+event_counts_unvax=event_counts_unvax[endsWith(event_counts_unvax,".csv")]
+event_counts_unvax=paste0(output_dir,"/", event_counts_unvax)
+event_counts_unvax_file_paths <- pmap(list(event_counts_unvax),
+                                    function(fpath){
+                                      df <- fread(fpath)
+                                      return(df)
+                                    })
+event_counts_unvax_df <- rbindlist(event_counts_unvax_file_paths, fill=TRUE)
+
+# RBIND
+
+event_counts_df <- rbindlist(list(event_counts_prevax_df, event_counts_vax_df, event_counts_unvax_df), fill = TRUE)
+
+event_counts_df$redacted_results <- factor(event_counts_df$redacted_results, levels = c("Redacted results",
+                                                                                        "No redacted results"))
+event_counts_df <- event_counts_df[order(event_counts_df$redacted_results),]
+
+write.csv(event_counts_df,paste0(output_dir,"/R_event_count_output.csv") , row.names=F)
+
+
+#Get event counts by time period for day zero analyses
+event_counts_df$events_total <- as.numeric(event_counts_df$events_total)
+event_counts_day_zero <- event_counts_df %>% filter(time_points == "day_zero_reduced"
+                                                    & event %in% c("t2dm_extended_follow_up"))%>%
+  select(event,cohort,subgroup,time_points,expo_week,events_total)
+
+
+tmp_hosp <- event_counts_day_zero %>% filter(subgroup == "main") %>%
+  left_join(event_counts_day_zero %>% filter(subgroup == "covid_pheno_non_hospitalised") %>%
+              select(!subgroup)%>%
+              rename(events_total_non_hosp = events_total))
+
+tmp_hosp$events_total_hosp <- tmp_hosp$events_total - tmp_hosp$events_total_non_hosp
+tmp_hosp$events_total <- NULL
+tmp_hosp$events_total_non_hosp <- NULL
+
+tmp_hosp$subgroup <- "covid_pheno_hospitalised"
+tmp_hosp <- rename(tmp_hosp, events_total=events_total_hosp)
+
+event_counts_day_zero <- rbind(event_counts_day_zero, tmp_hosp)
+
+write.csv(event_counts_day_zero,paste0(output_dir,"/R_event_count_day_zero_output.csv") , row.names=F)
+
+

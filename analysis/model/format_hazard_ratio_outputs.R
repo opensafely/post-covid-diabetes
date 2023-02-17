@@ -242,7 +242,7 @@ write.csv(estimates2, file = paste0("output/review/model/hr_output_formatted.csv
 
 event_counts_prevax=list.files(path = "output/review/model/prevax", pattern = "suppressed_compiled_event_counts")
 event_counts_prevax=event_counts_prevax[endsWith(event_counts_prevax,".csv")]
-event_counts_prevax=paste0(output_dir,"/", event_counts_prevax)
+event_counts_prevax=paste0("output/review/model/prevax/", event_counts_prevax)
 event_counts_prevax_file_paths <- pmap(list(event_counts_prevax),
                                 function(fpath){
                                   df <- fread(fpath)
@@ -254,7 +254,7 @@ event_counts_prevax_df <- rbindlist(event_counts_prevax_file_paths, fill=TRUE)
 
 event_counts_vax=list.files(path = "output/review/model/vax", pattern = "suppressed_compiled_event_counts")
 event_counts_vax=event_counts_vax[endsWith(event_counts_vax,".csv")]
-event_counts_vax=paste0(output_dir,"/", event_counts_vax)
+event_counts_vax=paste0("output/review/model/vax/", event_counts_vax)
 event_counts_vax_file_paths <- pmap(list(event_counts_vax),
                                        function(fpath){
                                          df <- fread(fpath)
@@ -266,7 +266,7 @@ event_counts_vax_df <- rbindlist(event_counts_vax_file_paths, fill=TRUE)
 
 event_counts_unvax=list.files(path = "output/review/model/unvax", pattern = "suppressed_compiled_event_counts")
 event_counts_unvax=event_counts_unvax[endsWith(event_counts_unvax,".csv")]
-event_counts_unvax=paste0(output_dir,"/", event_counts_unvax)
+event_counts_unvax=paste0("output/review/model/unvax/", event_counts_unvax)
 event_counts_unvax_file_paths <- pmap(list(event_counts_unvax),
                                     function(fpath){
                                       df <- fread(fpath)

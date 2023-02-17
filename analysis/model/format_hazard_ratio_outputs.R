@@ -287,8 +287,7 @@ write.csv(event_counts_df,paste0(output_dir,"/R_event_count_output.csv") , row.n
 
 #Get event counts by time period for day zero analyses
 event_counts_df$events_total <- as.numeric(event_counts_df$events_total)
-event_counts_day_zero <- event_counts_df %>% filter(time_points == "day_zero_reduced"
-                                                    & event %in% c("t2dm_extended_follow_up"))%>%
+event_counts_day_zero <- event_counts_df %>% filter(time_points == "day_zero_reduced")%>%
   select(event,cohort,subgroup,time_points,expo_week,events_total)
 
 

@@ -2032,4 +2032,6 @@ actions:
         hr_output: output/review/model/hr_output_formatted.csv
         hr_output_no_events: output/review/model/hr_output_formatted_no_event_counts.csv
         table2_output: output/review/model/table2_output_formatted_no_hrs.csv
+        R_event_counts: output/review/model/R_event_count_output.csv
+        R_event_counts_day_zero: output/review/model/R_event_count_day_zero_output.csv
 

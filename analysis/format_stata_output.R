@@ -86,7 +86,7 @@ for (f in files) {
   f <- gsub("_cox_model_","_stata_median_fup_",f)
   f <- gsub(".txt",".csv",f)
   fup <- readr::read_csv(file = paste0("output/",f))
-  tmp <- merge(tmp, fup, by = "term", all.x = TRUE)
+  tmp <- merge(tmp, fup, by = "term", all = TRUE)
   
   ## Apend to master dataframe
     
@@ -96,7 +96,7 @@ for (f in files) {
 
 # Format master dataframe
 
-df <- df[,c("source","term","medianfup",
+df <- df[,c("source","term","median_tte","events",
             paste0(c("b","se","t","lci","uci","p","persondays","outcomes","subjects","observations","clusters"),"_min"),
             paste0(c("b","se","t","lci","uci","p","persondays","outcomes","subjects","observations","clusters"),"_max"))]
 
@@ -109,7 +109,7 @@ df <- tidyr::pivot_longer(df,
                           values_to = "value")
 
 df <- tidyr::pivot_wider(df, 
-                         id_cols = c("source","term", "model","medianfup"),
+                         id_cols = c("source","term", "model","median_tte","events"),
                          names_from = "stat", 
                          values_from = "value")
 
@@ -119,7 +119,7 @@ df <- df[df$model=="max" | (df$model=="min" & df$term %in% c(unique(df$term)[gre
                                                              "1.sex","2.sex","age_spline1","age_spline2")),]
 
 df <- df[order(df$source, df$model),
-         c("source","term","model","b","lci","uci","se","medianfup","subjects","outcomes")]
+         c("source","term","model","b","lci","uci","se","median_tte","events","subjects","outcomes")]
 
 df <- dplyr::rename(df,
                     "estimate" = "b",
@@ -127,7 +127,8 @@ df <- dplyr::rename(df,
                     "conf_high" = "uci",
                     "se_ln_hr" = "se",
                     "N_sample_size" = "subjects",
-                    "median_follow_up" = "medianfup",
+                    "median_time_to_event" = "median_tte",
+                    "N_outcomes_episode" = "events",
                     "N_outcomes" = "outcomes")
 
 # Save output ------------------------------------------------------------------

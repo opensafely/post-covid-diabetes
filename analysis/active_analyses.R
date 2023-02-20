@@ -141,7 +141,7 @@ df <- df %>% mutate(cohort = case_when(outcome == "type 2 diabetes - recovery" ~
 # turn on subgroups for main t2dm analyses
 
 df[2,c(11:22, 25:32)] <- TRUE
-df[14,c(11:22, 25:32)] <- TRUE
+# df[14,c(11:22, 25:32)] <- TRUE
 
 
 # turn on t2dm

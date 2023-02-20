@@ -478,7 +478,7 @@ actions:
   ## Cox model for t2dm - vax 
 
   Analysis_cox_t2dm_vax:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm vax FALSE
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm vax TRUE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax

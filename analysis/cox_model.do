@@ -9,15 +9,9 @@
 	   Other output:			logfiles
    -----------------------------------------------------------------------------*/
 
-local cpf "input_sampled_data_t2dm_rec_main_prevax_normal_time_periods"
-local day0 "TRUE"
-local extf "FALSE"
-   
-/* 
 local cpf "`1'"
 local day0 "`2'"
 local extf "`3'"
-*/
 
 * Set file paths
 

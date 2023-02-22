@@ -4,10 +4,10 @@ library(tidyverse)
 
 # Set file locations
 
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/model/")
-results_dir_desc <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/descriptive/")
-aer_raw_output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/AER/"
-aer_compiled_output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/AER/"
+results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/model/")
+results_dir_desc <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/descriptive/")
+aer_raw_output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/AER/"
+aer_compiled_output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v3/generated-figures/AER/"
 scripts_dir <- "analysis/model"
 
 dir.create(file.path(aer_raw_output_dir), recursive =TRUE, showWarnings = FALSE)
@@ -33,6 +33,9 @@ active <- active[active$outcome_variable=="out_date_t2dm",]
 active$event <- gsub("out_date_","",active$outcome_variable)                                                                                        
 active[,c("active","outcome","outcome_variable","prior_history_var","covariates","model","cohort")] <- NULL       
 
+active <- active %>%
+  mutate_all(as.character)
+
 #Converts to long-format
 active <- tidyr::pivot_longer(active, 
                               cols = setdiff(colnames(active),c("event")), 
@@ -53,10 +56,10 @@ active <- crossing(active,time_points)
 active <- active %>% filter(startsWith(subgroup,"aer_") & model=="mdl_max_adj")
 
 #Add HR time point terms so that results can be left joined
-term <- c("days0_28","days28_197","days197_535")
+term <- c("days0_28","days28_197","days197_365", "days365_714")
 active_reduced <- crossing(active[active$time_points == "reduced",],term )
 
-term <- c("days0_7","days7_14","days14_28","days28_56","days56_84","days84_197","days197_535")
+term <- c("days0_7","days7_14","days14_28","days28_56","days56_84","days84_197","days197_365", "days365_714")
 active_normal <- crossing(active[active$time_points == "normal",],term )  
 
 results <- rbind(active_reduced,active_normal)
@@ -66,28 +69,28 @@ rm(active_reduced,active_normal)
 #------------------------------------ Load results------------------------------
 
 #-----------------------------Input hazard ratios-------------------------------
-hr_files=list.files(path = results_dir, pattern = "suppressed_compiled_HR_results_*")
-hr_files=hr_files[endsWith(hr_files,".csv")]
-hr_files=paste0(results_dir,"/", hr_files)
-hr_file_paths <- pmap(list(hr_files),
-                      function(fpath){
-                        df <- fread(fpath)
-                        return(df)
-                      })
-input <- rbindlist(hr_file_paths, fill=TRUE)
+# hr_files=list.files(path = results_dir, pattern = "suppressed_compiled_HR_results_*")
+# hr_files=hr_files[endsWith(hr_files,".csv")]
+# hr_files=paste0(results_dir,"/", hr_files)
+# hr_file_paths <- pmap(list(hr_files),
+#                       function(fpath){
+#                         df <- fread(fpath)
+#                         return(df)
+#                       })
+# input <- rbindlist(hr_file_paths, fill=TRUE)
 
-                                                            
+input <- read_csv(paste0(results_dir, "hr_output_formatted_for_AER_extended.csv"))
+
 #-------------------Select required columns and term----------------------------
 input <- input %>% 
   filter(str_detect(term, "^days")
          & (startsWith(subgroup, "aer_") | subgroup == "main")
          & model=="mdl_max_adj"
-         & results_fitted == "fitted_successfully"
          & estimate != "[Redacted]") %>%
   select(event,cohort,subgroup,model,time_points,term,estimate)
-  
+
 #---------------------------------Input Table 2---------------------------------
-table2_pre_vax <- read.csv(paste0(results_dir_desc,"table2_prevax_diabetes.csv"))
+table2_pre_vax <- read.csv(paste0(results_dir_desc,"table2_prevax_diabetes_extended.csv"))
 table2_vax <- read.csv(paste0(results_dir_desc,"table2_vax_diabetes.csv"))
 table2_unvax <- read.csv(paste0(results_dir_desc,"table2_unvax_diabetes.csv"))
 
@@ -101,8 +104,8 @@ rm(table2_pre_vax,table2_vax,table2_unvax)
 #-------------------Select required columns and term----------------------------
 
 table_2 <- table_2 %>% select(subgroup, event, cohort,unexposed_person_days,unexposed_event_count,total_covid19_cases, N_population_size) %>%
-                      filter(startsWith(subgroup, "aer_"))
-            
+  filter(startsWith(subgroup, "aer_"))
+
 table_2$event <- gsub("out_date_","",table_2$event)
 
 # Split HR results into age/sex subgroups and overall main results
@@ -207,4 +210,4 @@ AER_combined_subgroup <- AER_combined_subgroup %>% dplyr::rename(excess_risk_sub
 
 AER_compiled_results <- rbind(AER_compiled_results,AER_combined_overall,AER_combined_subgroup, fill = TRUE)
 
-write.csv(AER_compiled_results, paste0(aer_compiled_output_dir,"/AER_compiled_results.csv"), row.names = F)
+write.csv(AER_compiled_results, paste0(aer_compiled_output_dir,"/AER_compiled_results_extended.csv"), row.names = F)

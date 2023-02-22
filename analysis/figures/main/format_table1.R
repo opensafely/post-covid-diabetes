@@ -53,10 +53,10 @@ outcome_groups <- "diabetes"
 # READ IN AND FORMAT THE TABLE 1 FOR EACH OUTCOME GROUP
 
 for(group in outcome_groups){
-  table1_prevax <- read.csv(paste0("output/review/descriptives/Table1_prevax_without_covid_history_",group,".csv"))
-  table1_vax <- read.csv(paste0("output/review/descriptives/Table1_vax_without_covid_history_",group,".csv"))
+  table1_prevax <- read.csv(paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/descriptive/Table1_prevax_without_covid_history_",group,".csv"))
+  table1_vax <- read.csv(paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/descriptive/Table1_vax_without_covid_history_",group,".csv"))
   table1_vax <- table1_vax[ order(match(table1_vax$Covariate_level, table1_prevax$Covariate_level)), ]
-  table1_unvax <- read.csv(paste0("output/review/descriptives/Table1_unvax_without_covid_history_",group,".csv"))
+  table1_unvax <- read.csv(paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/descriptive/Table1_unvax_without_covid_history_",group,".csv"))
   
   table1_prevax_format <- clean_table_1(table1_prevax)
   table1_vax_format <- clean_table_1(table1_vax)
@@ -74,16 +74,16 @@ for(group in outcome_groups){
   # RENAME COLUMN NAMES 
   
   table1_merged <- table1_merged %>%
-    dplyr::rename("Prevaccinated Population" = "Whole Population_prevax",
-                  "Prevaccinated N Diagnosed with COVID-19 (risk per 100,000)" = "Number diagnosed with COVID-19 (risk per 100,000)_prevax",
-                  "Vaccinated Population" = "Whole Population_vax",
+    dplyr::rename("Prevaccination Cohort (1 Jan 2020 to 18 June 2021)" = "Whole Population_prevax",
+                  "Prevaccination N Diagnosed with COVID-19 (risk per 100,000)" = "Number diagnosed with COVID-19 (risk per 100,000)_prevax",
+                  "Vaccinated Cohort (1 June to 14 Dec 2021)" = "Whole Population_vax",
                   "Vaccinated N Diagnosed with COVID-19 (risk per 100,000)" = "Number diagnosed with COVID-19 (risk per 100,000)_vax",
-                  "Unvaccinated Population" = "Whole Population_unvax",
+                  "Unvaccinated Cohort (1 June to 14 Dec 2021)" = "Whole Population_unvax",
                   "Unvaccinated N Diagnosed with COVID-19 (risk per 100,000)" = "Number diagnosed with COVID-19 (risk per 100,000)_unvax")
   
   
   
   # SAVE TABLE 1
   
-  write.csv(table1_merged, paste0("output/review/descriptives/Table1_Formatted_To_Release_",group,".csv"), row.names = FALSE)
+  write.csv(table1_merged, paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/Table1_Formatted_Diabetes.csv"), row.names = FALSE)
 }

@@ -1,6 +1,7 @@
 # List files to be combined
 
-files <- list.files(path = "output/", pattern = "_cox_model_")
+files <- list.files(path = "output/", pattern = "cox_model")
+files <- files[grepl("day0",files)]
 
 analyses_to_run_stata <- read.csv("lib/analyses_to_run_in_stata.csv", header=TRUE,
                                   col.names = c("outcome","cohort","subgroup","time_periods","day0","extf"),

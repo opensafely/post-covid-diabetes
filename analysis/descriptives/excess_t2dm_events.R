@@ -3,9 +3,9 @@ library(readr)
 library(stringr)
 library(tidyr)
 
-aer_output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/AER/"
-aer_output_fig <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/"
-results_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/"
+aer_output_dir <- "/Users/kurttaylor/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/AER/"
+aer_output_fig <- "/Users/kurttaylor/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/"
+results_dir <- "/Users/kurttaylor/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/"
 
 #Read in AER
 df <- readr::read_csv(paste0(aer_output_dir,"/AER_compiled_results.csv"))
@@ -17,7 +17,7 @@ df <- readr::read_csv(paste0(aer_output_dir,"/AER_compiled_results.csv"))
 #   select(event, subgroup, cohort, subgroup, AER_main, time_points, days)%>% ungroup()
 
 df <- df %>% filter(days == 196 & subgroup != "aer_overall") %>%
-  filter(time_points == "reduced")
+  filter(time_points == "reduced") %>%
   distinct()
 
 #Sum over all subgroups to get total
@@ -40,10 +40,11 @@ rm(table2_pre_vax,table2_vax,table2_unvax)
 table_2$event <- gsub("_extended_follow_up","",table_2$event)
 
 #To get total follow up for main analysis need to sum unexposed person days of follow up & exposed person days
-table_2 <- table_2 %>% select(event, subgroup, cohort, total_person_days, unexposed_person_days) %>% 
+table_2 <- table_2 %>% select(event, subgroup, cohort, total_person_days, unexposed_person_days, total_person_days_to_day_197) %>% 
   filter(subgroup %in% c("covid_pheno_hospitalised","covid_pheno_non_hospitalised"))
 
-table_2$exposed_person_days <- table_2$total_person_days - table_2$unexposed_person_days
+table_2$exposed_person_days <- ifelse(table_2$cohort != "prevax", table_2$total_person_days - table_2$unexposed_person_days, table_2$total_person_days_to_day_197)
+# table_2$exposed_person_days <- table_2$total_person_days - table_2$unexposed_person_days
 table_2$total_person_days <- NULL
 table_2$unexposed_person_days <- NULL
 

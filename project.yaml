@@ -1977,6 +1977,70 @@ actions:
       moderately_sensitive:
         stata_output: output/stata_output.csv
 
+  format_stata_output_new:
+    run: r:latest analysis/mediantte_and_events.R
+    needs:
+    - stata_cox_model_t2dm_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_hospitalised_vax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_hospitalised_unvax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_main_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_main_vax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_main_unvax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_vax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_unvax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_follow_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_follow_main_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_follow_covid_pheno_non_hospitalised_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_rec_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_pre_rec_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_post_rec_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_rec_main_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_pre_rec_main_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_post_rec_main_prevax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_t2dm_extended_follow_up_main_prevax_reduced_day0FALSE_extfTRUE
+    - stata_cox_model_t2dm_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_day0FALSE_extfTRUE
+    - stata_cox_model_t2dm_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfTRUE
+    - stata_cox_model_t2dm_follow_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_t2dm_follow_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_t2dm_follow_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_t2dm_follow_extended_follow_up_main_prevax_reduced_day0FALSE_extfTRUE
+    - stata_cox_model_t2dm_follow_extended_follow_up_covid_pheno_non_hospitalised_prevax_reduced_day0FALSE_extfTRUE
+    - stata_cox_model_t2dm_follow_extended_follow_up_covid_pheno_hospitalised_prevax_reduced_day0FALSE_extfTRUE
+    - stata_cox_model_t1dm_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_otherdm_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_gestationaldm_extended_follow_up_main_prevax_reduced_day0TRUE_extfTRUE
+    - stata_cox_model_t1dm_extended_follow_up_main_prevax_reduced_day0FALSE_extfTRUE
+    - stata_cox_model_otherdm_extended_follow_up_main_prevax_reduced_day0FALSE_extfTRUE
+    - stata_cox_model_gestationaldm_extended_follow_up_main_prevax_reduced_day0FALSE_extfTRUE
+    - stata_cox_model_t2dm_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_hospitalised_vax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_hospitalised_unvax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_main_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_main_vax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_main_unvax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_vax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_covid_pheno_non_hospitalised_unvax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_follow_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_follow_main_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_follow_covid_pheno_non_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_pre_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_post_rec_covid_pheno_hospitalised_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_rec_main_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_pre_rec_main_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_post_rec_main_prevax_day_zero_reduced_day0TRUE_extfFALSE
+    - stata_cox_model_t2dm_unvax_sens_covid_pheno_hospitalised_unvax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_unvax_sens_main_unvax_reduced_day0FALSE_extfFALSE
+    - stata_cox_model_t2dm_unvax_sens_covid_pheno_non_hospitalised_unvax_reduced_day0FALSE_extfFALSE
+    outputs:
+      moderately_sensitive:
+        stata_output: output/mediantte_and_events.csv
+
   format_hazard_ratios:
     run: r:latest analysis/model/format_hazard_ratio_outputs.R
     needs:

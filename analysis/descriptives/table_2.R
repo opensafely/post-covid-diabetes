@@ -209,6 +209,7 @@ table_2_subgroups_output <- function(cohort_name, group){
     analyses_of_interest$day_0_event_counts[i] <- table2_output[[5]]
     analyses_of_interest$total_covid19_cases[i] <- table2_output[[6]]
     analyses_of_interest$N_population_size[i] <- table2_output[[7]]
+    analyses_of_interest$person_days_total_exposed_to_day_197 <- table2_output[[8]]
   
     
     setnames(survival_data,
@@ -339,6 +340,11 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
   person_days_total_unexposed  = round(sum(data_active$person_days_unexposed, na.rm = TRUE),1)
   person_days_total = round(sum(data_active$person_days, na.rm = TRUE),1)
   
+  #calculate post exposure follow-up up to day 197 for AER calculation
+  data_active$person_days_exposed_day_197 <- data_active$person_days - data_active$person_days_unexposed
+  data_active$person_days_exposed_day_197 <- ifelse(data_active$person_days_exposed_day_197 > 197, 197,data_active$person_days_exposed_day_197)
+  person_days_total_exposed_to_day_197 = round(sum(data_active$person_days_exposed_day_197, na.rm = TRUE),1)
+  
   # calculate total covid cases for aer
   total_covid_cases <- nrow(data_active %>% filter(!is.na(exp_date_covid19_confirmed)))
   
@@ -370,7 +376,7 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
     event_count_exposed <- "[Redacted]"
   }
   
-  return(list(person_days_total_unexposed, event_count_unexposed, event_count_exposed, person_days_total, day_0_event_count, total_covid_cases, N_population_size))
+  return(list(person_days_total_unexposed, event_count_unexposed, event_count_exposed, person_days_total, day_0_event_count, total_covid_cases, N_population_size, person_days_total_exposed_to_day_197))
 }
 
 

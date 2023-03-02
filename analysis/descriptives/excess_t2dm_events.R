@@ -43,7 +43,7 @@ table_2$event <- gsub("_extended_follow_up","",table_2$event)
 table_2 <- table_2 %>% select(event, subgroup, cohort, total_person_days, unexposed_person_days,total_person_days_to_day_197) %>% 
   filter(subgroup %in% c("covid_pheno_hospitalised","covid_pheno_non_hospitalised"))
 
-table_2$exposed_person_days <- ifelse(table_2$cohort != "pre_vaccination", table_2$total_person_days - table_2$unexposed_person_days, table_2$total_person_days_to_day_197)
+table_2$exposed_person_days <- ifelse(table_2$cohort != "prevax", table_2$total_person_days - table_2$unexposed_person_days, table_2$total_person_days_to_day_197)
 table_2$total_person_days <- NULL
 table_2$unexposed_person_days <- NULL
 table_2$total_person_days_to_day_197 <- NULL

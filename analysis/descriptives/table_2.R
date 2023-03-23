@@ -262,9 +262,9 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
   
   #Remove anyone with a history of COVID-19
   if(subgroup != "covid_history" ){
-    input=input%>%filter(sub_bin_covid19_confirmed_history == FALSE)
+    data_active=data_active%>%filter(sub_bin_covid19_confirmed_history == FALSE)
   }else {
-    input=input%>%filter(sub_bin_covid19_confirmed_history == TRUE)
+    data_active=data_active%>%filter(sub_bin_covid19_confirmed_history == TRUE)
   }
   
   for(i in c("hospitalised","non_hospitalised")){

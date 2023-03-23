@@ -260,6 +260,13 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
   data_active <- survival_data
   data_active$date_expo_censor <- NA
   
+  #Remove anyone with a history of COVID-19
+  if(subgroup != "covid_history" ){
+    data_active=data_active%>%filter(sub_bin_covid19_confirmed_history == FALSE)
+  }else {
+    data_active=data_active%>%filter(sub_bin_covid19_confirmed_history == TRUE)
+  }
+  
   for(i in c("hospitalised","non_hospitalised")){
     if(stratify_by == i){
       data_active$follow_up_end <- NULL
@@ -391,10 +398,10 @@ if (cohort_name == "prevax") {
   active_analyses <- active_analyses %>% filter(active==TRUE & (cohort == "unvax" | cohort == "all") )
 }
 
-group <- unique(active_analyses$outcome_group)
+group_names <- unique(active_analyses$outcome_group)
 
 
-for(i in group){
+for(i in group_names){
   if (cohort_name == "all") {
     table_2_subgroups_output("prevax", i)
     table_2_subgroups_output("vax", i)

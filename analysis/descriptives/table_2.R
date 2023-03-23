@@ -260,6 +260,7 @@ table_2_calculation <- function(survival_data, event,cohort,subgroup, stratify_b
   data_active <- survival_data
   data_active$date_expo_censor <- NA
   
+  #Remove anyone with a history of COVID-19
   data_active=data_active%>%filter(sub_bin_covid19_confirmed_history == FALSE)
   
   for(i in c("hospitalised","non_hospitalised")){

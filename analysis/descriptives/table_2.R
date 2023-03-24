@@ -400,13 +400,12 @@ if (cohort_name == "prevax") {
 
 group_names <- unique(active_analyses$outcome_group)
 
-
-for(i in group_names){
+for(group in group_names){
   if (cohort_name == "all") {
-    table_2_subgroups_output("prevax", i)
-    table_2_subgroups_output("vax", i)
-    table_2_subgroups_output("unvax", i)
+    table_2_subgroups_output("prevax", group)
+    table_2_subgroups_output("vax", group)
+    table_2_subgroups_output("unvax", group)
   } else{
-    table_2_subgroups_output(cohort_name, i)
+    table_2_subgroups_output(cohort_name, group)
   }
 }

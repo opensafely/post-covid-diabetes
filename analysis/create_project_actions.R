@@ -608,7 +608,17 @@ actions_list <- splice(
       table2_output = "output/review/model/table2_output_formatted_no_hrs.csv",
       R_event_counts = "output/review/model/R_event_count_output.csv",
       R_event_counts_day_zero = "output/review/model/R_event_count_day_zero_output.csv")
-  )
+  ),
+  
+  action(
+    name = "check_table2_matches_cox_event_counts",
+    run = "r:latest analysis/descriptives/check_table2_matches_cox_event_counts.R",
+    needs = c("stage4_table_2_prevax", "stage4_table_2_vax", "stage4_table_2_unvax",
+              paste0("Analysis_cox_",analyses_to_run$outcome,"_",analyses_to_run$cohort)),
+    moderately_sensitive = list(
+      check_table2_cox_event_counts = "output/not-for-review/descriptives/table2_cox_model_event_counts_comparison.csv"
+    )
+    )
 )
 
 ## combine everything ----

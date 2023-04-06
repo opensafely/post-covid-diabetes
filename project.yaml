@@ -2111,9 +2111,12 @@ actions:
     - Analysis_cox_t2dm_prevax
     - Analysis_cox_t2dm_vax
     - Analysis_cox_t2dm_unvax
+    - Analysis_cox_t2dm_rec_prevax
     - Analysis_cox_t2dm_pre_rec_prevax
     - Analysis_cox_t2dm_pre_rec_vax
     - Analysis_cox_t2dm_pre_rec_unvax
+    - Analysis_cox_t2dm_post_rec_prevax
+    - Analysis_cox_t2dm_follow_prevax
     - Analysis_cox_t2dm_pd_prevax
     - Analysis_cox_t2dm_pd_vax
     - Analysis_cox_t2dm_pd_unvax
@@ -2132,9 +2135,6 @@ actions:
     - Analysis_cox_gestationaldm_prevax
     - Analysis_cox_gestationaldm_vax
     - Analysis_cox_gestationaldm_unvax
-    - Analysis_cox_t2dm_rec_prevax
-    - Analysis_cox_t2dm_post_rec_prevax
-    - Analysis_cox_t2dm_follow_prevax
     - Analysis_cox_t1dm_extended_follow_up_prevax
     - Analysis_cox_t2dm_extended_follow_up_prevax
     - Analysis_cox_otherdm_extended_follow_up_prevax

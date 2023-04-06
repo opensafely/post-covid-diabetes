@@ -608,7 +608,32 @@ actions_list <- splice(
       table2_output = "output/review/model/table2_output_formatted_no_hrs.csv",
       R_event_counts = "output/review/model/R_event_count_output.csv",
       R_event_counts_day_zero = "output/review/model/R_event_count_day_zero_output.csv")
-  )
+  ),
+  
+  action(
+    name = "check_table2_matches_cox_event_counts",
+    run = "r:latest analysis/descriptives/check_table2_matches_cox_event_counts.R",
+    needs = list("stage4_table_2_prevax", "stage4_table_2_vax", "stage4_table_2_unvax",
+                "Analysis_cox_t1dm_prevax", "Analysis_cox_t1dm_vax", "Analysis_cox_t1dm_unvax",
+                "Analysis_cox_t2dm_prevax", "Analysis_cox_t2dm_vax", "Analysis_cox_t2dm_unvax",
+                "Analysis_cox_t2dm_pre_rec_prevax", "Analysis_cox_t2dm_pre_rec_vax", "Analysis_cox_t2dm_pre_rec_unvax",
+                "Analysis_cox_t2dm_pd_prevax", "Analysis_cox_t2dm_pd_vax", "Analysis_cox_t2dm_pd_unvax",
+                "Analysis_cox_t2dm_pd_no_prevax", "Analysis_cox_t2dm_pd_no_vax", "Analysis_cox_t2dm_pd_no_unvax",
+                "Analysis_cox_t2dm_obes_prevax", "Analysis_cox_t2dm_obes_vax", "Analysis_cox_t2dm_obes_unvax",
+                "Analysis_cox_t2dm_obes_no_prevax", "Analysis_cox_t2dm_obes_no_vax", "Analysis_cox_t2dm_obes_no_unvax",
+                "Analysis_cox_otherdm_prevax", "Analysis_cox_otherdm_vax", "Analysis_cox_otherdm_unvax",
+                "Analysis_cox_gestationaldm_prevax", "Analysis_cox_gestationaldm_vax", "Analysis_cox_gestationaldm_unvax",
+                "Analysis_cox_t2dm_rec_prevax",
+                "Analysis_cox_t2dm_post_rec_prevax",
+                "Analysis_cox_t2dm_follow_prevax",
+                "Analysis_cox_t1dm_extended_follow_up_prevax", "Analysis_cox_t2dm_extended_follow_up_prevax", "Analysis_cox_otherdm_extended_follow_up_prevax", "Analysis_cox_gestationaldm_extended_follow_up_prevax",
+                "Analysis_cox_t2dm_follow_extended_follow_up_prevax", "Analysis_cox_t2dm_pd_extended_follow_up_prevax", "Analysis_cox_t2dm_pd_no_extended_follow_up_prevax",
+                "Analysis_cox_t2dm_obes_extended_follow_up_prevax", "Analysis_cox_t2dm_obes_no_extended_follow_up_prevax",
+                "Analysis_cox_t2dm_unvax_sens_unvax", "Analysis_cox_t1dm_unvax_sens_unvax", "Analysis_cox_otherdm_unvax_sens_unvax", "Analysis_cox_gestationaldm_unvax_sens_unvax"),
+    moderately_sensitive = list(
+      check_table2_cox_event_counts = "output/not-for-review/descriptives/table2_cox_model_event_counts_comparison.csv"
+    )
+    )
 )
 
 ## combine everything ----

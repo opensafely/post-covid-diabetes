@@ -87,7 +87,7 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
     data.table::fwrite(data_surv, paste0("output/input_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"))
     
   # ADD IF STATEMENT TO SKIP MODELING CODE BUT KEEP SAVING OF DATASET FOR STATA
-  if (data_only=="FALSE" & (event_name != "t2dm_follow_extended_follow_up" | subgroup != "covid_pheno_hospitalised" | time_point != "day_zero_reduced")) {
+  if (data_only=="FALSE") {
       
     #Fit model and prep output csv
     fit_model <- coxfit(data_surv, interval_names, covar_names, mdl, subgroup,non_case_inverse_weight)

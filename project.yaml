@@ -1143,7 +1143,7 @@ actions:
 
   Analysis_cox_t2dm_follow_extended_follow_up_prevax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_follow_extended_follow_up
-      prevax FALSE
+      prevax TRUE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax

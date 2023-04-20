@@ -83,6 +83,22 @@ table_2_subgroups_output <- function(cohort_name, group){
            new = c("sex",
                    "ethnicity"))
   
+  # Add extra columns for persistent diabetes and diabetes with 4 months follow up
+  
+  if (cohort_name == "prevax" & group == "diabetes") {
+    for(i in c("out_date_t2dm_follow","out_date_t2dm_follow_extended_follow_up","out_date_t2dm_4months_follow_up_no_cox_only_table_2","out_date_t2dm_4months_follow_up_no_cox_only_table_2_extended_follow_up")){
+      outcome_name_short <- gsub("out_date_","",i)
+      replace_outcome <- ifelse(outcome_name_short %in% c("t2dm_follow", "t2dm_4months_follow_up_no_cox_only_table_2"), "t2dm", "t2dm_extended_follow_up")
+      
+      survival_data[paste0(outcome_name_short,"_follow_up_end_unexposed")] <- survival_data[paste0(replace_outcome,"_follow_up_end_unexposed")]
+      survival_data[paste0(outcome_name_short,"_follow_up_end")] <- survival_data[paste0(replace_outcome,"_follow_up_end")]
+      survival_data[paste0(outcome_name_short,"_hospitalised_follow_up_end")] <- survival_data[paste0(replace_outcome,"_hospitalised_follow_up_end")]
+      survival_data[paste0(outcome_name_short,"_non_hospitalised_follow_up_end")] <- survival_data[paste0(replace_outcome,"_non_hospitalised_follow_up_end")]
+      survival_data[paste0(outcome_name_short,"_hospitalised_date_expo_censor")] <- survival_data[paste0(replace_outcome,"_hospitalised_date_expo_censor")]
+      survival_data[paste0(outcome_name_short,"_non_hospitalised_date_expo_censor")] <- survival_data[paste0(replace_outcome,"_non_hospitalised_date_expo_censor")]
+    }
+  }
+  
   #-----------------------Add in age groups category----------------------------
   setDT(survival_data)[ , agegroup := cut(cov_num_age, 
                                           breaks = agebreaks, 
@@ -92,23 +108,6 @@ table_2_subgroups_output <- function(cohort_name, group){
   for(i in outcomes){
     
     # RENAME END DATES FOR T2DM FOLLOW ANALYSIS -------------------------------
-    
-    if (i == "out_date_t2dm_follow" | i == "out_date_t2dm_follow_extended_follow_up") {
-      
-      survival_data$t2dm_follow_follow_up_end_unexposed <- survival_data$t2dm_follow_up_end_unexposed
-      survival_data$t2dm_follow_follow_up_end <- survival_data$t2dm_follow_up_end
-      survival_data$t2dm_follow_hospitalised_follow_up_end <- survival_data$t2dm_hospitalised_follow_up_end
-      survival_data$t2dm_follow_non_hospitalised_follow_up_end <- survival_data$t2dm_non_hospitalised_follow_up_end
-      survival_data$t2dm_follow_hospitalised_date_expo_censor <- survival_data$t2dm_hospitalised_date_expo_censor
-      survival_data$t2dm_follow_non_hospitalised_date_expo_censor <- survival_data$t2dm_non_hospitalised_date_expo_censor
-      survival_data$t2dm_follow_extended_follow_up_follow_up_end_unexposed <- survival_data$t2dm_extended_follow_up_follow_up_end_unexposed
-      survival_data$t2dm_follow_extended_follow_up_follow_up_end <- survival_data$t2dm_extended_follow_up_follow_up_end
-      survival_data$t2dm_follow_extended_follow_up_hospitalised_follow_up_end <- survival_data$t2dm_extended_follow_up_hospitalised_follow_up_end
-      survival_data$t2dm_follow_extended_follow_up_non_hospitalised_follow_up_end <- survival_data$t2dm_extended_follow_up_non_hospitalised_follow_up_end
-      survival_data$t2dm_follow_extended_follow_up_hospitalised_date_expo_censor <- survival_data$t2dm_extended_follow_up_hospitalised_date_expo_censor
-      survival_data$t2dm_follow_extended_follow_up_non_hospitalised_date_expo_censor <- survival_data$t2dm_extended_follow_up_non_hospitalised_date_expo_censor
-      
-    }
     
     analyses_to_run <- active_analyses %>% filter(outcome_variable==i)
     
@@ -157,6 +156,15 @@ table_2_subgroups_output <- function(cohort_name, group){
   
   analyses_of_interest$strata[analyses_of_interest$strata=="South_Asian"]<- "South Asian"
   analyses_of_interest <- analyses_of_interest %>% filter(cohort_to_run == cohort_name)
+  
+  analyses_of_interest <- as.data.frame(analyses_of_interest)
+  
+  if(cohort_name == "prevax" & group == "diabetes"){
+    analyses_of_interest[nrow(analyses_of_interest)+1,] <- c("covid_pheno_hospitalised","out_date_t2dm_4months_follow_up_no_cox_only_table_2","prevax","covid_pheno_hospitalised","hospitalised")
+    analyses_of_interest[nrow(analyses_of_interest)+1,] <- c("covid_pheno_non_hospitalised","out_date_t2dm_4months_follow_up_no_cox_only_table_2","prevax","covid_pheno_non_hospitalised","non_hospitalised")
+    analyses_of_interest[nrow(analyses_of_interest)+1,] <- c("covid_pheno_hospitalised","out_date_t2dm_4months_follow_up_no_cox_only_table_2_extended_follow_up","prevax","covid_pheno_hospitalised","hospitalised")
+    analyses_of_interest[nrow(analyses_of_interest)+1,] <- c("covid_pheno_non_hospitalised","out_date_t2dm_4months_follow_up_no_cox_only_table_2_extended_follow_up","prevax","covid_pheno_non_hospitalised","non_hospitalised")
+    }
   
   #-----------------Add subgroup category for low count redaction---------------
   analyses_of_interest <- analyses_of_interest %>% 

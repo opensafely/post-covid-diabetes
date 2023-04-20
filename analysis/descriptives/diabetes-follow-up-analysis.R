@@ -32,14 +32,14 @@ fs::dir_create(here::here("output", "review", "descriptives"))
 
 study_dates <- jsonlite::fromJSON("output/study_dates.json")
 
-if (cohort_name %in% c("vax","unvax"))
-{
+if (cohort_name %in% c("vax","unvax")){
   #These are the study start and end dates for the Delta era
   cohort_start_date <- as.Date(study_dates$delta_date)
   cohort_end_date <- as.Date(study_dates$omicron_date)
 }else if (cohort_name == "prevax") {
   cohort_start_date <- as.Date(study_dates$pandemic_start)
   cohort_end_date <- as.Date(study_dates$all_eligible)
+  cohort_end_date_extended <- as.Date("2021-12-14")
 }
 
 ###############################################
@@ -352,9 +352,21 @@ if (cohort_name == "prevax"){
   # do what we did above but for all (not just those following COVID)
   # calculate new end date
   
+  # Creates 4 additional outcomes
+  # out_date_t2dm_follow which is Persistent diabetes
+  # out_date_t2dm_follow_extended_follow_up which is Persistent diabetes with extended follow up
+  
+  # out_date_t2dm_4months_follow_up_no_cox_only_table_2 which is type 2 diabetes where patients have 4 months of follow up
+  # out_date_t2dm_4months_follow_up_no_cox_only_table_2_extended_follow_up which is type 2 diabetes where patients have 4 months of follow up using etended follow up end dates
+  # The above two outcomes are ONLY for table 2 where event counts are calculated and are NOT to be run with the cox model
+  
   input$cohort_end_date <- cohort_end_date
   input$end_date <- apply(input[,c("death_date", "dereg_date", "cohort_end_date")],1, min,na.rm=TRUE)
   input$end_date <- as.Date(input$end_date)
+  
+  input$cohort_end_date_extended <- cohort_end_date_extended
+  input$end_date_extended <- apply(input[,c("death_date", "dereg_date", "cohort_end_date_extended")],1, min,na.rm=TRUE)
+  input$end_date_extended <- as.Date(input$end_date_extended)
   
   # Get N with 4 months follow up (those with an end date >= 4 months from t2dm)
   
@@ -364,6 +376,13 @@ if (cohort_name == "prevax"){
     ungroup() %>%
     mutate(start_end_diff_months = start_end_diff/30.417) %>%
     mutate(follow_4mth = ifelse(start_end_diff_months >= 4, TRUE, FALSE))
+  
+  input <- input %>% 
+    rowwise() %>%
+    mutate(start_end_diff_extended = as.numeric(difftime(end_date_extended, out_date_t2dm_extended_follow_up, units = "days"))) %>%
+    ungroup() %>%
+    mutate(start_end_diff_months_extended = start_end_diff_extended/30.417) %>%
+    mutate(follow_4mth_extended = ifelse(start_end_diff_months_extended >= 4, TRUE, FALSE))
   
   # summarise df
   summary(input)
@@ -378,30 +397,75 @@ if (cohort_name == "prevax"){
     mutate(N_follow_prescribe = ifelse(follow_4mth == TRUE & (out_num_max_hba1c_mmol_4mnths >= 47.5), TRUE,
                                        ifelse(follow_4mth == TRUE & (total_prescriptions >= 2), TRUE, FALSE)))
   
+  input <- input %>%
+    # create total N prescriptions variable
+    rowwise() %>%
+    mutate(total_prescriptions_extended = sum(out_count_insulin_snomed_4mnths, out_count_antidiabetic_drugs_snomed_4mnths, out_count_nonmetform_drugs_snomed_4mnths)) %>%
+    ungroup() %>%
+    mutate(N_follow_prescribe_extended = ifelse(follow_4mth_extended == TRUE & (out_num_max_hba1c_mmol_4mnths >= 47.5), TRUE,
+                                       ifelse(follow_4mth_extended == TRUE & (total_prescriptions_extended >= 2), TRUE, FALSE)))
+  
+
   # read in main input file 
   
   input_main <- readr::read_rds(file.path("output", paste0("input_prevax_stage1_diabetes.rds")))
   input_main$out_date_t2dm_follow <- NULL
-    # get list of IDs that will be t2dm cases post covid that are not being treated after 4 months (i.e., suspected stress/steroid induced cases)
+  input_main$out_date_t2dm_follow_extended_follow_up <- NULL
+  input_main$out_date_t2dm_4months_follow_up_no_cox_only_table_2 <- NULL
+  input_main$out_date_t2dm_4months_follow_up_no_cox_only_table_2_extended_follow_up <- NULL
+    
+  # get list of IDs that will be t2dm cases post covid that are not being treated after 4 months (i.e., suspected stress/steroid induced cases)
   
   remove <- input %>%
     dplyr::filter(N_follow_prescribe == FALSE)
   remove_ids <- remove$patient_id
   
+  remove_extended <- input %>%
+    dplyr::filter(N_follow_prescribe_extended == FALSE)
+  remove_ids_extended <- remove_extended$patient_id
+  
+  remove_4months_follow_up <- input %>%
+    dplyr::filter(follow_4mth == FALSE)
+  remove_ids_4months_follow_up <- remove_4months_follow_up$patient_id
+  
+  remove_4months_follow_up_extended <- input %>%
+    dplyr::filter(follow_4mth_extended == FALSE)
+  remove_ids_4months_follow_up_extended <- remove_4months_follow_up_extended$patient_id
+  
   # and now remove them 
   
   input_new_t2dm_cases <- input_main[ ! input_main$patient_id %in% remove_ids, ]
+  input_new_t2dm_cases_extended <- input_main[ ! input_main$patient_id %in% remove_ids_extended, ]
+  
+  input_new_t2dm_cases_4months_follow_up <- input_main[ ! input_main$patient_id %in% remove_ids_4months_follow_up, ]
+  input_new_t2dm_cases_4months_follow_up_extended <- input_main[ ! input_main$patient_id %in% remove_ids_4months_follow_up_extended, ]
   
   # rename t2dm variable to t2dm_follow 
   
   input_new_t2dm_cases <- input_new_t2dm_cases %>%
-    dplyr::rename(out_date_t2dm_follow = out_date_t2dm,
-                  out_date_t2dm_follow_extended_follow_up = out_date_t2dm_extended_follow_up) %>%
-    dplyr::select(patient_id, out_date_t2dm_follow, out_date_t2dm_follow_extended_follow_up)
+    dplyr::rename(out_date_t2dm_follow = out_date_t2dm,) %>%
+    dplyr::select(patient_id, out_date_t2dm_follow)
+  
+  input_new_t2dm_cases_extended <- input_new_t2dm_cases_extended %>%
+    dplyr::rename(out_date_t2dm_follow_extended_follow_up = out_date_t2dm_extended_follow_up,) %>%
+    dplyr::select(patient_id, out_date_t2dm_follow_extended_follow_up)
+  
+  input_new_t2dm_cases_4months_follow_up <- input_new_t2dm_cases_4months_follow_up %>%
+    dplyr::rename(out_date_t2dm_4months_follow_up_no_cox_only_table_2 = out_date_t2dm,) %>%
+    dplyr::select(patient_id, out_date_t2dm_4months_follow_up_no_cox_only_table_2)
+  
+  input_new_t2dm_cases_4months_follow_up_extended <- input_new_t2dm_cases_4months_follow_up_extended %>%
+    dplyr::rename(out_date_t2dm_4months_follow_up_no_cox_only_table_2_extended_follow_up = out_date_t2dm_extended_follow_up,) %>%
+    dplyr::select(patient_id, out_date_t2dm_4months_follow_up_no_cox_only_table_2_extended_follow_up)
   
   # merge and save input file back ready for cox analysis - the only change made is the addition of out_date_t2dm_follow variable 
   
   input_main <- merge(input_main, input_new_t2dm_cases, all.x = TRUE)
+  input_main <- merge(input_main, input_new_t2dm_cases_extended, all.x = TRUE)
+  
+  input_main <- merge(input_main, input_new_t2dm_cases_4months_follow_up, all.x = TRUE)
+  input_main <- merge(input_main, input_new_t2dm_cases_4months_follow_up_extended, all.x = TRUE)
+  
   input_main <- input_main %>%
     mutate(across(c(contains("_date")),
                   ~ floor_date(as.Date(., format="%Y-%m-%d"), unit = "days")))

@@ -94,8 +94,8 @@ table_2_subgroups_output <- function(cohort_name, group){
       survival_data[paste0(outcome_name_short,"_follow_up_end")] <- survival_data[paste0(replace_outcome,"_follow_up_end")]
       survival_data[paste0(outcome_name_short,"_hospitalised_follow_up_end")] <- survival_data[paste0(replace_outcome,"_hospitalised_follow_up_end")]
       survival_data[paste0(outcome_name_short,"_non_hospitalised_follow_up_end")] <- survival_data[paste0(replace_outcome,"_non_hospitalised_follow_up_end")]
-      survival_data[paste0(outcome_name_short,"_hospitalised_date_expo_censor")] <- survival_data[paste0(replace_outcome,"_follow_up_end_unexposed")]
-      survival_data[paste0(outcome_name_short,"_non_hospitalised_date_expo_censor")] <- survival_data[paste0(replace_outcome,"_follow_up_end_unexposed")]
+      survival_data[paste0(outcome_name_short,"_hospitalised_date_expo_censor")] <- survival_data[paste0(replace_outcome,"_hospitalised_date_expo_censor")]
+      survival_data[paste0(outcome_name_short,"_non_hospitalised_date_expo_censor")] <- survival_data[paste0(replace_outcome,"_non_hospitalised_date_expo_censor")]
     }
   }
   

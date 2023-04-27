@@ -1,9 +1,13 @@
 library(dplyr)
 library(broman)
+library(stringr)
 # Load data --------------------------------------------------------------------
 
-results_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/"
-output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/"
+#results_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/"
+#output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/"
+
+results_dir <- "C:/Users/zy21123/OneDrive - University of Bristol/Documents/OpenSAFELY/Outputs/release/"
+output_dir <- "C:/Users/zy21123/OneDrive - University of Bristol/Documents/OpenSAFELY/Outputs/Figures/"
 dir.create(file.path(output_dir), recursive =TRUE, showWarnings = FALSE)
 
 
@@ -18,6 +22,10 @@ active_analyses <- readr::read_rds("lib/active_analyses.RDS")
 table2_pre_vax <- read.csv(paste0(results_dir,"table2_prevax_diabetes.csv"))
 table2_vax <- read.csv(paste0(results_dir,"table2_vax_diabetes.csv"))
 table2_unvax <- read.csv(paste0(results_dir,"table2_unvax_diabetes.csv"))
+
+table2_pre_vax_gestational <- read.csv(paste0(results_dir,"table2_prevax_diabetes_gestational.csv"))
+table2_vax_gestational <- read.csv(paste0(results_dir,"table2_vax_diabetes_gestational.csv"))
+table2_unvax_gestational <- read.csv(paste0(results_dir,"table2_unvax_diabetes_gestational.csv"))
 
 
 # Format data from each cohort -------------------------------------------------
@@ -82,13 +90,31 @@ table2_pre_vax_formatted <- format_table_2_short(table2_pre_vax,"Pre-vaccination
 table2_vax_formatted <- format_table_2_short(table2_vax,"Vaccinated")
 table2_unvax_formatted <- format_table_2_short(table2_unvax,"Unvaccinated")
 
+table2_pre_vax_formatted_gestational <- format_table_2_short(table2_pre_vax_gestational,"Pre-vaccination")
+table2_vax_formatted_gestational <- format_table_2_short(table2_vax_gestational,"Vaccinated")
+table2_unvax_formatted_gestational <- format_table_2_short(table2_unvax_gestational,"Unvaccinated")
+
+rm(table2_pre_vax,table2_pre_vax_gestational,table2_vax,table2_vax_gestational,table2_unvax,table2_unvax_gestational)
+
 # Combine results for all cohorts ----------------------------------------------
-table2_merged <- rbind(table2_pre_vax_formatted,table2_vax_formatted,table2_unvax_formatted)
+table2_merged <- rbind(table2_pre_vax_formatted,table2_vax_formatted,table2_unvax_formatted,
+                       table2_pre_vax_formatted_gestational,table2_vax_formatted_gestational,table2_unvax_formatted_gestational)
+
+rm(table2_pre_vax_formatted,table2_vax_formatted,table2_unvax_formatted,
+   table2_pre_vax_formatted_gestational,table2_vax_formatted_gestational,table2_unvax_formatted_gestational)
 
 # remove prevax outcomes without extended follow up 
 
 table2_merged <- table2_merged %>%
   dplyr::filter(!(!str_detect(Outcome, 'extended') & str_detect(cohort, 'Pre')))
+
+# remove persistent diabetes for now - will update once updated table 2 release
+table2_merged <- table2_merged %>% dplyr::filter(!str_detect(Outcome, '4_mnth'))
+
+# remove unvax outcomes with extended follow up (sensitivity analyses - in separate table)
+
+table2_merged <- table2_merged %>%
+  dplyr::filter(!(str_detect(Outcome, 'extended') & cohort == "Unvaccinated"))
 
 # remove extended follow up text
 table2_merged$Outcome <- gsub("\\ - extended follow up*","",table2_merged$Outcome)
@@ -116,11 +142,13 @@ table2_transposed$Outcome <- as.factor(table2_transposed$Outcome)
 
 levels(table2_transposed$Outcome) <- list("Type 1 diabetes"="type 1 diabetes",
                                           "Type 2 diabetes"="type 2 diabetes",
-                                          "Other or non-specified diabetes"="other or non-specific diabetes")
+                                          "Other or non-specified diabetes"="other or non-specific diabetes",
+                                          "Gestational diabetes" = "gestational diabetes")
 
 
 table2_transposed$Outcome <- factor(table2_transposed$Outcome, levels=c("Type 2 diabetes",
                                                                         "Type 1 diabetes",
+                                                                        "Gestational diabetes",
                                                                         "Other or non-specified diabetes"))
 
 table2_transposed$period <- factor(table2_transposed$period, levels = c("No COVID-19",

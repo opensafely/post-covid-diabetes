@@ -37,6 +37,7 @@ for (f in files) {
                                        "b_max","se_max","t_max","lci_max","uci_max","p_max"))
   
   print(tmp)
+  print(Hmisc::describe(tmp))
   
   ## Make variables numeric
   
@@ -94,6 +95,8 @@ for (f in files) {
   ## Apend to master dataframe
     
   df <- rbind(df, tmp)
+  print(df)
+  print(Hmisc::describe(df))
     
 }
 

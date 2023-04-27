@@ -36,6 +36,8 @@ for (f in files) {
                                        "b_min","se_min","t_min","lci_min","uci_min","p_min",
                                        "b_max","se_max","t_max","lci_max","uci_max","p_max"))
   
+  print(tmp)
+  
   ## Make variables numeric
   
   tmp$b_min <- as.numeric(tmp$b_min)

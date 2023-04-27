@@ -28,6 +28,7 @@ df <- NULL
 # Append each file to master data frame
 
 for (f in files) {
+  print(f)
   
   ## Load data
   

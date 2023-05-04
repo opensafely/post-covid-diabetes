@@ -28,7 +28,7 @@ df <- NULL
 # Append each file to master data frame
 
 for (f in files) {
-  print(f)
+  print(paste0("Working on ",f))
   
   ## Load data
   print("Loading data")
@@ -37,7 +37,7 @@ for (f in files) {
                                        "b_min","se_min","t_min","lci_min","uci_min","p_min",
                                        "b_max","se_max","t_max","lci_max","uci_max","p_max"))
   
-  print(tmp)
+  #print(tmp)
   #print(Hmisc::describe(tmp))
   
   ## Make variables numeric
@@ -94,15 +94,17 @@ for (f in files) {
   fup <- readr::read_csv(file = paste0("output/",f))
   tmp <- merge(tmp, fup, by = "term", all = TRUE)
   
-  ## Apend to master dataframe
-    
+  ## Append to master dataframe
+  print("Append to master dataframe")  
   df <- rbind(df, tmp)
-  print(df)
-  print(Hmisc::describe(df))
+  #print(df)
+  #print(Hmisc::describe(df))
+  print(paste0("Finished working on ",f))
     
 }
 
 # Format master dataframe
+print("Format master dataframe")
 
 df <- df[,c("source","term","median_tte","events",
             paste0(c("b","se","t","lci","uci","p","persondays","outcomes","subjects","observations","clusters"),"_min"),

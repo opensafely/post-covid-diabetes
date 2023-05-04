@@ -105,11 +105,12 @@ for (f in files) {
 
 # Format master dataframe
 print("Format master dataframe")
-
+print("Select columns")
 df <- df[,c("source","term","median_tte","events",
             paste0(c("b","se","t","lci","uci","p","persondays","outcomes","subjects","observations","clusters"),"_min"),
             paste0(c("b","se","t","lci","uci","p","persondays","outcomes","subjects","observations","clusters"),"_max"))]
 
+print("Pivot longer")
 df <- tidyr::pivot_longer(df, 
                           cols = c(paste0(c("b","se","t","lci","uci","p","persondays","outcomes","subjects","observations","clusters"),"_min"),
                                    paste0(c("b","se","t","lci","uci","p","persondays","outcomes","subjects","observations","clusters"),"_max")),
@@ -117,7 +118,7 @@ df <- tidyr::pivot_longer(df,
                           names_sep = "_",
                           names_prefix = "name",
                           values_to = "value")
-
+print("Pivot wider")
 df <- tidyr::pivot_wider(df, 
                          id_cols = c("source","term", "model","median_tte","events"),
                          names_from = "stat", 

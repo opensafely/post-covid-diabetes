@@ -1,3 +1,4 @@
+library(dplyr)
 # List files to be combined
 
 files <- list.files(path = "output/", pattern = "cox_model")
@@ -119,6 +120,12 @@ df <- tidyr::pivot_longer(df,
                           names_prefix = "name",
                           values_to = "value")
 print("Pivot wider")
+# Add in redaction
+df <- df %>% group_by(source) %>%
+  mutate(events = case_when(
+    any(events <= 5) ~ "[Redacted]",
+    TRUE ~ as.character(events)))
+
 readr::write_csv(df, "output/stata_output.csv")
 # df <- tidyr::pivot_wider(df, 
 #                          id_cols = c("source","term", "model","median_tte","events"),

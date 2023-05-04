@@ -31,16 +31,17 @@ for (f in files) {
   print(f)
   
   ## Load data
-  
+  print("Loading data")
   tmp <- readr::read_tsv(file = paste0("output/",f), skip = 2,
                          col_names = c("term",
                                        "b_min","se_min","t_min","lci_min","uci_min","p_min",
                                        "b_max","se_max","t_max","lci_max","uci_max","p_max"))
   
   print(tmp)
-  print(Hmisc::describe(tmp))
+  #print(Hmisc::describe(tmp))
   
   ## Make variables numeric
+  print("Making variables numeric")
   
   tmp$b_min <- as.numeric(tmp$b_min)
   tmp$se_min <- as.numeric(tmp$se_min)
@@ -82,12 +83,12 @@ for (f in files) {
                              values_from = c("min","max"),
                              names_glue = "{term}_{.value}")
     
-  ## Merge info and estinates
-  
+  ## Merge info and estimates
+  print("Add info to estimates")
   tmp <- merge(tmp, info, by = "source")
   
   ## Add median follow up
-
+  print("Add median follow up")
   f <- gsub("_cox_model_","_stata_median_fup_",f)
   f <- gsub(".txt",".csv",f)
   fup <- readr::read_csv(file = paste0("output/",f))

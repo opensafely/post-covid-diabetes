@@ -217,7 +217,7 @@ table_2_subgroups_output <- function(cohort_name, group){
     analyses_of_interest$day_0_event_counts[i] <- table2_output[[5]]
     analyses_of_interest$total_covid19_cases[i] <- table2_output[[6]]
     analyses_of_interest$N_population_size[i] <- table2_output[[7]]
-    analyses_of_interest$person_days_total_exposed_to_day_197 <- table2_output[[8]]
+    analyses_of_interest$person_days_total_exposed_to_day_197[i] <- table2_output[[8]]
   
     
     setnames(survival_data,

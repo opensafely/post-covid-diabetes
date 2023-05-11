@@ -126,6 +126,11 @@ df <- df %>% group_by(source) %>%
     any(events <= 5) ~ "[Redacted]",
     TRUE ~ as.character(events)))
 
+df <- df %>% mutate(across(c("median_tte","value"),as.character))
+
+df$median_tte <- ifelse(df$events == "[Redacted]", "[Redacted]", df$median_tte)
+df$value <- ifelse(df$events == "[Redacted]", "[Redacted]", df$value)
+
 readr::write_csv(df, "output/stata_output.csv")
 # df <- tidyr::pivot_wider(df, 
 #                          id_cols = c("source","term", "model","median_tte","events"),

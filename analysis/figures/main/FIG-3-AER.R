@@ -10,8 +10,10 @@ library(RColorBrewer)
 library(gridExtra)
 #library(plyr)
 
-aer_output_dir <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/AER/"
-aer_output_fig <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/"
+# Set file locations
+date <- "18_05_2023"
+aer_output_dir <- paste0("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/AER/compiled_results_for_plotting/",date,"/")
+#aer_output_fig <- "/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/"
 
 event_of_interest <- c("t2dm")
 cohort_name <- c("prevax", "vax","unvax")
@@ -20,11 +22,11 @@ active_analyses <- read_rds("lib/active_analyses.rds")
 active_analyses$outcome_variable <- gsub("out_date_","",active_analyses$outcome_variable)
 
 #Load data
-lifetables <- readr::read_csv(paste0(aer_output_dir,"/AER_compiled_results_extended.csv"))
+lifetables <- readr::read_csv(paste0(aer_output_dir,"/AER_compiled_results.csv"))
 
 #???? Do we need to do this ?????
-lifetables$excess_risk_main <- lifetables$excess_risk_main *100
-lifetables$excess_risk_subgroup <- lifetables$excess_risk_subgroup *100
+lifetables$excess_risk <- lifetables$excess_risk *100
+#lifetables$excess_risk_subgroup <- lifetables$excess_risk_subgroup *100
 #-------------------------Make event names 'nice' ------------------------------
 lifetables <- lifetables %>% left_join(active_analyses %>% select(outcome, outcome_variable), by = c("event"="outcome_variable"))
 lifetables$outcome <- factor(lifetables$outcome, levels = c("type 2 diabetes"))
@@ -66,9 +68,6 @@ lifetables$grouping_name[lifetables$grouping_name == "type 2 diabetes - Pre-vacc
 lifetables$grouping_name[lifetables$grouping_name == "type 2 diabetes - Vaccinated"] <- "Type 2 diabetes - Vaccinated"
 lifetables$grouping_name[lifetables$grouping_name == "type 2 diabetes - Unvaccinated"] <- "Type 2 diabetes - Unvaccinated"
 
-
-
-
 #Set factor levels
 lifetables$grouping_name <- factor(lifetables$grouping_name, levels = c("Type 2 diabetes - Pre-vaccination",
                                                                         "Type 2 diabetes - Vaccinated",
@@ -88,63 +87,17 @@ lifetables <- lifetables %>% filter(days <= 196)
 # Change days to weeks
 lifetables$weeks <- lifetables$days /7
 
-#Filter the lifetables to non-NA results split by using the HRs from the overall results (hr_main)
-# & using the age/sex HRs (hr_subgroup)
-lifetables_main <- lifetables %>% filter(!is.na(excess_risk_main))
-lifetables_subgroup <- lifetables %>% filter(!is.na(excess_risk_subgroup))
+# Order variables
+lifetables$agegroup <- factor(lifetables$agegroup, levels=c("Age group: 18-39","Age group: 40-59","Age group: 60-79","Age group: 80-110","Combined"))
 
-#Plot for any position events using reduced time periods and overall HRs
+lifetables$sex <- factor(lifetables$sex, levels=c("Sex: Male","Sex: Female"))
 
-# for(outcome_position in c("any_position","primary_position")){
-#   
-#   if(outcome_position == "any_position"){
-#     df=lifetables_main %>% filter(!str_detect(event, "primary_position") & time_points == "reduced")
-#   }else{
-#     df=lifetables_main %>% filter(str_detect(event, "primary_position") & time_points == "reduced")
-#   }
+lifetables$colour <- factor(lifetables$colour, levels=c("#006d2c","#31a354","#74c476","#bae4b3","#000000"))
 
-df=lifetables_main %>% filter(time_points == "reduced")
+lifetables$linetype <- factor(lifetables$linetype, levels=c("solid","dotted"))
 
-agegroup_levels <-c()
-for(i in c("Age group: 18-39","Age group: 40-59","Age group: 60-79","Age group: 80-110","Combined")){
-  levels_available <- unique(df$agegroup)
-  if(i %in% levels_available){
-    agegroup_levels <- append(agegroup_levels,i)
-  }
-}
+df <- lifetables 
 
-df$agegroup <- factor(df$agegroup, levels=agegroup_levels)
-
-#Set sex levels as factor
-sex_levels <-c()
-for(i in c("Sex: Male","Sex: Female")){
-  levels_available <- unique(df$sex)
-  if(i %in% levels_available){
-    sex_levels <- append(sex_levels,i)
-  }
-}
-
-df$sex <- factor(df$sex, levels=sex_levels)
-
-#Set colour levels as factor
-colour_levels <-c()
-for(i in c("#006d2c","#31a354","#74c476","#bae4b3","#000000")){
-  levels_available <- unique(df$colour)
-  if(i %in% levels_available){
-    colour_levels <- append(colour_levels,i)
-  }
-} 
-df$colour <- factor(df$colour, levels=colour_levels)
-
-#Set linetype levels as factor
-linetype_levels <-c()
-for(i in c("solid","dotted")){
-  levels_available <- unique(df$linetype)
-  if(i %in% levels_available){
-    linetype_levels <- append(linetype_levels,i)
-  }
-} 
-df$linetype <- factor(df$linetype, levels=linetype_levels)
 
 
 #Test to see error bars as in dummy data the CI is too small so can't see it
@@ -157,7 +110,7 @@ df$x_max <- ifelse(df$cohort == "prevax",30,df$x_max)
 df$x_max <- ifelse(df$cohort != "prevax",30,df$x_max)
 
 ggplot2::ggplot(data = df, 
-                mapping = ggplot2::aes(x = weeks, y = excess_risk_main, color = agegroup, shape = agegroup, fill = agegroup, linetype = sex)) +
+                mapping = ggplot2::aes(x = weeks, y = excess_risk, color = agegroup, shape = agegroup, fill = agegroup, linetype = sex)) +
   #ggplot2::geom_hline(colour = "#A9A9A9") +
   #geom_ribbon(aes(ymin = CIp.low, ymax = CIp.high), alpha = 0.1)+
   ggplot2::geom_line() +
@@ -184,7 +137,7 @@ ggplot2::ggplot(data = df,
   geom_blank(aes(x = x_min)) +
   geom_blank(aes(x = x_max))
 
-ggsave(paste0(aer_output_fig, "/FIG-3-AER.png"), height = 210, width = 297, unit = "mm", dpi = 600, scale = 1)
+#ggsave(paste0(aer_output_fig, "/FIG-3-AER.png"), height = 210, width = 297, unit = "mm", dpi = 600, scale = 1)
 
 
 

@@ -38,8 +38,6 @@ for (f in files) {
                                        "b_min","se_min","t_min","lci_min","uci_min","p_min",
                                        "b_max","se_max","t_max","lci_max","uci_max","p_max"))
   
-  #print(tmp)
-  #print(Hmisc::describe(tmp))
   
   ## Make variables numeric
   print("Making variables numeric")
@@ -94,6 +92,7 @@ for (f in files) {
   f <- gsub(".txt",".csv",f)
   fup <- readr::read_csv(file = paste0("output/",f))
   tmp <- merge(tmp, fup, by = "term", all = TRUE)
+  tmp <- tmp[!is.na(tmp$source),]
   
   ## Append to master dataframe
   print("Append to master dataframe")  
@@ -120,18 +119,7 @@ df <- tidyr::pivot_longer(df,
                           names_prefix = "name",
                           values_to = "value")
 print("Pivot wider")
-# Add in redaction
-df <- df %>% group_by(source) %>%
-  mutate(events = case_when(
-    any(events <= 5) ~ "[Redacted]",
-    TRUE ~ as.character(events)))
 
-df <- df %>% mutate(across(c("median_tte","value"),as.character))
-
-df$median_tte <- ifelse(df$events == "[Redacted]", "[Redacted]", df$median_tte)
-df$value <- ifelse(df$events == "[Redacted]", "[Redacted]", df$value)
-
-df <- df %>% filter(!is.na(source))
 df <- tidyr::pivot_wider(df,
                          id_cols = c("source","term", "model","median_tte","events"),
                          names_from = "stat",
@@ -154,6 +142,18 @@ df <- dplyr::rename(df,
                     "median_time_to_event" = "median_tte",
                     "N_outcomes_episode" = "events",
                     "N_outcomes" = "outcomes")
+
+
+
+# Add in redaction
+df <- df %>% group_by(source) %>%
+  mutate(N_outcomes_episode = case_when(
+    any(N_outcomes_episode <= 10) ~ "[Redacted]",
+    TRUE ~ as.character(N_outcomes_episode)))
+
+df <- df %>% mutate(across(where(is.numeric), as.character))
+
+df[which(df$N_outcomes_episode == "[Redacted]"),c("estimate","conf_low","conf_high","se_ln_hr","median_time_to_event","N_sample_size","N_outcomes")] <- "[Redacted]"
 
 # Save output ------------------------------------------------------------------
 readr::write_csv(df, "output/stata_output.csv")

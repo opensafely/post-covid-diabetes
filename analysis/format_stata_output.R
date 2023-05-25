@@ -131,30 +131,29 @@ df <- df %>% mutate(across(c("median_tte","value"),as.character))
 df$median_tte <- ifelse(df$events == "[Redacted]", "[Redacted]", df$median_tte)
 df$value <- ifelse(df$events == "[Redacted]", "[Redacted]", df$value)
 
+df <- df %>% filter(!is.na(source))
+df <- tidyr::pivot_wider(df,
+                         id_cols = c("source","term", "model","median_tte","events"),
+                         names_from = "stat",
+                         values_from = "value")
+
+# Make names match R output ----------------------------------------------------
+
+df <- df[df$model=="max" | (df$model=="min" & df$term %in% c(unique(df$term)[grepl("days",unique(df$term))],
+                                                             "1.sex","2.sex","age_spline1","age_spline2")),]
+
+df <- df[order(df$source, df$model),
+         c("source","term","model","b","lci","uci","se","median_tte","events","subjects","outcomes")]
+
+df <- dplyr::rename(df,
+                    "estimate" = "b",
+                    "conf_low" = "lci",
+                    "conf_high" = "uci",
+                    "se_ln_hr" = "se",
+                    "N_sample_size" = "subjects",
+                    "median_time_to_event" = "median_tte",
+                    "N_outcomes_episode" = "events",
+                    "N_outcomes" = "outcomes")
+
+# Save output ------------------------------------------------------------------
 readr::write_csv(df, "output/stata_output.csv")
-# df <- tidyr::pivot_wider(df, 
-#                          id_cols = c("source","term", "model","median_tte","events"),
-#                          names_from = "stat", 
-#                          values_from = "value")
-# 
-# # Make names match R output ----------------------------------------------------
-# 
-# df <- df[df$model=="max" | (df$model=="min" & df$term %in% c(unique(df$term)[grepl("days",unique(df$term))],
-#                                                              "1.sex","2.sex","age_spline1","age_spline2")),]
-# 
-# df <- df[order(df$source, df$model),
-#          c("source","term","model","b","lci","uci","se","median_tte","events","subjects","outcomes")]
-# 
-# df <- dplyr::rename(df,
-#                     "estimate" = "b",
-#                     "conf_low" = "lci",
-#                     "conf_high" = "uci",
-#                     "se_ln_hr" = "se",
-#                     "N_sample_size" = "subjects",
-#                     "median_time_to_event" = "median_tte",
-#                     "N_outcomes_episode" = "events",
-#                     "N_outcomes" = "outcomes")
-# 
-# # Save output ------------------------------------------------------------------
-# 
-# readr::write_csv(df, "output/stata_output.csv")

@@ -42,7 +42,9 @@ analyses_to_run <- analyses_to_run %>%
                                                                               ifelse(outcome_variable == "out_date_t2dm_unvax_sens" & cohort == "unvax", "TRUE",
                                                                                   ifelse(outcome_variable == "out_date_t2dm_extended_follow_up", "TRUE",
                                                                                          ifelse(outcome_variable == "out_date_t2dm_follow_extended_follow_up", "TRUE",
-                                                                          "FALSE"))))))))))))))
+                                                                                                ifelse(outcome_variable == "out_date_t2dm_pd_no_extended_follow_up" & cohort == "prevax", "TRUE",
+                                                                                                       ifelse(outcome_variable == "out_date_t2dm_obes_no_extended_follow_up"& cohort == "prevax", "TRUE",
+                                                                          "FALSE"))))))))))))))))
 
 
 cohort_to_run_all <- c("prevax", "vax", "unvax")

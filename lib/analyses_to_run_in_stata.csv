@@ -62,9 +62,3 @@ t2dm_pd_no_extended_follow_up,prevax,non_hospitalised,reduced,FALSE,TRUE
 t2dm_pd_no_extended_follow_up,prevax,main,day_zero_reduced,TRUE,TRUE
 t2dm_pd_no_extended_follow_up,prevax,hospitalised,day_zero_reduced,TRUE,TRUE
 t2dm_pd_no_extended_follow_up,prevax,non_hospitalised,day_zero_reduced,TRUE,TRUE
-t2dm_obes_no_extended_follow_up,prevax,main,reduced,FALSE,TRUE
-t2dm_obes_no_extended_follow_up,prevax,hospitalised,reduced,FALSE,TRUE
-t2dm_obes_no_extended_follow_up,prevax,non_hospitalised,reduced,FALSE,TRUE
-t2dm_obes_no_extended_follow_up,prevax,main,day_zero_reduced,TRUE,TRUE
-t2dm_obes_no_extended_follow_up,prevax,hospitalised,day_zero_reduced,TRUE,TRUE
-t2dm_obes_no_extended_follow_up,prevax,non_hospitalised,day_zero_reduced,TRUE,TRUE

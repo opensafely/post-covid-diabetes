@@ -194,7 +194,10 @@ stage2 <- function(cohort_name, covid_history, group) {
 
   #binary_cov <- colnames(input)[grep("cov_bin", colnames(input))]
   binary_cov <- covar_names[grep("cov_bin", covar_names)]
-  binary_cov_table <- crossing(covar_names[grep("cov_bin", covar_names)], c("TRUE","FALSE"))
+  if(cohort_name == "prevax" & group == "diabetes"){
+    binary_cov <- append(binary_cov, c("has_4mth_follow_up","has_4mth_follow_up_extended"))
+  }
+  binary_cov_table <- crossing(binary_cov, c("TRUE","FALSE"))
   colnames(binary_cov_table) <- c("Covariate","Covariate_level")
   
   # Base table

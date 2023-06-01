@@ -574,15 +574,6 @@ actions_list <- splice(
       stata_output = "output/stata_output.csv")
   ),
   
-  #comment("Format Stata output NEWER"),
-  action(
-    name = "format_stata_output_new",
-    run = "r:latest analysis/mediantte_and_events.R",
-    needs = as.list(paste0("stata_cox_model_",analyses_to_run_stata$outcome,"_",analyses_to_run_stata$subgroup,"_",analyses_to_run_stata$cohort,"_",analyses_to_run_stata$time_periods,"_day0",analyses_to_run_stata$day0,"_extf",analyses_to_run_stata$extf)),
-    moderately_sensitive = list(
-      stata_output = "output/mediantte_and_events.csv")
-  ),
-  
   #comment("Format hazard ratio output")
   action(
     name = "format_hazard_ratios",
@@ -606,22 +597,9 @@ actions_list <- splice(
                  "Analysis_cox_t2dm_obes_extended_follow_up_prevax", "Analysis_cox_t2dm_obes_no_extended_follow_up_prevax",
                  "Analysis_cox_t2dm_unvax_sens_unvax", "Analysis_cox_t1dm_unvax_sens_unvax", "Analysis_cox_otherdm_unvax_sens_unvax", "Analysis_cox_gestationaldm_unvax_sens_unvax"),
     moderately_sensitive = list(
-      hr_output = "output/review/model/hr_output_formatted.csv",
-      hr_output_no_events = "output/review/model/hr_output_formatted_no_event_counts.csv",
-      table2_output = "output/review/model/table2_output_formatted_no_hrs.csv",
-      R_event_counts = "output/review/model/R_event_count_output.csv",
-      R_event_counts_day_zero = "output/review/model/R_event_count_day_zero_output.csv")
-  ),
-  
-  action(
-    name = "check_table2_matches_cox_event_counts",
-    run = "r:latest analysis/descriptives/check_table2_matches_cox_event_counts.R",
-    needs = c("stage4_table_2_prevax", "stage4_table_2_vax", "stage4_table_2_unvax",
-              paste0("Analysis_cox_",analyses_to_run$outcome,"_",analyses_to_run$cohort)),
-    moderately_sensitive = list(
-      check_table2_cox_event_counts = "output/not-for-review/descriptives/table2_cox_model_event_counts_comparison.csv"
-    )
-    )
+      hr_output = "output/review/model/R_hr_output.csv",
+      event_counts = "output/review/model/R_event_count_output.csv")
+  )
 )
 
 ## combine everything ----

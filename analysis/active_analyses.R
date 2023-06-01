@@ -130,7 +130,7 @@ df <- df %>% mutate(cohort = case_when(outcome == "type 2 diabetes - recovery" ~
                                               TRUE ~ as.character(cohort)),
                     cohort = case_when(outcome == "type 2 diabetes - post_recovery" ~ "prevax",
                                        TRUE ~ as.character(cohort)),
-                    cohort = case_when(outcome == "type 2 diabetes - 4_mnth_follow" ~ "prevax",
+                    cohort = case_when(outcome == "type 2 diabetes - persistant" ~ "prevax",
                                       TRUE ~ as.character(cohort)),
                     cohort = case_when(grepl("extended_follow_up", outcome_variable) ~ "prevax",
                                        TRUE ~ as.character(cohort))) %>%

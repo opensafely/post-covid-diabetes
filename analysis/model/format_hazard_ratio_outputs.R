@@ -6,112 +6,10 @@ library(stringr)
 library(data.table)
 library(tidyverse)
 
-fs::dir_create(here::here("output", "not-for-review"))
-fs::dir_create(here::here("output", "review", "model"))
-fs::dir_create(here::here("output", "review", "descriptives"))
 fs::dir_create(here::here("output", "review", "model","prevax"))
 fs::dir_create(here::here("output", "review", "model","vax"))
 fs::dir_create(here::here("output", "review", "model","unvax"))
 
-# Read in results from stata output
-proj_dir <- getwd()
-stata_results_dir <- "output"
-r_results_dir_prevax <- "output/review/model/prevax"
-r_results_dir_vax <- "output/review/model/prevax"
-r_results_dir_unvax <- "output/review/model/prevax"
-output_dir <- "output/review/model"
-
-print(getwd())
-
-df <- read.csv(paste0(stata_results_dir,"/stata_output.csv"))
-# df_prevax <- read.csv(paste0(results_dir,"/stata_output_prevax.csv"))
-# df <- rbind(df, df_prevax)
-# df$X <- NULL
-# 
-# rm(df_prevax)
-
-active_analyses <- read_rds("lib/active_analyses.rds")
-
-## Transpose active_analyses to single column so can filter to analysis models to run
-subgroup <- as.data.frame(t(active_analyses[1,]))
-subgroup$subgroup <- row.names(subgroup)
-colnames(subgroup) <- c("run","subgroup")
-subgroup<- subgroup %>% filter((run=="TRUE" | run == "FALSE") & subgroup != "active" ) 
-rownames(subgroup) <- NULL
-subgroup <- subgroup %>% select(!run)
-subgroup$subgroup <- paste0("_",subgroup$subgroup)
-
-# Get cohort
-df$cohort <- ifelse(grepl("unvax",df$source),"unvax", ifelse(grepl("prevax",df$source),"prevax","vax"))
-unique(df$cohort)
-
-# Get outcome event name
-df$event <- df$source
-df$event <- gsub("input_sampled_data_","",df$event)
-df$event <- sub('\\_unvax.*', '', df$event)
-df$event <- sub('\\_vax.*', '', df$event)
-df$event <- sub('\\_prevax.*', '', df$event)
-df$event <- stri_replace_all_regex(df$event,
-                                   pattern=subgroup$subgroup,
-                                   replacement=c(""),
-                                   vectorize=FALSE)
-unique(df$event)
-
-# Get subgroup
-df$subgroup <- df$source
-df$subgroup <- str_replace(df$subgroup,paste0("input_sampled_data_", df$event,"_"),"")
-df$subgroup <- sub('\\_unvax.*', '', df$subgroup)
-df$subgroup <- sub('\\_vax.*', '', df$subgroup)
-df$subgroup <- sub('\\_prevax.*', '', df$subgroup)
-unique(df$subgroup)
-
-# Rename model
-df$model <- ifelse(df$model == "max", "mdl_max_adj","mdl_age_sex_region")
-
-#Fomat columns
-df <- df %>%
-  dplyr::mutate(time_points = ifelse(grepl("day0FALSE", source), "reduced",
-                                     ifelse(grepl("day0TRUE", source), "day_zero_reduced", NA)))
-
-# df$time_points <- "reduced"
-df$results_fitted <- "fitted_successfully"
-df$source <- NULL
-df$N_outcomes <- NULL
-
-#Exponentiate results
-df$estimate <- exp(df$estimate)
-df$conf_low <- exp(df$conf_low)
-df$conf_high <- exp(df$conf_high)
-
-#Some results have been run twice (once in stata and once in R so remove duplicates)
-#Only use results that are in the analyses_to_run_in_stata files
-
-stata_analyses <- read_csv("lib/analyses_to_run_in_stata.csv")
-# stata_analyses_0 <- read_csv("lib/analyses_to_run_in_stata_day0.csv")
-# stata_analyses_extend <- read_csv("lib/analyses_to_run_in_stata_extended.csv")
-# 
-# stata_analyses <- do.call("rbind", list(stata_analyses, stata_analyses_0, stata_analyses_extend))
-
-stata_analyses <- stata_analyses %>% dplyr::rename(time_points=time_periods,
-                                                   event = outcome)
-
-stata_analyses$subgroup <- ifelse(stata_analyses$subgroup=="hospitalised","covid_pheno_hospitalised",stata_analyses$subgroup)
-stata_analyses$subgroup <- ifelse(stata_analyses$subgroup=="non_hospitalised","covid_pheno_non_hospitalised",stata_analyses$subgroup)
-
-df <- merge(df,stata_analyses, by=c("event","subgroup","cohort","time_points"))
-
-#Previous time period days have been added to the median which hasn't been done in the R HRs and gets done
-# in the figure scripts. Removing here so that everything is the same
-# df$remove_from_median <- NA
-# df$remove_from_median <- ifelse(grepl("days",df$term),df$term,df$remove_from_median)
-# df$remove_from_median <- sub("days","",df$remove_from_median)
-# df$remove_from_median <- as.numeric(sub("\\_.*","",df$remove_from_median))
-# 
-# df$median_follow_up <- df$median_follow_up - df$remove_from_median
-
-df$source <- "stata"
-
-print("Stata part of script ran successfully")
 #Read in R HRs
 
 # PREVAX 
@@ -121,13 +19,8 @@ print(getwd())
 hr_files=list.files(path = "output/review/model/prevax/", pattern = "to_release")
 hr_files=hr_files[endsWith(hr_files,".csv")]
 hr_files=paste0("output/review/model/prevax/", hr_files)
-# hr_file_paths <- pmap(list(hr_files),
-#                       function(fpath){
-#                         df <- fread(fpath)
-#                         return(df)
-#                       })
 temp <- lapply(hr_files, read_csv)
-estimates <- rbindlist(temp, fill=TRUE)
+estimates_prevax <- rbindlist(temp, fill=TRUE)
 
 print("prevax estimates read successfully")
 
@@ -153,158 +46,46 @@ estimates_unvax <- rbindlist(temp, fill=TRUE)
 
 print("unvax estimates read successfully")
 
-estimates <- rbindlist(list(estimates, estimates_vax, estimates_unvax), fill = TRUE)
+estimates <- rbindlist(list(estimates_prevax, estimates_vax, estimates_unvax), fill = TRUE)
 
 estimates$source <- "R"
 
-write.csv(estimates, file = paste0("output/review/model/hr_output_formatted_no_event_counts.csv"),row.names = FALSE)
+estimates$redacted_results <- factor(estimates$redacted_results, levels = c("Redacted results",
+                                                                            "No redacted results"))
+estimates <- estimates[order(estimates$redacted_results),]
 
-df <- df %>% select(intersect(colnames(estimates),colnames(df)))
-# Don't add Stata results for now'
-
-# estimates <- rbind(estimates, df, fill = TRUE)
-
-rm(df)
-
-
-#If any of the models has fitted unsuccessfully, class all models as fitted unsuccessfully
-# estimates <- estimates %>%
-#   group_by(event,cohort,subgroup,time_points, source) %>%
-#   dplyr::mutate(results_fitted = case_when(
-#     any(results_fitted == "fitted_unsuccessfully") ~ "fitted_unsuccessfully",
-#     TRUE ~ "fitted_successfully")) %>% ungroup()
-
-# remove any models that were not fitted 
-
-estimates <- estimates %>%
-  dplyr::filter(results_fitted == "fitted_successfully")
-
-#Filter to columns and terms of interest
-estimates <- estimates %>% filter(term %in% term[grepl("^days",term)]) %>%
-  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,median_follow_up, model, source)
-
-#Set any redacted values to NA
-estimates <- estimates %>%
-  mutate(across(c("estimate","conf_low","conf_high","median_follow_up"), ~ na_if(., "[Redacted]")))
-
-estimates <- estimates %>% dplyr::mutate(across(c(estimate,conf_low,conf_high,median_follow_up),as.numeric))
-
-#Calculate median follow-up for plotting
-estimates$median_follow_up <- as.numeric(estimates$median_follow_up)
-estimates$add_to_median <- sub("days","",estimates$term)
-estimates$add_to_median <- as.numeric(sub("\\_.*","",estimates$add_to_median))
-
-estimates$median_follow_up <- ((estimates$median_follow_up + estimates$add_to_median)-1)/7
-estimates$add_to_median <- NULL
-
-estimates <- as.data.frame(estimates)
-
-# df <- estimates %>% select(term,event,subgroup,cohort, time_points,model)
-# df <- as.data.frame(df)
-# df <- df[duplicated(df),]
-# 
-# df <- merge(estimates,df)
-# df <- df %>% filter(source == "stata")
-# 
-# df <- df[!(df$cohort == "vax" & df$subgroup == "covid_pheno_hospitalised"),] 
-# 
-
-# estimates <- estimates %>% anti_join(df)
-
-#Left join event counts
-
-setwd("output/review/descriptives/")
-temp <- list.files(pattern="table2")
-table2_all <- lapply(temp, read_csv)
-table2  <- do.call(rbind , table2_all)
-
-table2 <- table2 %>% dplyr::rename(cohort = cohort_to_run)
-table2 <- table2 %>% dplyr::select(event, subgroup, cohort, post_exposure_event_count)
-table2$event <- gsub("out_date_","",table2$event)
-
-estimates2 <- estimates %>% left_join(table2)
-
-setwd(proj_dir)
-
-# save  table 2 and estimates to see whats going on
-
-# write.csv(estimates, file = paste0("output/review/model/hr_output_formatted_no_event_counts.csv"),row.names = FALSE)
-write.csv(table2, file = paste0("output/review/model/table2_output_formatted_no_hrs.csv"),row.names = FALSE)
-
-write.csv(estimates2, file = paste0("output/review/model/hr_output_formatted.csv"),row.names = FALSE)
-
-
-# EVENT COUNTS ------------------------------------------------------------
+write.csv(estimates, file = paste0("output/review/model/R_hr_output.csv"),row.names = FALSE)
 
 # Read in event count files
 
-#prevax 
-
-event_counts_prevax=list.files(path = "output/review/model/prevax", pattern = "suppressed_compiled_event_counts")
+# Event counts prevax
+event_counts_prevax=list.files(path = "output/review/model/prevax/", pattern = "suppressed_compiled_event_counts")
 event_counts_prevax=event_counts_prevax[endsWith(event_counts_prevax,".csv")]
-event_counts_prevax=paste0("output/review/model/prevax/", event_counts_prevax)
-event_counts_prevax_file_paths <- pmap(list(event_counts_prevax),
-                                function(fpath){
-                                  df <- fread(fpath)
-                                  return(df)
-                                })
-event_counts_prevax_df <- rbindlist(event_counts_prevax_file_paths, fill=TRUE)
+event_counts_prevax=paste0("output/review/model/prevax/","/", event_counts_prevax)
 
-# vax
+temp <- lapply(event_counts_prevax, read_csv)
+event_counts_prevax <- rbindlist(temp, fill=TRUE)
 
-event_counts_vax=list.files(path = "output/review/model/vax", pattern = "suppressed_compiled_event_counts")
+# Event counts vax
+event_counts_vax=list.files(path = "output/review/model/vax/", pattern = "suppressed_compiled_event_counts")
 event_counts_vax=event_counts_vax[endsWith(event_counts_vax,".csv")]
-event_counts_vax=paste0("output/review/model/vax/", event_counts_vax)
-event_counts_vax_file_paths <- pmap(list(event_counts_vax),
-                                       function(fpath){
-                                         df <- fread(fpath)
-                                         return(df)
-                                       })
-event_counts_vax_df <- rbindlist(event_counts_vax_file_paths, fill=TRUE)
+event_counts_vax=paste0("output/review/model/vax/","/", event_counts_vax)
 
-# unvax
+temp <- lapply(event_counts_vax, read_csv)
+event_counts_vax <- rbindlist(temp, fill=TRUE)
 
-event_counts_unvax=list.files(path = "output/review/model/unvax", pattern = "suppressed_compiled_event_counts")
+# Event counts unvax
+event_counts_unvax=list.files(path = "output/review/model/unvax/", pattern = "suppressed_compiled_event_counts")
 event_counts_unvax=event_counts_unvax[endsWith(event_counts_unvax,".csv")]
-event_counts_unvax=paste0("output/review/model/unvax/", event_counts_unvax)
-event_counts_unvax_file_paths <- pmap(list(event_counts_unvax),
-                                    function(fpath){
-                                      df <- fread(fpath)
-                                      return(df)
-                                    })
-event_counts_unvax_df <- rbindlist(event_counts_unvax_file_paths, fill=TRUE)
+event_counts_unvax=paste0("output/review/model/unvax/","/", event_counts_unvax)
 
-# RBIND
+temp <- lapply(event_counts_unvax, read_csv)
+event_counts_unvax <- rbindlist(temp, fill=TRUE)
 
-event_counts_df <- rbindlist(list(event_counts_prevax_df, event_counts_vax_df, event_counts_unvax_df), fill = TRUE)
+event_counts <- rbindlist(list(event_counts_prevax, event_counts_vax, event_counts_unvax), fill = TRUE)
 
-event_counts_df$redacted_results <- factor(event_counts_df$redacted_results, levels = c("Redacted results",
+event_counts$redacted_results <- factor(event_counts$redacted_results, levels = c("Redacted results",
                                                                                         "No redacted results"))
-event_counts_df <- event_counts_df[order(event_counts_df$redacted_results),]
+event_counts <- event_counts[order(event_counts$redacted_results),]
 
-write.csv(event_counts_df,paste0(output_dir,"/R_event_count_output.csv") , row.names=F)
-
-
-#Get event counts by time period for day zero analyses
-event_counts_df$events_total <- as.numeric(event_counts_df$events_total)
-event_counts_day_zero <- event_counts_df %>% filter(time_points == "day_zero_reduced")%>%
-  select(event,cohort,subgroup,time_points,expo_week,events_total)
-
-
-tmp_hosp <- event_counts_day_zero %>% filter(subgroup == "main") %>%
-  left_join(event_counts_day_zero %>% filter(subgroup == "covid_pheno_non_hospitalised") %>%
-              select(!subgroup)%>%
-              rename(events_total_non_hosp = events_total))
-
-tmp_hosp$events_total_hosp <- tmp_hosp$events_total - tmp_hosp$events_total_non_hosp
-tmp_hosp$events_total <- NULL
-tmp_hosp$events_total_non_hosp <- NULL
-
-tmp_hosp$subgroup <- "covid_pheno_hospitalised"
-tmp_hosp <- rename(tmp_hosp, events_total=events_total_hosp)
-
-event_counts_day_zero <- rbind(event_counts_day_zero, tmp_hosp)
-
-write.csv(event_counts_day_zero,paste0(output_dir,"/R_event_count_day_zero_output.csv") , row.names=F)
-
-
+write.csv(event_counts,"output/review/model/R_event_count_output.csv", row.names=F)

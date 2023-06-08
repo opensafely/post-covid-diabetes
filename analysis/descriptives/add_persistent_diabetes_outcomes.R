@@ -25,28 +25,26 @@ rm(list=ls())
   
 tmp <- arrow::read_feather(file = paste0("output/input_prevax_diabetes_analysis.feather"))
 tmp <- tmp %>% select(patient_id,out_count_insulin_snomed_4mnths, out_count_antidiabetic_drugs_snomed_4mnths, 
-                        out_count_nonmetform_drugs_snomed_4mnths,out_num_max_hba1c_mmol_4mnths)
+                        out_count_nonmetform_drugs_snomed_4mnths,out_num_max_hba1c_mmol_4mnths,t2dm_follow_up_end,t2dm_extended_follow_up_follow_up_end)
+tmp$t2dm_follow_up_end <- as.Date(tmp$t2dm_follow_up_end)
+tmp$t2dm_extended_follow_up_follow_up_end <- as.Date(tmp$t2dm_extended_follow_up_follow_up_end)
 
 input <- readr::read_rds(file.path("output", paste0("input_prevax_stage1_diabetes.rds")))
 input[c("has_4mth_follow_up","has_4mth_follow_up_extended","out_date_t2dm_follow","out_date_t2dm_follow_extended_follow_up" )] <- NULL
 input <- input %>% left_join(tmp, by = c("patient_id"="patient_id"))
 rm(tmp)
   
-input$cohort_end_date_extended <- as.Date("2021-12-14")
-input$end_date_extended <- apply(input[,c("end_date","cohort_end_date_extended")],1, min,na.rm=TRUE)
-input$end_date_extended <- as.Date(input$end_date_extended)
-  
 # Get those with 4 months follow up (those with an end date >= 4 months from t2dm)
 input <- input %>% 
   rowwise() %>%
-  mutate(start_end_diff = as.numeric(difftime(end_date, out_date_t2dm, units = "days"))) %>%
+  mutate(start_end_diff = as.numeric(difftime(t2dm_follow_up_end, out_date_t2dm, units = "days"))) %>%
   ungroup() %>%
   mutate(start_end_diff_months = start_end_diff/30.417) %>%
   mutate(has_4mth_follow_up = ifelse(start_end_diff_months < 4 | is.na(start_end_diff_months), FALSE, TRUE))
 
 input <- input %>% 
   rowwise() %>%
-  mutate(start_end_diff_extended = as.numeric(difftime(end_date_extended, out_date_t2dm_extended_follow_up, units = "days"))) %>%
+  mutate(start_end_diff_extended = as.numeric(difftime(t2dm_extended_follow_up_follow_up_end, out_date_t2dm_extended_follow_up, units = "days"))) %>%
   ungroup() %>%
   mutate(start_end_diff_months_extended = start_end_diff_extended/30.417) %>%
   mutate(has_4mth_follow_up_extended = ifelse(start_end_diff_months_extended < 4 | is.na(start_end_diff_months_extended), FALSE, TRUE))
@@ -73,12 +71,12 @@ input$out_date_t2dm_follow <- as.Date(NA)
 input$out_date_t2dm_follow[which(input$persistent_diabetes == TRUE)] <- input$out_date_t2dm[which(input$persistent_diabetes == TRUE)]
 
 input$out_date_t2dm_follow_extended_follow_up <- as.Date(NA)
-input$out_date_t2dm_follow_extended_follow_up[which(input$persistent_diabetes == TRUE)] <- input$out_date_t2dm[which(input$persistent_diabetes == TRUE)]
+input$out_date_t2dm_follow_extended_follow_up[which(input$persistent_diabetes_extended_follow_up == TRUE)] <- input$out_date_t2dm[which(input$persistent_diabetes_extended_follow_up == TRUE)]
 
 input[c("out_count_insulin_snomed_4mnths", "out_count_antidiabetic_drugs_snomed_4mnths",
         "out_count_nonmetform_drugs_snomed_4mnths","out_num_max_hba1c_mmol_4mnths","start_end_diff","start_end_diff_months",
         "start_end_diff_extended","start_end_diff_months_extended","total_prescriptions","total_prescriptions_extended",
-        "persistent_diabetes","persistent_diabetes_extended_follow_up","cohort_end_date_extended","end_date_extended")] <- NULL
+        "persistent_diabetes","persistent_diabetes_extended_follow_up","t2dm_follow_up_end","t2dm_extended_follow_up_follow_up_end")] <- NULL
 
 # SAVE input file with new diabetes outcome added
 

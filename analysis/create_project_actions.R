@@ -59,6 +59,10 @@ analyses_to_run_stata <- read.csv("lib/analyses_to_run_in_stata.csv")
 analyses_to_run_stata$subgroup <- ifelse(analyses_to_run_stata$subgroup=="hospitalised","covid_pheno_hospitalised",analyses_to_run_stata$subgroup)
 analyses_to_run_stata$subgroup <- ifelse(analyses_to_run_stata$subgroup=="non_hospitalised","covid_pheno_non_hospitalised",analyses_to_run_stata$subgroup)
 
+# Obesity subgroup uses separate stata code
+analyses_to_run_stata_obesity <- analyses_to_run_stata %>% filter(outcome %in% c("t2dm_obes_no_extended_follow_up","t2dm_obes_no"))
+analyses_to_run_stata <- analyses_to_run_stata %>% filter(!outcome %in% c("t2dm_obes_no_extended_follow_up","t2dm_obes_no"))
+
 # create action functions ----
 
 ############################
@@ -183,6 +187,20 @@ stata_actions <- function(outcome, cohort, subgroup, time_periods, day0, extf){
     action(
       name = glue("stata_cox_model_{outcome}_{subgroup}_{cohort}_{time_periods}_day0{day0}_extf{extf}"),
       run = glue("stata-mp:latest analysis/cox_model.do input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods {day0} {extf}"),
+      needs = list(glue("Analysis_cox_{outcome}_{cohort}")),
+      moderately_sensitive = list(
+        medianfup = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_stata_median_fup_day0{day0}_extf{extf}.csv"),
+        stata_output = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_cox_model_day0{day0}_extf{extf}.txt")
+      )
+    )
+  )
+}
+
+stata_actions_obesity <- function(outcome, cohort, subgroup, time_periods, day0, extf){
+  splice(
+    action(
+      name = glue("stata_cox_model_{outcome}_{subgroup}_{cohort}_{time_periods}_day0{day0}_extf{extf}"),
+      run = glue("stata-mp:latest analysis/cox_model_obesity.do input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods {day0} {extf}"),
       needs = list(glue("Analysis_cox_{outcome}_{cohort}")),
       moderately_sensitive = list(
         medianfup = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_stata_median_fup_day0{day0}_extf{extf}.csv"),
@@ -522,11 +540,21 @@ actions_list <- splice(
                                                  extf = analyses_to_run_stata[i, "extf"])),
                 recursive = FALSE)),
   
+  splice(unlist(lapply(1:nrow(analyses_to_run_stata_obesity), 
+                       function(i) stata_actions_obesity(outcome = analyses_to_run_stata_obesity[i, "outcome"],
+                                                         subgroup = analyses_to_run_stata_obesity[i, "subgroup"],
+                                                         cohort = analyses_to_run_stata_obesity[i, "cohort"],
+                                                         time_periods = analyses_to_run_stata_obesity[i, "time_periods"],
+                                                         day0 = analyses_to_run_stata_obesity[i, "day0"],
+                                                         extf = analyses_to_run_stata_obesity[i, "extf"])),
+                recursive = FALSE)),
+  
   #comment("Format Stata output"),
   action(
     name = "format_stata_output",
     run = "r:latest analysis/format_stata_output.R",
-    needs = as.list(paste0("stata_cox_model_",analyses_to_run_stata$outcome,"_",analyses_to_run_stata$subgroup,"_",analyses_to_run_stata$cohort,"_",analyses_to_run_stata$time_periods,"_day0",analyses_to_run_stata$day0,"_extf",analyses_to_run_stata$extf)),
+    needs = as.list(c(paste0("stata_cox_model_",analyses_to_run_stata$outcome,"_",analyses_to_run_stata$subgroup,"_",analyses_to_run_stata$cohort,"_",analyses_to_run_stata$time_periods,"_day0",analyses_to_run_stata$day0,"_extf",analyses_to_run_stata$extf),
+                    paste0("stata_cox_model_",analyses_to_run_stata_obesity$outcome,"_",analyses_to_run_stata_obesity$subgroup,"_",analyses_to_run_stata_obesity$cohort,"_",analyses_to_run_stata_obesity$time_periods,"_day0",analyses_to_run_stata_obesity$day0,"_extf",analyses_to_run_stata_obesity$extf))),
     moderately_sensitive = list(
       stata_output = "output/stata_output.csv")
   ),

@@ -575,7 +575,7 @@ actions:
   ## Cox model for t2dm_follow - prevax 
 
   Analysis_cox_t2dm_follow_prevax:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_follow prevax FALSE
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_follow prevax TRUE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax

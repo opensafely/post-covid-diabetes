@@ -34,7 +34,7 @@ args = commandArgs(trailingOnly=TRUE)
 if(length(args)==0){
   event_name="t2dm"
   cohort="prevax"
-  data_only="TRUE"
+  data_only_variable="FALSE"
 }else{
   event_name  = args[[1]]
   cohort = args[[2]]
@@ -92,6 +92,11 @@ day_zero_analyses$reduced_timepoint <- paste0("day_zero_",day_zero_analyses$redu
 analyses_to_run <- rbind(analyses_to_run, day_zero_analyses)
 rm(day_zero_analyses)
 
+# Add in data only setting
+analyses_to_run$data_only <- data_only_variable
+analyses_to_run$data_only <- ifelse(analyses_to_run$event %in% c("t2dm","t2dm_extended_follow_up") 
+                                    & analyses_to_run$subgroup %in% c("main","covid_pheno_non_hospitalised","covid_pheno_hospitalised"), TRUE, analyses_to_run$data_only)
+
 # Source remainder of relevant files --------------------------------------------------------
 
 source(file.path(scripts_dir,paste0("03_01_cox_subgrouping.R"))) # Model specification
@@ -105,7 +110,8 @@ if(nrow(analyses_to_run>0)){
              subgroup=analyses_to_run$subgroup,           
              stratify_by_subgroup=analyses_to_run$stratify_by_subgroup,           
              stratify_by=analyses_to_run$strata,           
-             time_point=analyses_to_run$reduced_timepoint,       
+             time_point=analyses_to_run$reduced_timepoint,
+             data_only=analyses_to_run$data_only,
              input,covar_names,
              cuts_days_since_expo,cuts_days_since_expo_reduced,
              cuts_days_since_expo_day_zero,cuts_days_since_expo_reduced_day_zero,

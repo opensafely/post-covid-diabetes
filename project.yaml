@@ -399,7 +399,7 @@ actions:
   ## Cox model for t2dm - prevax 
 
   Analysis_cox_t2dm_prevax:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm prevax TRUE
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm prevax FALSE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax
@@ -421,7 +421,7 @@ actions:
   ## Cox model for t2dm - vax 
 
   Analysis_cox_t2dm_vax:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm vax TRUE
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm vax FALSE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax
@@ -443,7 +443,7 @@ actions:
   ## Cox model for t2dm - unvax 
 
   Analysis_cox_t2dm_unvax:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm unvax TRUE
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm unvax FALSE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax
@@ -1017,7 +1017,7 @@ actions:
 
   Analysis_cox_t2dm_extended_follow_up_prevax:
     run: r:latest analysis/model/01_cox_pipeline.R t2dm_extended_follow_up prevax
-      TRUE
+      FALSE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax

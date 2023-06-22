@@ -38,7 +38,7 @@ if(length(args)==0){
 }else{
   event_name  = args[[1]]
   cohort = args[[2]]
-  data_only = args[[3]]
+  data_only_variable = args[[3]]
 }
 
 # Specify directories ----------------------------------------------------------

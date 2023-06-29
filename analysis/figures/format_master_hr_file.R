@@ -6,8 +6,13 @@ library(stringr)
 library(data.table)
 library(tidyverse)
 
+# You will need to ensure that you have created a shortcut to the group-EHR sharepoint in your OneDrive folder to 
+# run this script
+# Change user ID  to your own
+staff_ID <- "zy21123"
+
 # Read in results from stata output
-df <- readr::read_csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/stata_output.csv")
+df <- readr::read_csv(paste0("C:/Users/",staff_ID,"/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/stata_output.csv"))
 
 active_analyses <- read_rds("lib/active_analyses.rds")
 
@@ -99,7 +104,7 @@ df$median_follow_up <- df$median_time_to_event - df$remove_from_median
 df$source <- "stata"
 
 #Read in R HRs
-estimates <- readr::read_csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/R_hr_output.csv")
+estimates <- readr::read_csv(paste0("C:/Users/",staff_ID,"/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/R_hr_output.csv"))
 estimates <- estimates %>% filter(model != "mdl_age_sex")
 estimates$source <- "R"
 
@@ -157,9 +162,9 @@ df <- df %>% filter(source == "stata")
 estimates <- estimates %>% anti_join(df)
 
 #Left join event counts
-table2=list.files(path = "C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/", pattern = "table2*")
+table2=list.files(path = paste0("C:/Users/",staff_ID,"/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/"), pattern = "table2*")
 
-table2=paste0("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/",table2)
+table2=paste0("C:/Users/",staff_ID,"/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/",table2)
 table2 <- pmap(list(table2),
                function(fpath){
                  df <- fread(fpath)
@@ -184,4 +189,4 @@ estimates$post_exposure_event_count <- NULL
 estimates <- estimates %>% left_join(table2) %>%
   select(event, subgroup, cohort, model, time_points, source,term, estimate, conf_low, conf_high, post_exposure_event_count, median_follow_up)
 
-write.csv(estimates, file ="C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/master_hr_file.csv",row.names = FALSE)
+write.csv(estimates, file = paste0("C:/Users/",staff_ID,"/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/master_hr_file.csv"),row.names = FALSE)

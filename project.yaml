@@ -685,7 +685,7 @@ actions:
   ## Cox model for t2dm_pd_no - vax 
 
   Analysis_cox_t2dm_pd_no_vax:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no vax TRUE
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no vax FALSE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax
@@ -707,7 +707,7 @@ actions:
   ## Cox model for t2dm_pd_no - unvax 
 
   Analysis_cox_t2dm_pd_no_unvax:
-    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no unvax TRUE
+    run: r:latest analysis/model/01_cox_pipeline.R t2dm_pd_no unvax FALSE
     needs:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax

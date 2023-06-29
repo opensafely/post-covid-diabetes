@@ -32,16 +32,17 @@ analyses_to_run <- analyses_to_run %>%
            ifelse(outcome_variable == "out_date_t2dm_obes_no" & cohort == "prevax", "TRUE",
                   ifelse(outcome_variable == "out_date_t2dm_obes_no" & cohort == "vax", "TRUE",
                          ifelse(outcome_variable == "out_date_t2dm_pd_no" & cohort == "prevax", "TRUE",
-                                ifelse(outcome_variable == "out_date_t2dm_pd_no" & cohort == "vax", "TRUE",
-                                       ifelse(outcome_variable == "out_date_t2dm_pd_no" & cohort == "unvax", "TRUE",
-                                              ifelse(outcome_variable == "out_date_t2dm_pre_rec" & cohort == "prevax", "TRUE",
-                                                     ifelse(outcome_variable == "out_date_t2dm_pre_rec" & cohort == "unvax", "TRUE",
-                                                            ifelse(outcome_variable == "out_date_t2dm_unvax_sens" & cohort == "unvax", "TRUE",
-                                                                   ifelse(outcome_variable == "out_date_t2dm_follow_extended_follow_up", "TRUE",
-                                                                          ifelse(outcome_variable == "out_date_t2dm_pd_no_extended_follow_up" & cohort == "prevax", "TRUE",
-                                                                                 ifelse(outcome_variable == "out_date_t2dm_obes_no_extended_follow_up"& cohort == "prevax", "TRUE",
-                                                                                        ifelse(outcome_variable == "out_date_t2dm_follow", "TRUE",
-                                                                                               "FALSE")))))))))))))
+                                ifelse(outcome_variable == "out_date_t2dm_pre_rec" & cohort == "prevax", "TRUE",
+                                       ifelse(outcome_variable == "out_date_t2dm_pre_rec" & cohort == "unvax", "TRUE",
+                                              ifelse(outcome_variable == "out_date_t2dm_unvax_sens" & cohort == "unvax", "TRUE",
+                                                     ifelse(outcome_variable == "out_date_t2dm_follow_extended_follow_up", "TRUE",
+                                                            ifelse(outcome_variable == "out_date_t2dm_pd_no_extended_follow_up" & cohort == "prevax", "TRUE",
+                                                                   ifelse(outcome_variable == "out_date_t2dm_obes_no_extended_follow_up"& cohort == "prevax", "TRUE",
+                                                                          ifelse(outcome_variable == "out_date_t2dm_follow", "TRUE",
+                                                                                 "FALSE")))))))))))
+                                
+                                       
+                                              
                                                                                   
                                                                                          
 

@@ -96,6 +96,8 @@ rm(day_zero_analyses)
 analyses_to_run$data_only <- data_only_variable
 analyses_to_run$data_only <- ifelse(analyses_to_run$event %in% c("t2dm","t2dm_extended_follow_up") 
                                     & analyses_to_run$subgroup %in% c("main","covid_pheno_non_hospitalised","covid_pheno_hospitalised"), TRUE, analyses_to_run$data_only)
+analyses_to_run$data_only <- ifelse(analyses_to_run$event == "t2dm_pd_no"
+                                    & analyses_to_run$subgroup %in% c("covid_pheno_hospitalised"), TRUE, analyses_to_run$data_only)
 
 # Source remainder of relevant files --------------------------------------------------------
 

@@ -8,7 +8,7 @@ library(tidyverse)
 # Calculates AER within age/sex subgroups
 
 # Set file locations
-date <- "18_05_2023"
+date <- "15_06_2023"
 aer_raw_output_dir <- paste0("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/AER/lifetables/",date,"/")
 
 aer_compiled_output_dir <- paste0("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/AER/compiled_results_for_plotting/",date,"/")
@@ -66,7 +66,7 @@ results <- crossing(active,term)
 #------------------------------------ Load results------------------------------
 # to run change zy21123 to your personal staff ID
 # In this file the t2dm_extended_follow_up outcomes for prevax have been renamed t2dm
-input <- read_csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/hr_output_formatted_for_AER_extend.csv")
+input <- read_csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/master_hr_file.csv")
 
 #-------------------Select required columns and term----------------------------
 input <- input %>% 
@@ -75,19 +75,10 @@ input <- input %>%
          & model=="mdl_max_adj"
          & estimate != "[Redacted]"
          & time_points == "reduced"
-         & event == "t2dm") %>%
-  select(event,subgroup,cohort,model,time_points,term,estimate,source)
+         & ((event == "t2dm" & cohort %in% c("vax","unvax")) | (event == "t2dm_extended_follow_up" & cohort %in% c("prevax")))) %>%
+  select(event,cohort,model,time_points,term,estimate)
 
-# There are some results in the input file that have been run in both stata and R. We only want to keep the results in R
-df <- input %>% select(term,event,subgroup,cohort, time_points,model)
-df <- df[duplicated(df),]
-
-df <- merge(input,df)
-df <- df %>% filter(source == "stata")
-
-input <- input %>% anti_join(df)
-input[,c("subgroup","source")] <- NULL
-rm(df)
+input$event = "t2dm"
 
 #---------------------------------Input Table 2---------------------------------
 table2_pre_vax <- read.csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_prevax_diabetes.csv")
@@ -145,30 +136,28 @@ AER_compiled_results <- purrr::pmap(list(AER_files),
 AER_compiled_results=rbindlist(AER_compiled_results, fill=TRUE)
 
 # Calculate overall AER
-AER_combined <- AER_compiled_results %>% select(days, event, cohort, subgroup, time_points, excess_risk)
+AER_combined <- AER_compiled_results %>% select(days, event, cohort, subgroup, time_points, cumulative_difference_absolute_excess_risk)
 table_2 <- table_2 %>% select(event, cohort, subgroup, N_population_size)
 
 # AER_combined <- AER_combined %>% left_join(table_2, by=c("event","cohort","subgroup"))
 
 #Standardize AER and use pre-vax subgroup sizes for all cohorts
 table_2 <- table_2 %>% filter(cohort == "prevax") %>% select(!cohort)
-AER_combined <- AER_combined %>% left_join(table_2, by=c("event","subgroup"))
+table_2$weight <- table_2$N_population_size/sum(table_2$N_population_size)
+write.csv(table_2,file="table2.csv")
+AER_combined <- AER_combined %>% left_join(table_2 %>% select(event,subgroup,weight), by=c("event","subgroup"))
 
-AER_combined <- AER_combined %>% filter(!is.na(excess_risk))
-
-AER_combined <- AER_combined %>% 
-  group_by(days, event, cohort,time_points) %>%
-  mutate(weight = N_population_size/sum(N_population_size))
+AER_combined <- AER_combined %>% filter(!is.na(cumulative_difference_absolute_excess_risk))
 
 AER_combined <- AER_combined %>% 
   dplyr::group_by(days, event, cohort,time_points) %>%
-  dplyr::summarise(weighted_mean = weighted.mean(excess_risk,weight))
+  dplyr::summarise(weighted_mean = weighted.mean(cumulative_difference_absolute_excess_risk,weight))
 
 
 #Join all results together 
 AER_combined$subgroup <- "aer_overall"
 
-AER_combined <- AER_combined %>% dplyr::rename(excess_risk = weighted_mean )
+AER_combined <- AER_combined %>% dplyr::rename(cumulative_difference_absolute_excess_risk = weighted_mean )
 
 AER_compiled_results <- rbind(AER_compiled_results,AER_combined, fill = TRUE)
 

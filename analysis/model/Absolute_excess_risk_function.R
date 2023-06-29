@@ -85,11 +85,11 @@ excess_risk <- function(event_of_interest, cohort_of_interest, model_of_interest
 
   #Step5. Calculate daily excess risk
   #As difference in cumulative survival unexposed and expected cumulative survival in unexposed
-  lifetable$excess_risk <- lifetable$cumulative_survival_unexp - lifetable$cumulative_survival_exp
+  lifetable$cumulative_difference_absolute_excess_risk <- lifetable$cumulative_survival_unexp - lifetable$cumulative_survival_exp
 
   #Step6. Carry over total number of COVID cases in age/sex subgroup, calculate subgroup-specific absolute excess risk
-  lifetable$total_covid19_cases <- input$total_covid19_cases[1]
-  lifetable$AER <- lifetable$excess_risk * lifetable$total_covid19_cases
+  #lifetable$total_covid19_cases <- input$total_covid19_cases[1]
+  #lifetable$AER <- lifetable$excess_risk * lifetable$total_covid19_cases
 
   #Step7. Total AER as total of all subgroups
 

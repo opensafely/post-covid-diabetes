@@ -5,11 +5,9 @@ packages <- c("dplyr", "scales", "ggplot2", "readr", "data.table", "tidyverse",
 lapply(packages, require, character.only=T)
 rm(list = ls())
 
-dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
-setwd(dir)
-
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/")
-output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/supplementary/")
+# Change user ID (currently zy21123) to your own
+results_dir <- "C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/"
+output_dir <- "C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/"
 
 # ------------------------------------######## ------------------------------------#######
 # FIGURE 3: TYPE-2 DIABETES SUBGROUPS --------------------------------------------------------------

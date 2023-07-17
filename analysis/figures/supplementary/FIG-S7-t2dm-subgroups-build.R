@@ -10,7 +10,7 @@ rm(list = ls())
 # Change user ID  to your own
 staff_ID <- "zy21123"
 results_dir <- paste0("C:/Users/",staff_ID,"/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/")
-output_dir <- paste0("C:/Users/",staff_ID,"/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/")
+output_dir <- paste0("C:/Users/",staff_ID,"/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/supplementary/")
 
 # ------------------------------------######## ------------------------------------#######
 # FIGURE 3: TYPE-2 DIABETES SUBGROUPS --------------------------------------------------------------

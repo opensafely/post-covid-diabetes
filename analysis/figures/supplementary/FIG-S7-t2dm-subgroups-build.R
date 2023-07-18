@@ -5,11 +5,12 @@ packages <- c("dplyr", "scales", "ggplot2", "readr", "data.table", "tidyverse",
 lapply(packages, require, character.only=T)
 rm(list = ls())
 
-dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
-setwd(dir)
-
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/")
-output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/supplementary/")
+# You will need to ensure that you have created a shortcut to the group-EHR sharepoint in your OneDrive folder to 
+# run this script
+# Change user ID  to your own
+staff_ID <- "zy21123"
+results_dir <- paste0("C:/Users/",staff_ID,"/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/")
+output_dir <- paste0("C:/Users/",staff_ID,"/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/supplementary/")
 
 # ------------------------------------######## ------------------------------------#######
 # FIGURE 3: TYPE-2 DIABETES SUBGROUPS --------------------------------------------------------------

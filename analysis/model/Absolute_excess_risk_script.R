@@ -1,3 +1,6 @@
+post_covid_diabetes <- "~/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/"
+analysis <- "main"
+
 ####  IMPORTANT - PLEASE READ ####
 # This script will save results directly to the EHR sharepoint so will save over any results that are already there
 # The lifetables will be saved into the directory aer_raw_output_dir. 
@@ -8,15 +11,13 @@ library(tidyverse)
 # Calculates AER within age/sex subgroups
 
 # Set file locations
-date <- "15_06_2023"
-aer_raw_output_dir <- paste0("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/AER/lifetables/",date,"/")
+aer_raw_output_dir <- "output/"
 
-aer_compiled_output_dir <- paste0("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/AER/compiled_results_for_plotting/",date,"/")
-scripts_dir <- "analysis/model"
+aer_compiled_output_dir <- "output/"
+scripts_dir <- "analysis/model/"
 
-dir.create(file.path(aer_raw_output_dir), recursive =TRUE, showWarnings = FALSE)
-dir.create(file.path(aer_compiled_output_dir), recursive =TRUE, showWarnings = FALSE)
-
+# dir.create(file.path(aer_raw_output_dir), recursive =TRUE, showWarnings = FALSE)
+# dir.create(file.path(aer_compiled_output_dir), recursive =TRUE, showWarnings = FALSE)
 
 #-------------------------Call AER function-------------------------------------
 source(file.path(scripts_dir,"Absolute_excess_risk_function.R"))
@@ -56,7 +57,11 @@ colnames(active) <- c("event", "subgroup", "model", "cohort")
 active$time_points <- "reduced"
 
 #Focus only on aer analyses
-active <- active %>% filter(startsWith(subgroup,"aer_") & model=="mdl_max_adj")
+#active <- active %>% filter(startsWith(subgroup,"aer_") & model=="mdl_max_adj")
+active <- active %>% filter(model=="mdl_max_adj")
+
+active <- active[active$subgroup==analysis,]
+active$analysis <- active$subgroup
 
 #Add HR time point terms so that results can be left joined
 term <- c("days0_28","days28_197","days197_365", "days365_714")
@@ -66,7 +71,7 @@ results <- crossing(active,term)
 #------------------------------------ Load results------------------------------
 # to run change zy21123 to your personal staff ID
 # In this file the t2dm_extended_follow_up outcomes for prevax have been renamed t2dm
-input <- read_csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/master_hr_file.csv")
+input <- read_csv(paste0(post_covid_diabetes,"results/model/master_hr_file.csv"))
 
 #-------------------Select required columns and term----------------------------
 input <- input %>% 
@@ -81,13 +86,13 @@ input <- input %>%
 input$event = "t2dm"
 
 #---------------------------------Input Table 2---------------------------------
-table2_pre_vax <- read.csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_prevax_diabetes.csv")
+table2_pre_vax <- read.csv(paste0(post_covid_diabetes,"results/descriptive/table2_prevax_diabetes.csv"))
 table2_pre_vax <- table2_pre_vax %>% filter(event == "out_date_t2dm_extended_follow_up")
 
-table2_vax <- read.csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_vax_diabetes.csv")
+table2_vax <- read.csv(paste0(post_covid_diabetes,"results/descriptive/table2_vax_diabetes.csv"))
 table2_vax <- table2_vax %>% filter(event == "out_date_t2dm")
 
-table2_unvax <- read.csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_unvax_diabetes.csv")
+table2_unvax <- read.csv(paste0(post_covid_diabetes,"results/descriptive/table2_unvax_diabetes.csv"))
 table2_unvax <- table2_unvax %>% filter(event == "out_date_t2dm")
 
 
@@ -103,17 +108,23 @@ table_2 <- table_2 %>% select(subgroup, event, cohort,unexposed_person_days,unex
 table_2$event <- gsub("_extended_follow_up","",table_2$event)
 table_2$event <- gsub("out_date_","",table_2$event)
 
+table_2$analysis <- analysis
+
 # Join HRs onto active df
 
+results$subgroup <- NULL
 results <- results %>% left_join(input, by=c("event","cohort","model","time_points","term"))
 results <- results %>% filter(!is.na(estimate))
 
 #Join on table 2 event counts
-results <- results %>% left_join(table_2, by=c("event","cohort","subgroup"))
+results <- merge(results,table_2, by=c("event","cohort","analysis"))
 
 results <- results %>% mutate(across(c(estimate, unexposed_person_days, unexposed_event_count, total_covid19_cases), as.numeric))
 
 #-------------------------Run AER function--------------------------------------
+
+active$subgroup <- paste0(unique(table_2$subgroup), collapse = ";")
+active <- tidyr::separate_rows(active, subgroup, sep = ";")
 
 lapply(split(active,seq(nrow(active))),
        function(active)
@@ -123,8 +134,7 @@ lapply(split(active,seq(nrow(active))),
            model_of_interest = active$model,
            subgroup_of_interest = active$subgroup,
            time_point_of_interest = active$time_points,
-           results))
-
+           input = results))
 
 #------------------------------Compile the results------------------------------
 AER_files=list.files(path = aer_raw_output_dir, pattern = "lifetable_")
@@ -161,4 +171,4 @@ AER_combined <- AER_combined %>% dplyr::rename(cumulative_difference_absolute_ex
 
 AER_compiled_results <- rbind(AER_compiled_results,AER_combined, fill = TRUE)
 
-write.csv(AER_compiled_results, paste0(aer_compiled_output_dir,"/AER_compiled_results.csv"), row.names = F)
+write.csv(AER_compiled_results, paste0(aer_compiled_output_dir,"AER_compiled_results.csv"), row.names = F)

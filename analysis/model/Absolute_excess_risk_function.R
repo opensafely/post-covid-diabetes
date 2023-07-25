@@ -96,7 +96,7 @@ excess_risk <- function(event_of_interest, cohort_of_interest, model_of_interest
   #lifetable$total_AER = rowSums(select(lifetable, ends_with("_AER")))
   
   # write output for AER figure
-  write.csv(lifetable, file=paste0(aer_raw_output_dir, "/lifetable_" ,event_of_interest, "_" ,subgroup_of_interest, "_",cohort_of_interest,"_",time_point_of_interest, "_time_points.csv"), row.names = F)
+  write.csv(lifetable, file=paste0(aer_raw_output_dir, "lifetable_" ,event_of_interest, "_" ,subgroup_of_interest, "_",cohort_of_interest,"_",time_point_of_interest, "_time_points.csv"), row.names = F)
 
   
   #AER_followup_end <- lifetable[nrow(lifetable),]$total_AER

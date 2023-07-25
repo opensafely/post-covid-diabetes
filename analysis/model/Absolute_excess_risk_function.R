@@ -1,6 +1,6 @@
-# Function for making life tables
-# Inputs are df, which is a data frame containing: hazard ratio, unexposed_person_days, unexposed_events, total_exposed, time_period_start, time_period_end
-# Plus the relevant subgroup, outcome, cohort, analysis and model to use
+# Function for making life tables that requires two inputs:
+# (1) model_output
+# (2) aer_input [adapted Table 2 with age and sex groupings]
 
 lifetable <- function(model_output, aer_input) {
 
@@ -57,17 +57,6 @@ lifetable <- function(model_output, aer_input) {
   # This is the difference in cumulative survival unexposed and expected cumulative survival in unexposed
   
   lifetable$cumulative_difference_absolute_excess_risk <- lifetable$cumulative_survival_unexp - lifetable$cumulative_survival_exp
-
-  # Save output for AER figure -------------------------------------------------
-  print('Save output for AER figure')
-
-  write.csv(lifetable, 
-            file=paste0("output/lifetable_",
-                        aer_input$outcome,"_",
-                        aer_input$cohort,"_",
-                        aer_input$aer_sex,"_",
-                        aer_input$aer_age,".csv"), 
-            row.names = FALSE)
 
   # Return output for compiling ------------------------------------------------
   print('Return output for compiling')

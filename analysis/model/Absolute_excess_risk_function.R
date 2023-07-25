@@ -1,111 +1,77 @@
-## =============================================================================
-## Project:     Vaccinated delta wave population study
-##
-## Purpose:  
-##  Apply stage 5. Absolute excess risk analysis
-##  - Create a function to calculate absolute excess risks
-## 
-## Authors: Lucy Teece (adapted from RT, XJ, VW)
-## Reviewer: Genevieve Cezard
-## 
-## TO RUN OUTSIDE OPENSAFELY PLATFORM
-## Content: 
-## 0. Clean input data and subset to relevant event / cohort
-## 1. Average daily incidence of each outcome in unexposed age/sex subgroups
-## 2. Life table approach to calculate cumulative risk over time
-## 3. Carry over time-varying hazard ratios
-## 4. Daily event incidence in exposed age/sex subgroups
-## 5. Daily excess risk between exposed and unexposed age/sex subgroups
-## 6. Absolute excess risk weighted by total number of COVID cases
-## 7. total absolute excess risk as culmination of age/sex subgroups
-## =============================================================================
+# Function for making life tables
+# Inputs are df, which is a data frame containing: hazard ratio, unexposed_person_days, unexposed_events, total_exposed, time_period_start, time_period_end
+# Plus the relevant subgroup, outcome, cohort, analysis and model to use
 
-# # CODE FOR SINGLE AER
-# event_of_interest="ate"
-# cohort_of_interest="pre_vaccination"
-# model_of_interest="mdl_max_adj"     #Should always be maximum adjusted model
-# subgroup_of_interest="aer_Female_40_59"
+lifetable <- function(model_output, aer_input) {
 
-excess_risk <- function(event_of_interest, cohort_of_interest, model_of_interest,subgroup_of_interest,time_point_of_interest, input) {
+  # Filter model output --------------------------------------------------------
+  print('Filter model output')
   
+  model_output <- model_output[model_output$analysis==aer_input$analysis &
+                                 model_output$outcome==aer_input$outcome &
+                                 model_output$cohort==aer_input$cohort,]
   
-  #-------------------------Check structure the input---------------------------
-  input <- input %>% mutate(across(c("estimate","unexposed_person_days","unexposed_event_count","total_covid19_cases"), as.numeric))
-  input <- as.data.frame(input)
+  # Step 0. Create life table --------------------------------------------------
+  print('Step 0. Create life table')
   
-  #---------------------------------Subset to relevant data---------------------
-  input <- input[input$event == event_of_interest
-                 & input$model == model_of_interest
-                 & input$cohort == cohort_of_interest
-                 & input$subgroup == subgroup_of_interest
-                 & input$time_points == time_point_of_interest,]
+  lifetable <- data.frame(analysis = aer_input$analysis, 
+                          outcome = aer_input$outcome, 
+                          cohort = aer_input$cohort,
+                          aer_age = aer_input$aer_age,
+                          aer_sex = aer_input$aer_sex,
+                          days = c(0:(max(model_output$time_period_end)-1)),
+                          stringsAsFactors = FALSE)
   
-  #----Add start and end days for time periods which are needed for lifetable---
-  for(i in c("time_period_start","time_period_end")){
-    input[,i] <- input$term
-    input[,i] <- gsub("days", "",input[,i])                                     #Remove 'days'
-  }
+  # Step 1. Average daily incidence in unexposed -------------------------------
+  print('Step 1. Average daily incidence in unexposed')
   
-  input$time_period_start <- gsub("\\_.*", "",input[,i])                        #Remove everything after _
-  input$time_period_end <- gsub(".*_", "",input[,i])                            #Remove everything before _
-  input <- input %>% mutate(across(c("time_period_start", "time_period_end"), as.numeric))
+  # Divide the number of events in the unexposed by time in days
   
-  
-  #---------------------------------------------------------------
-  # LIFETABLE APPROACH
-  #---------------------------------------------------------------
-  lifetable <- data.frame(c(0:(max(input$time_period_end)-1)))
-  
-  colnames(lifetable) <- c("days")
-  lifetable$event <- event_of_interest
-  lifetable$cohort <- cohort_of_interest
-  lifetable$model <- model_of_interest
-  lifetable$subgroup <- subgroup_of_interest
-  lifetable$time_points <- time_point_of_interest
-  
-  
-  #Step1. Calculate average daily incidence of outcome in unexposed age/sex subgroups
-  #As number of events (in the unexposed) divided by time (days)
-  lifetable$incidence_unexp <- input$unexposed_event_count[1] / input$unexposed_person_days[1]
+  lifetable$incidence_unexp <- aer_input$unexposed_events / aer_input$unexposed_person_days
  
-  #Step2. Use life table approach to calculate cumulative risk over time in unexposed age/sex subgroups
+  # Step 2. Cumulative risk over time in unexposed -----------------------------
+  print('Step 2. Cumulative risk over time in unexposed')
+  
   lifetable$cumulative_survival_unexp <- cumprod(1 - lifetable$incidence_unexp) 
   
-  #Step3. Carry over maximally adjusted hazard ratio estimates (time varying) for event after COVID exposure
+  # Step 3. Add HRs  -----------------------------------------------------------
+  print('Step 3. Add HRs')
+
   lifetable$hr <- NA
   
-  for(i in 1:nrow(input)){
-    tmp <- input[i,]
-    lifetable$hr <- ifelse(lifetable$days >= tmp$time_period_start & lifetable$days < tmp$time_period_end, tmp$estimate, lifetable$hr)
+  for(i in 1:nrow(model_output)){
+    tmp <- model_output[i,]
+    lifetable$hr <- ifelse(lifetable$days >= tmp$time_period_start & lifetable$days < tmp$time_period_end, tmp$hr, lifetable$hr)
   }
   
-  #Step4. Calculate predicted incidence of outcome after COVID exposure in age/sex subgroups
-  #Multiply daily incidence in unexposed by maximally adjusted hazard ratios (time varying) for event after COVID exposure
+  # Step 4. Predict incidence of outcome after exposure ------------------------
+  print('Step 4. Predict incidence of outcome after exposure')
+  
+  # Multiply daily incidence in unexposed by relevant hazard ratio
+  
   lifetable$cumulative_survival_exp <- cumprod(1 - (lifetable$hr * lifetable$incidence_unexp))
 
-  #Step5. Calculate daily excess risk
-  #As difference in cumulative survival unexposed and expected cumulative survival in unexposed
+  # Step 5. Calculate daily excess risk ----------------------------------------
+  print('Step 5. Calculate daily excess risk')
+
+  # This is the difference in cumulative survival unexposed and expected cumulative survival in unexposed
+  
   lifetable$cumulative_difference_absolute_excess_risk <- lifetable$cumulative_survival_unexp - lifetable$cumulative_survival_exp
 
-  #Step6. Carry over total number of COVID cases in age/sex subgroup, calculate subgroup-specific absolute excess risk
-  #lifetable$total_covid19_cases <- input$total_covid19_cases[1]
-  #lifetable$AER <- lifetable$excess_risk * lifetable$total_covid19_cases
+  # Save output for AER figure -------------------------------------------------
+  print('Save output for AER figure')
 
-  #Step7. Total AER as total of all subgroups
+  write.csv(lifetable, 
+            file=paste0("output/lifetable_",
+                        aer_input$outcome,"_",
+                        aer_input$cohort,"_",
+                        aer_input$aer_sex,"_",
+                        aer_input$aer_age,".csv"), 
+            row.names = FALSE)
 
-  #lifetable$total_AER = rowSums(select(lifetable, ends_with("_AER")))
+  # Return output for compiling ------------------------------------------------
+  print('Return output for compiling')
   
-  # write output for AER figure
-  write.csv(lifetable, file=paste0("output/lifetable_" ,event_of_interest, "_" ,subgroup_of_interest, "_",cohort_of_interest,"_",time_point_of_interest, "_time_points.csv"), row.names = F)
-
   return(lifetable)
-  #AER_followup_end <- lifetable[nrow(lifetable),]$total_AER
-  
-  # results <- data.frame(event=event_of_interest,
-  #                       cohort=cohort_of_interest,
-  #                       model=model_of_interest,
-  #                       AER_followup_end=AER_followup_end)
-  
-  #write.csv(results, paste0(aer_raw_results_dir, "/AER_raw_results_", cohort_of_interest, "_", model_of_interest, "_", event_of_interest,".csv"), row.names = F)
-  #return(results)
+
 }

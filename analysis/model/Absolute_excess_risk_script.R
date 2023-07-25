@@ -147,6 +147,7 @@ print('Compile aer_group and overall life tables')
 lifetables_compiled <- lifetables_compiled[,c("analysis","outcome","cohort","days",
                                               "aer_age","aer_sex",
                                               "cumulative_difference_absolute_excess_risk")]
+
 lifetables_compiled <- rbind(lifetables_compiled, lifetable_overall)
 
 # Save compiled life tables ----------------------------------------------------

@@ -2169,3 +2169,13 @@ actions:
         hr_output: output/review/model/R_hr_output.csv
         event_counts: output/review/model/R_event_count_output.csv
 
+  summary_follow_up:
+    run: r:latest analysis/summary_follow_up.R
+    needs:
+    - Analysis_cox_t2dm_prevax
+    - Analysis_cox_t2dm_vax
+    - Analysis_cox_t2dm_unvax
+    outputs:
+      moderately_sensitive:
+        summary_follow_up: output/summary_follow_up.csv
+

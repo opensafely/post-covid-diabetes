@@ -15,9 +15,9 @@ get_fup <- function(input) {
     stop("Necessary variables are missing")
   }
 
-  df <- readr::read_csv(paste0("output/",input,".csv"),
-                        col_select = c("patient_id","tstart","tstop"),
-                        col_types = c("c","n","n"))
+  df <- readr::read_csv(paste0("output/",input,".csv"))
+
+  df <- df[,c("patient_id","tstart","tstop")]
   
   df$fup <- as.numeric(df$tstop - df$tstart)
   

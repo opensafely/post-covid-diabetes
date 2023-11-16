@@ -3,6 +3,18 @@ print('Define function to calculate follow-up')
 
 get_fup <- function(input) {
   
+  cols <- data.table::fread(paste0("output/",input,".csv"), 
+                                header = TRUE, 
+                                sep = ",", 
+                                nrows = 0, 
+                                stringsAsFactors = FALSE)
+  
+  print(paste0(colnames(cols), collapse = ";"))
+  
+  if (sum(c("patient_id","tstart","tstop") %in% colnames(cols))!=3) {
+    stop("Necessary variables are missing")
+  }
+
   df <- readr::read_csv(paste0("output/",input,".csv"),
                         col_select = c("patient_id","tstart","tstop"),
                         col_types = c("c","D","D"))

@@ -17,7 +17,7 @@ get_fup <- function(input) {
 
   df <- readr::read_csv(paste0("output/",input,".csv"),
                         col_select = c("patient_id","tstart","tstop"),
-                        col_types = c("c","D","D"))
+                        col_types = c("c","n","n"))
   
   df$fup <- as.numeric(df$tstop - df$tstart)
   

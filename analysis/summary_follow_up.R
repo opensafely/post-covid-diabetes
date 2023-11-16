@@ -43,6 +43,6 @@ for (input in input_files) {
 }
 
 # Save follow-up table ---------------------------------------------------------
-print('Calculate follow-up for each input file')
+print('Save follow-up table')
 
 write.csv(df, "output/summary_follow_up.csv", row.names = FALSE)

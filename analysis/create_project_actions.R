@@ -596,6 +596,20 @@ actions_list <- splice(
     ),
     moderately_sensitive = list(
       summary_follow_up = "output/summary_follow_up.csv")
+  ),
+  
+  # Summarize deaths within 28 days post-COVID
+  
+  action(
+    name = "summary_died28",
+    run = "r:latest analysis/summary_died28.R",
+    needs = list(
+      "Analysis_cox_t2dm_prevax", 
+      "Analysis_cox_t2dm_vax", 
+      "Analysis_cox_t2dm_unvax"
+    ),
+    moderately_sensitive = list(
+      summary_follow_up = "output/summary_died28.csv")
   )
   
 )

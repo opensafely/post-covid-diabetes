@@ -40,11 +40,11 @@ analyses_to_run <- analyses_to_run %>%
                                                                    ifelse(outcome_variable == "out_date_t2dm_obes_no_extended_follow_up"& cohort == "prevax", "TRUE",
                                                                           ifelse(outcome_variable == "out_date_t2dm_follow", "TRUE",
                                                                                  "FALSE")))))))))))
-                                
-                                       
-                                              
-                                                                                  
-                                                                                         
+
+
+
+
+
 
 
 cohort_to_run_all <- c("prevax", "vax", "unvax")
@@ -174,7 +174,7 @@ table2 <- function(cohort){
       run = "r:latest analysis/descriptives/table_2.R",
       arguments = c(cohort),
       needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax",glue("stage1_end_date_table_{cohort}"),
-                    "add_persistent_diabetes_outcomes"),
+                   "add_persistent_diabetes_outcomes"),
       moderately_sensitive = list(
         input_table_2 = glue("output/review/descriptives/table2_{cohort}_*.csv")
       )
@@ -554,7 +554,7 @@ actions_list <- splice(
     name = "format_stata_output",
     run = "r:latest analysis/format_stata_output.R",
     needs = as.list(c(paste0("stata_cox_model_",analyses_to_run_stata$outcome,"_",analyses_to_run_stata$subgroup,"_",analyses_to_run_stata$cohort,"_",analyses_to_run_stata$time_periods,"_day0",analyses_to_run_stata$day0,"_extf",analyses_to_run_stata$extf),
-                    paste0("stata_cox_model_",analyses_to_run_stata_obesity$outcome,"_",analyses_to_run_stata_obesity$subgroup,"_",analyses_to_run_stata_obesity$cohort,"_",analyses_to_run_stata_obesity$time_periods,"_day0",analyses_to_run_stata_obesity$day0,"_extf",analyses_to_run_stata_obesity$extf))),
+                      paste0("stata_cox_model_",analyses_to_run_stata_obesity$outcome,"_",analyses_to_run_stata_obesity$subgroup,"_",analyses_to_run_stata_obesity$cohort,"_",analyses_to_run_stata_obesity$time_periods,"_day0",analyses_to_run_stata_obesity$day0,"_extf",analyses_to_run_stata_obesity$extf))),
     moderately_sensitive = list(
       stata_output = "output/stata_output.csv")
   ),
@@ -582,7 +582,22 @@ actions_list <- splice(
     moderately_sensitive = list(
       hr_output = "output/review/model/R_hr_output.csv",
       event_counts = "output/review/model/R_event_count_output.csv")
+  ),
+  
+  # Summarize follow-up
+  
+  action(
+    name = "summary_follow_up",
+    run = "r:latest analysis/summary_follow_up.R",
+    needs = list(
+      "Analysis_cox_t2dm_prevax", 
+      "Analysis_cox_t2dm_vax", 
+      "Analysis_cox_t2dm_unvax"
+    ),
+    moderately_sensitive = list(
+      summary_follow_up = "output/summary_follow_up.csv")
   )
+  
 )
 
 ## combine everything ----

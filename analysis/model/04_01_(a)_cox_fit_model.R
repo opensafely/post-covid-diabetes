@@ -81,7 +81,7 @@ fit_model_reducedcovariates <- function(event,subgroup,stratify_by_subgroup,stra
     sampled_data$index_date <- as.Date("2020-01-01")
   }
   
-  write.csv(sampled_data, paste0("output/input_sampled_data_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"), row.names = F )
+  write.csv(sampled_data, file=gzfile(paste0("output/input_sampled_data_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv.gz")), row.names = F )
   rm(sampled_data)
     
     data.table::fwrite(data_surv, paste0("output/input_",event,"_", subgroup,"_",cohort,"_",time_point,"_time_periods.csv"))

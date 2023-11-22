@@ -40,7 +40,7 @@ df <- data.frame(active = logical(),
                  aer_Male_80_110 = character(),
                  prior_history_var = character(),
                  outcome_group = character(),
-                 venn = character(),
+#                 venn = character(),
                  data_only = character(),
                  stringsAsFactors = FALSE)
 
@@ -48,18 +48,19 @@ df <- data.frame(active = logical(),
 # Add diabetes outcomes --------------------------------------------------------
 # ------------------------------------------------------------------------------
 
-outcomes <- c("type 1 diabetes",
-              "type 2 diabetes",
-              "type 2 diabetes - recovery",
-              "type 2 diabetes - pre_recovery",
-              "type 2 diabetes - post_recovery",
-              "type 2 diabetes - persistant",
-              "type 2 diabetes - pre diabetes",
-              "type 2 diabetes - no pre diabetes",
-              "type 2 diabetes - obesity",
-              "type 2 diabetes - no obesity",
-              "other or non-specific diabetes",
-              "gestational diabetes",
+outcomes <- c(
+#              "type 1 diabetes",
+#              "type 2 diabetes",
+#              "type 2 diabetes - recovery",
+#              "type 2 diabetes - pre_recovery",
+#              "type 2 diabetes - post_recovery",
+#              "type 2 diabetes - persistant",
+#              "type 2 diabetes - pre diabetes",
+#              "type 2 diabetes - no pre diabetes",
+#              "type 2 diabetes - obesity",
+#              "type 2 diabetes - no obesity",
+ #             "other or non-specific diabetes",
+#              "gestational diabetes",
               "type 1 diabetes - extended follow up",
               "type 2 diabetes - extended follow up",
               "other or non-specific diabetes - extended follow up",
@@ -76,30 +77,31 @@ outcomes <- c("type 1 diabetes",
 
 outcome_group <- "diabetes"
 
-outcomes_short <- c("t1dm","t2dm", "t2dm_rec", "t2dm_pre_rec", "t2dm_post_rec", "t2dm_follow", "t2dm_pd","t2dm_pd_no", "t2dm_obes","t2dm_obes_no", "otherdm","gestationaldm",
+outcomes_short <- c(
+#                    "t1dm","t2dm", "t2dm_rec", "t2dm_pre_rec", "t2dm_post_rec", "t2dm_follow", "t2dm_pd","t2dm_pd_no", "t2dm_obes","t2dm_obes_no", "otherdm","gestationaldm",
                     "t1dm_extended_follow_up","t2dm_extended_follow_up", "otherdm_extended_follow_up","gestationaldm_extended_follow_up", "t2dm_follow_extended_follow_up",
                     "t2dm_pd_extended_follow_up","t2dm_pd_no_extended_follow_up", "t2dm_obes_extended_follow_up","t2dm_obes_no_extended_follow_up",
                     "t2dm_unvax_sens", "t1dm_unvax_sens", "otherdm_unvax_sens", "gestationaldm_unvax_sens")
-outcome_venn <- c(TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)
+# outcome_venn <- c(TRUE, TRUE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE, FALSE)
 
 for (i in 1:length(outcomes)) {
   df[nrow(df)+1,] <- c(TRUE,
                        outcomes[i],
                        paste0("out_date_",outcomes_short[i]),
-                       "cov_cat_sex;cov_num_age;cov_cat_ethnicity;cov_cat_deprivation;cov_cat_region;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_num_tc_hdl_ratio;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational",
+                       "cov_cat_sex;cov_num_age;cov_cat_ethnicity;cov_cat_deprivation;cov_cat_region;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational",
                        rep("all",2),
                        rep(TRUE,4),
                        rep(FALSE,22),
                        "",
                        "diabetes",
-                       outcome_venn[i],
+#                       outcome_venn[i],
                        "FALSE")
 }
 
 # change outcome group so that gestational diabetes has its own group
 
-df <- df %>% mutate(outcome_group = case_when(outcome_variable == "out_date_gestationaldm" ~ "diabetes_gestational",
-                                              TRUE ~ as.character(outcome_group)))
+# df <- df %>% mutate(outcome_group = case_when(outcome_variable == "out_date_gestationaldm" ~ "diabetes_gestational",
+#                                               TRUE ~ as.character(outcome_group)))
 
 df <- df %>% mutate(outcome_group = case_when(outcome_variable == "out_date_gestationaldm_extended_follow_up" ~ "diabetes_gestational",
                                               TRUE ~ as.character(outcome_group)))
@@ -181,7 +183,7 @@ df <- df %>% mutate(covariates = case_when(outcome_variable == "out_date_t2dm_pd
 # turn all COVID history to false
 
 df$covid_history <- FALSE
-df$venn <- FALSE
+# df$venn <- FALSE
 
 # add pre diabetes subgroup analysis
 # 

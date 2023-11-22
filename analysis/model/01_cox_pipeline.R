@@ -32,7 +32,7 @@ library(matrixStats)
 args = commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
-  event_name="t2dm"
+  event_name="t1dm"
   cohort="prevax"
   data_only_variable="FALSE"
 }else{
@@ -134,16 +134,16 @@ if(cohort == "prevax"){
   
   #Save csv of analyses not run
   write.csv(analyses_not_run, paste0(output_dir_unvax,"/analyses_not_run_" , event_name ,"_",cohort,".csv"), row.names = T)
-  
+
 }
 
 if(nrow(analyses_to_run)==0){
-  sink(paste0("output/not-for-review/describe_data_surv_",event_name,"__",cohort,"__time_periods.txt"))
+  sink(paste0("output/not-for-review/describe_data_surv_",event_name,"_",cohort,"_time_periods.txt"))
   sink()
   
   df <- as.data.frame(matrix(ncol = 2))
-  write.csv(df, paste0("output/input_",event_name,"__",cohort,"__time_periods.csv"))
-  write.csv(df, paste0("output/input_sampled_data_",event_name,"__",cohort,"__time_periods.csv"))
+#  write.csv(df, paste0("output/input_",event_name,"__",cohort,"__time_periods.csv"))
+  write.csv(df, file=gzfile(paste0("output/input_sampled_data_",event_name,"_",cohort,"_time_periods.csv.gz")))
   
 }
   

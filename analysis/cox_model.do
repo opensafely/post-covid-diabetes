@@ -22,6 +22,10 @@ di "$projectdir"
 
 adopath + "$projectdir/analysis/extra_ados"
 
+* Unzip the input data
+
+shell gunzip "./output/`cpf'.csv.gs"
+
 * Import and describe data
 
 import delim using "./output/`cpf'.csv", clear

@@ -136,11 +136,11 @@ apply_model_function <- function(outcome, cohort, data_only){
         compiled_hrs_csv_to_release = glue("output/review/model/*/suppressed_compiled_HR_results_{outcome}_{cohort}_to_release.csv"),
         compiled_event_counts_csv = glue("output/review/model/*/suppressed_compiled_event_counts_{outcome}_{cohort}.csv"),
         compiled_event_counts_csv_non_supressed = glue("output/review/model/*/compiled_event_counts_{outcome}_{cohort}.csv"),
-        describe_data_surv = glue("output/not-for-review/describe_data_surv_{outcome}_*_{cohort}_*_time_periods.txt")
+        describe_data_surv = glue("output/not-for-review/describe_data_surv_{outcome}_{cohort}_time_periods.txt")
       ),
       highly_sensitive = list(
-        dataset = glue("output/input_{outcome}_*_{cohort}_*_time_periods.csv"),
-        sampled_dataset = glue("output/input_sampled_data_{outcome}_*_{cohort}_*_time_periods.csv")
+#        dataset = glue("output/input_{outcome}_*_{cohort}_*_time_periods.csv"),
+        sampled_dataset = glue("output/input_sampled_data_{outcome}_{cohort}_time_periods.csv.gz")
       )
     )
   )
@@ -166,49 +166,49 @@ apply_model_function <- function(outcome, cohort, data_only){
 #     )
 #   )
 # }
-table2 <- function(cohort){
-  splice(
-    comment(glue("Stage 4 - Table 2 - {cohort} cohort")),
-    action(
-      name = glue("stage4_table_2_{cohort}"),
-      run = "r:latest analysis/descriptives/table_2.R",
-      arguments = c(cohort),
-      needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax",glue("stage1_end_date_table_{cohort}"),
-                   "add_persistent_diabetes_outcomes"),
-      moderately_sensitive = list(
-        input_table_2 = glue("output/review/descriptives/table2_{cohort}_*.csv")
-      )
-    )
-  )
-}
+# table2 <- function(cohort){
+#  splice(
+#    comment(glue("Stage 4 - Table 2 - {cohort} cohort")),
+#    action(
+#      name = glue("stage4_table_2_{cohort}"),
+#      run = "r:latest analysis/descriptives/table_2.R",
+#      arguments = c(cohort),
+#      needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax",glue("stage1_end_date_table_{cohort}"),
+#                   "add_persistent_diabetes_outcomes"),
+#      moderately_sensitive = list(
+#        input_table_2 = glue("output/review/descriptives/table2_{cohort}_*.csv")
+#      )
+#    )
+#  )
+#}
 
-stata_actions <- function(outcome, cohort, subgroup, time_periods, day0, extf){
-  splice(
-    action(
-      name = glue("stata_cox_model_{outcome}_{subgroup}_{cohort}_{time_periods}_day0{day0}_extf{extf}"),
-      run = glue("stata-mp:latest analysis/cox_model.do input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods {day0} {extf}"),
-      needs = list(glue("Analysis_cox_{outcome}_{cohort}")),
-      moderately_sensitive = list(
-        medianfup = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_stata_median_fup_day0{day0}_extf{extf}.csv"),
-        stata_output = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_cox_model_day0{day0}_extf{extf}.txt")
-      )
-    )
-  )
-}
+# stata_actions <- function(outcome, cohort, subgroup, time_periods, day0, extf){
+#  splice(
+#    action(
+#      name = glue("stata_cox_model_{outcome}_{subgroup}_{cohort}_{time_periods}_day0{day0}_extf{extf}"),
+#      run = glue("stata-mp:latest analysis/cox_model.do input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods {day0} {extf}"),
+#      needs = list(glue("Analysis_cox_{outcome}_{cohort}")),
+#      moderately_sensitive = list(
+#        medianfup = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_stata_median_fup_day0{day0}_extf{extf}.csv"),
+#        stata_output = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_cox_model_day0{day0}_extf{extf}.txt")
+#      )
+#    )
+#  )
+#}
 
-stata_actions_obesity <- function(outcome, cohort, subgroup, time_periods, day0, extf){
-  splice(
-    action(
-      name = glue("stata_cox_model_{outcome}_{subgroup}_{cohort}_{time_periods}_day0{day0}_extf{extf}"),
-      run = glue("stata-mp:latest analysis/cox_model_obesity.do input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods {day0} {extf}"),
-      needs = list(glue("Analysis_cox_{outcome}_{cohort}")),
-      moderately_sensitive = list(
-        medianfup = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_stata_median_fup_day0{day0}_extf{extf}.csv"),
-        stata_output = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_cox_model_day0{day0}_extf{extf}.txt")
-      )
-    )
-  )
-}
+#stata_actions_obesity <- function(outcome, cohort, subgroup, time_periods, day0, extf){
+#  splice(
+#    action(
+#      name = glue("stata_cox_model_{outcome}_{subgroup}_{cohort}_{time_periods}_day0{day0}_extf{extf}"),
+#      run = glue("stata-mp:latest analysis/cox_model_obesity.do input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods {day0} {extf}"),
+#      needs = list(glue("Analysis_cox_{outcome}_{cohort}")),
+#      moderately_sensitive = list(
+#        medianfup = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_stata_median_fup_day0{day0}_extf{extf}.csv"),
+#        stata_output = glue("output/input_sampled_data_{outcome}_{subgroup}_{cohort}_{time_periods}_time_periods_cox_model_day0{day0}_extf{extf}.txt")
+#      )
+#    )
+#  )
+#}
 
 ##########################################################
 ## Define and combine all actions into a list of actions #
@@ -504,12 +504,12 @@ actions_list <- splice(
   ),
   
   
-  #comment("Stage 4 - Create input for table2"),
-  splice(
-    # over outcomes
-    unlist(lapply(cohort_to_run_all, function(x) table2(cohort = x)), recursive = FALSE)
-  ),
-  
+#  #comment("Stage 4 - Create input for table2"),
+#  splice(
+#    # over outcomes
+#    unlist(lapply(cohort_to_run_all, function(x) table2(cohort = x)), recursive = FALSE)
+#  ),
+#  
   # #comment("Stage 4 - Venn diagrams - all cohorts"),
   # action(
   #   name = "stage4_venn_diagram_all",
@@ -531,50 +531,51 @@ actions_list <- splice(
   
   # STATA ANALYSES
   
-  splice(unlist(lapply(1:nrow(analyses_to_run_stata), 
-                       function(i) stata_actions(outcome = analyses_to_run_stata[i, "outcome"],
-                                                 subgroup = analyses_to_run_stata[i, "subgroup"],
-                                                 cohort = analyses_to_run_stata[i, "cohort"],
-                                                 time_periods = analyses_to_run_stata[i, "time_periods"],
-                                                 day0 = analyses_to_run_stata[i, "day0"],
-                                                 extf = analyses_to_run_stata[i, "extf"])),
-                recursive = FALSE)),
-  
-  splice(unlist(lapply(1:nrow(analyses_to_run_stata_obesity), 
-                       function(i) stata_actions_obesity(outcome = analyses_to_run_stata_obesity[i, "outcome"],
-                                                         subgroup = analyses_to_run_stata_obesity[i, "subgroup"],
-                                                         cohort = analyses_to_run_stata_obesity[i, "cohort"],
-                                                         time_periods = analyses_to_run_stata_obesity[i, "time_periods"],
-                                                         day0 = analyses_to_run_stata_obesity[i, "day0"],
-                                                         extf = analyses_to_run_stata_obesity[i, "extf"])),
-                recursive = FALSE)),
-  
-  #comment("Format Stata output"),
-  action(
-    name = "format_stata_output",
-    run = "r:latest analysis/format_stata_output.R",
-    needs = as.list(c(paste0("stata_cox_model_",analyses_to_run_stata$outcome,"_",analyses_to_run_stata$subgroup,"_",analyses_to_run_stata$cohort,"_",analyses_to_run_stata$time_periods,"_day0",analyses_to_run_stata$day0,"_extf",analyses_to_run_stata$extf),
-                      paste0("stata_cox_model_",analyses_to_run_stata_obesity$outcome,"_",analyses_to_run_stata_obesity$subgroup,"_",analyses_to_run_stata_obesity$cohort,"_",analyses_to_run_stata_obesity$time_periods,"_day0",analyses_to_run_stata_obesity$day0,"_extf",analyses_to_run_stata_obesity$extf))),
-    moderately_sensitive = list(
-      stata_output = "output/stata_output.csv")
-  ),
-  
+#  splice(unlist(lapply(1:nrow(analyses_to_run_stata), 
+#                       function(i) stata_actions(outcome = analyses_to_run_stata[i, "outcome"],
+#                                                 subgroup = analyses_to_run_stata[i, "subgroup"],
+#                                                 cohort = analyses_to_run_stata[i, "cohort"],
+#                                                 time_periods = analyses_to_run_stata[i, "time_periods"],
+#                                                 day0 = analyses_to_run_stata[i, "day0"],
+#                                                 extf = analyses_to_run_stata[i, "extf"])),
+#                recursive = FALSE)),
+#  
+#  splice(unlist(lapply(1:nrow(analyses_to_run_stata_obesity), 
+#                       function(i) stata_actions_obesity(outcome = analyses_to_run_stata_obesity[i, "outcome"],
+#                                                         subgroup = analyses_to_run_stata_obesity[i, "subgroup"],
+#                                                         cohort = analyses_to_run_stata_obesity[i, "cohort"],
+#                                                         time_periods = analyses_to_run_stata_obesity[i, "time_periods"],
+#                                                         day0 = analyses_to_run_stata_obesity[i, "day0"],
+#                                                         extf = analyses_to_run_stata_obesity[i, "extf"])),
+#                recursive = FALSE)),
+#  
+#  #comment("Format Stata output"),
+#  action(
+#    name = "format_stata_output",
+#    run = "r:latest analysis/format_stata_output.R",
+#    needs = as.list(c(paste0("stata_cox_model_",analyses_to_run_stata$outcome,"_",analyses_to_run_stata$subgroup,"_",analyses_to_run_stata$cohort,"_",analyses_to_run_stata$time_periods,"_day0",analyses_to_run_stata$day0,"_extf",analyses_to_run_stata$extf),
+#                      paste0("stata_cox_model_",analyses_to_run_stata_obesity$outcome,"_",analyses_to_run_stata_obesity$subgroup,"_",analyses_to_run_stata_obesity$cohort,"_",analyses_to_run_stata_obesity$time_periods,"_day0",analyses_to_run_stata_obesity$day0,"_extf",analyses_to_run_stata_obesity$extf))),
+#    moderately_sensitive = list(
+#      stata_output = "output/stata_output.csv")
+#  ),
+#  
   #comment("Format hazard ratio output")
   action(
     name = "format_hazard_ratios",
     run = "r:latest analysis/model/format_hazard_ratio_outputs.R",
-    needs = list("Analysis_cox_t1dm_prevax", "Analysis_cox_t1dm_vax", "Analysis_cox_t1dm_unvax",
-                 "Analysis_cox_t2dm_prevax", "Analysis_cox_t2dm_vax", "Analysis_cox_t2dm_unvax",
-                 "Analysis_cox_t2dm_pre_rec_prevax", "Analysis_cox_t2dm_pre_rec_vax", "Analysis_cox_t2dm_pre_rec_unvax",
-                 "Analysis_cox_t2dm_pd_prevax", "Analysis_cox_t2dm_pd_vax", "Analysis_cox_t2dm_pd_unvax",
-                 "Analysis_cox_t2dm_pd_no_prevax", "Analysis_cox_t2dm_pd_no_vax", "Analysis_cox_t2dm_pd_no_unvax",
-                 "Analysis_cox_t2dm_obes_prevax", "Analysis_cox_t2dm_obes_vax", "Analysis_cox_t2dm_obes_unvax",
-                 "Analysis_cox_t2dm_obes_no_prevax", "Analysis_cox_t2dm_obes_no_vax", "Analysis_cox_t2dm_obes_no_unvax",
-                 "Analysis_cox_otherdm_prevax", "Analysis_cox_otherdm_vax", "Analysis_cox_otherdm_unvax",
-                 "Analysis_cox_gestationaldm_prevax", "Analysis_cox_gestationaldm_vax", "Analysis_cox_gestationaldm_unvax",
-                 "Analysis_cox_t2dm_rec_prevax",
-                 "Analysis_cox_t2dm_post_rec_prevax",
-                 "Analysis_cox_t2dm_follow_prevax",
+    needs = list(
+#                 "Analysis_cox_t1dm_prevax", "Analysis_cox_t1dm_vax", "Analysis_cox_t1dm_unvax",
+#                 "Analysis_cox_t2dm_prevax", "Analysis_cox_t2dm_vax", "Analysis_cox_t2dm_unvax",
+#                 "Analysis_cox_t2dm_pre_rec_prevax", "Analysis_cox_t2dm_pre_rec_vax", "Analysis_cox_t2dm_pre_rec_unvax",
+            #     "Analysis_cox_t2dm_pd_prevax", "Analysis_cox_t2dm_pd_vax", "Analysis_cox_t2dm_pd_unvax",
+            #     "Analysis_cox_t2dm_pd_no_prevax", "Analysis_cox_t2dm_pd_no_vax", "Analysis_cox_t2dm_pd_no_unvax",
+            #     "Analysis_cox_t2dm_obes_prevax", "Analysis_cox_t2dm_obes_vax", "Analysis_cox_t2dm_obes_unvax",
+            #     "Analysis_cox_t2dm_obes_no_prevax", "Analysis_cox_t2dm_obes_no_vax", "Analysis_cox_t2dm_obes_no_unvax",
+            #     "Analysis_cox_otherdm_prevax", "Analysis_cox_otherdm_vax", "Analysis_cox_otherdm_unvax",
+            #     "Analysis_cox_gestationaldm_prevax", "Analysis_cox_gestationaldm_vax", "Analysis_cox_gestationaldm_unvax",
+            #     "Analysis_cox_t2dm_rec_prevax",
+            #     "Analysis_cox_t2dm_post_rec_prevax",
+            #     "Analysis_cox_t2dm_follow_prevax",
                  "Analysis_cox_t1dm_extended_follow_up_prevax", "Analysis_cox_t2dm_extended_follow_up_prevax", "Analysis_cox_otherdm_extended_follow_up_prevax", "Analysis_cox_gestationaldm_extended_follow_up_prevax",
                  "Analysis_cox_t2dm_follow_extended_follow_up_prevax", "Analysis_cox_t2dm_pd_extended_follow_up_prevax", "Analysis_cox_t2dm_pd_no_extended_follow_up_prevax",
                  "Analysis_cox_t2dm_obes_extended_follow_up_prevax", "Analysis_cox_t2dm_obes_no_extended_follow_up_prevax",
@@ -582,21 +583,21 @@ actions_list <- splice(
     moderately_sensitive = list(
       hr_output = "output/review/model/R_hr_output.csv",
       event_counts = "output/review/model/R_event_count_output.csv")
-  ),
+  )#,
   
   # Summarize follow-up
   
-  action(
-    name = "summary_follow_up",
-    run = "r:latest analysis/summary_follow_up.R",
-    needs = list(
-      "Analysis_cox_t2dm_prevax", 
-      "Analysis_cox_t2dm_vax", 
-      "Analysis_cox_t2dm_unvax"
-    ),
-    moderately_sensitive = list(
-      summary_follow_up = "output/summary_follow_up.csv")
-  )
+#  action(
+#    name = "summary_follow_up",
+#    run = "r:latest analysis/summary_follow_up.R",
+#    needs = list(
+#      "Analysis_cox_t2dm_prevax", 
+#      "Analysis_cox_t2dm_vax", 
+#      "Analysis_cox_t2dm_unvax"
+#    ),
+#    moderately_sensitive = list(
+#      summary_follow_up = "output/summary_follow_up.csv")
+#  )
   
 )
 

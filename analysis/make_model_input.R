@@ -60,7 +60,7 @@ for (i in 1:nrow(active_analyses)) {
   
   input <- dplyr::as_tibble(readr::read_rds(paste0("output/input_",active_analyses$cohort[i],"_stage1_diabetes",suffix,".rds")))
   
-  end_dates <- read_rds(paste0("output/follow_up_end_dates_",active_analyses$cohort[i],"_diabetes",suffix,".rds"))
+  end_dates <- readr::read_rds(paste0("output/follow_up_end_dates_",active_analyses$cohort[i],"_diabetes",suffix,".rds"))
   
   # Add end dates --------------------------------------------------------------
   print("Add end dates")
@@ -77,7 +77,7 @@ for (i in 1:nrow(active_analyses)) {
   
   colnames(end_dates) <- gsub(paste0(event_name,"_"),"",colnames(end_dates))
   
-  input <- input %>% left_join(end_dates, by = "patient_id")
+  input <- input %>% dplyr::left_join(end_dates, by = "patient_id")
   
   # Define end dates -----------------------------------------------------------
   print('Define data suffix')

@@ -2372,3 +2372,12 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_unvax-sub_covid_nonhospitalised-gestationaldm_unvax_sens.csv
 
+  make_model_output:
+    run: r:latest analysis/make_model_output.R
+    needs:
+    - cox_ipw-
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output.csv
+        model_output_midpoint6: output/model_output_midpoint6.csv
+

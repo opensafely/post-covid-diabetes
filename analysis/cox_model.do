@@ -22,6 +22,16 @@ shell gunzip "./output/ready-`name'.csv.gz"
 import delim using "./output/ready-`name'.csv", clear
 describe
 
+* Add cox_weight if missing
+
+capture confirm variable cox_weight
+if !_rc {
+	di in red "Variable cox_weight exists"
+}
+else {
+	gen cox_weight = 1
+}
+
 * Filter data
 
 keep patient_id exposure outcome fup_start fup_stop cox_weight cov_cat* cov_num* cov_bin*

@@ -167,7 +167,8 @@ bysort time: summarize(fup), detail
 if `gestationaldm'==1 {
 	stcox days* age_spline1 age_spline2, strata(region) vce(r)
 	est store min, title(Age_Sex)
-} else {
+} 
+else {
 	stcox days* i.cov_cat_sex age_spline1 age_spline2, strata(region) vce(r)
 	est store min, title(Age_Sex)
 }

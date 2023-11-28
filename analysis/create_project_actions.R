@@ -24,6 +24,14 @@ active_analyses <- read_rds("lib/active_analyses.rds")
 
 cohort_to_run_all <- c("prevax", "vax", "unvax")
 
+# Specify active analyses requiring Stata
+
+#run_stata <- c("")
+
+#stata <- active_analyses[active_analyses$name %in% run_stata]
+#stata$save_analysis_ready <-TRUE
+#stata$day0 <- grepl("1;",stata$cutpoints)
+
 # Create action function -------------------------------------------------------
 
 action <- function(
@@ -147,6 +155,7 @@ table2 <- function(cohort){
     )
   )
 }
+
 
 
 ##########################################################
@@ -462,8 +471,17 @@ actions_list <- splice(
                                                    age_spline = active_analyses$age_spline[x])), 
            recursive = FALSE
     )
-  )
+  ),
   
+  action(
+    name = "make_model_output",
+    run = "r:latest analysis/make_model_output.R",
+    needs = as.list(glue("cox_ipw-{active_analyses$name}")),
+    moderately_sensitive = list(
+      model_output = glue("output/model_output.csv"),
+      model_output_midpoint6 = glue("output/model_output_midpoint6.csv")
+    )
+  )
 )
 
 ## combine everything ----

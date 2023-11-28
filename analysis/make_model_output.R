@@ -53,6 +53,7 @@ for (i in files) {
                         person_time_total = NA,
                         outcome_time_median = NA,
                         strata_warning = "",
+                        obs_warning = "",
                         surv_formula = "",
                         input = "",
                         error = tmp$error)
@@ -92,7 +93,7 @@ print('Save model output')
 df <- df[,c("name","cohort","outcome","analysis","error","model","term",
             "lnhr","se_lnhr","hr","conf_low","conf_high",
             "N_total","N_exposed","N_events","person_time_total",
-            "outcome_time_median","strata_warning","surv_formula")]
+            "outcome_time_median","strata_warning","obs_warning","surv_formula")]
 
 readr::write_csv(df, "output/model_output.csv")
 
@@ -114,4 +115,3 @@ df <- dplyr::rename(df,
 print('Save model output')
 
 readr::write_csv(df, "output/model_output_midpoint6.csv")
-

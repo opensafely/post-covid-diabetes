@@ -3,34 +3,35 @@ library(yaml)
 library(here)
 library(glue)
 library(readr)
-#library(dplyr)
 
+# Set defaults -----------------------------------------------------------------
 
-###########################
-# Load information to use #
-###########################
-
-## defaults ----
 defaults_list <- list(
   version = "3.0",
   expectations= list(population_size=200000L)
 )
 
-# Load active analyses table
+# Load active analyses table ---------------------------------------------------
 
 active_analyses <- read_rds("lib/active_analyses.rds")
 
-# Specify cohorts
+# Specify cohorts --------------------------------------------------------------
 
 cohort_to_run_all <- c("prevax", "vax", "unvax")
 
-# Specify active analyses requiring Stata
+# Specify active analyses requiring Stata --------------------------------------
 
-#run_stata <- c("")
+run_stata <- c("cohort_unvax-sub_covid_hospitalised-t2dm_unvax_sens",
+               "cohort_prevax-sub_covid_hospitalised-t2dm_extended_follow_up",
+               "cohort_prevax-sub_covid_hospitalised-t2dm_obes_no_extended_follow_up",
+               "cohort_prevax-sub_covid_hospitalised-t2dm_pd_no_extended_follow_up",
+               "cohort_vax-sub_covid_hospitalised-t2dm_obes_no",
+               "cohort_vax-sub_covid_hospitalised-t2dm",
+               "cohort_prevax-main-gestationaldm_extended_follow_up",
+               "cohort_prevax-main-t1dm_extended_follow_up")
 
-#stata <- active_analyses[active_analyses$name %in% run_stata]
-#stata$save_analysis_ready <-TRUE
-#stata$day0 <- grepl("1;",stata$cutpoints)
+stata <- active_analyses[active_analyses$name %in% run_stata,]
+stata$save_analysis_ready <-TRUE
 
 # Create action function -------------------------------------------------------
 
@@ -156,7 +157,33 @@ table2 <- function(cohort){
   )
 }
 
+# Create function to make Stata models -----------------------------------------
 
+apply_stata_model_function <- function(name, cohort, analysis, ipw, strata, 
+                                       covariate_sex, covariate_age, covariate_other, 
+                                       cox_start, cox_stop, study_start, study_stop,
+                                       cut_points, controls_per_case,
+                                       total_event_threshold, episode_event_threshold,
+                                       covariate_threshold, age_spline, day0){
+  splice(
+    action(
+      name = glue("ready-{name}"),
+      run = glue("cox-ipw:v0.0.30 --df_input=model_input-{name}.rds --ipw={ipw} --exposure=exp_date --outcome=out_date --strata={strata} --covariate_sex={covariate_sex} --covariate_age={covariate_age} --covariate_other={covariate_other} --cox_start={cox_start} --cox_stop={cox_stop} --study_start={study_start} --study_stop={study_stop} --cut_points={cut_points} --controls_per_case={controls_per_case} --total_event_threshold={total_event_threshold} --episode_event_threshold={episode_event_threshold} --covariate_threshold={covariate_threshold} --age_spline={age_spline} --save_analysis_ready=TRUE --run_analysis=FALSE --df_output=model_output-{name}.csv"),
+      needs = list(glue("make_model_input-{name}")),
+      highly_sensitive = list(ready = glue("output/ready-{name}.csv.gz"))
+    ),
+    action(
+      name = glue("stata_cox_ipw-{name}"),
+      run = "stata-mp:latest analysis/cox_model.do",
+      arguments = c(name, day0),
+      needs = c(as.list(glue("ready-{name}"))),
+      moderately_sensitive = list(
+        stata_fup = glue("output/stata_fup-{name}.csv"),
+        stata_model_output = glue("output/stata_model_output-{name}.txt")
+      )
+    )
+  )
+}
 
 ##########################################################
 ## Define and combine all actions into a list of actions #
@@ -473,6 +500,31 @@ actions_list <- splice(
     )
   ),
   
+  splice(
+    unlist(lapply(1:nrow(stata), 
+                  function(x) apply_stata_model_function(name = stata$name[x],
+                                                         cohort = stata$cohort[x],
+                                                         analysis = stata$analysis[x],
+                                                         ipw = stata$ipw[x],
+                                                         strata = stata$strata[x],
+                                                         covariate_sex = stata$covariate_sex[x],
+                                                         covariate_age = stata$covariate_age[x],
+                                                         covariate_other = stata$covariate_other[x],
+                                                         cox_start = stata$cox_start[x],
+                                                         cox_stop = stata$cox_stop[x],
+                                                         study_start = stata$study_start[x],
+                                                         study_stop = stata$study_stop[x],
+                                                         cut_points = stata$cut_points[x],
+                                                         controls_per_case = stata$controls_per_case[x],
+                                                         total_event_threshold = stata$total_event_threshold[x],
+                                                         episode_event_threshold = stata$episode_event_threshold[x],
+                                                         covariate_threshold = stata$covariate_threshold[x],
+                                                         age_spline = stata$age_spline[x],
+                                                         day0 = "FALSE")), 
+           recursive = FALSE
+    )
+  ),
+  
   action(
     name = "make_model_output",
     run = "r:latest analysis/make_model_output.R",
@@ -480,6 +532,16 @@ actions_list <- splice(
     moderately_sensitive = list(
       model_output = glue("output/model_output.csv"),
       model_output_midpoint6 = glue("output/model_output_midpoint6.csv")
+    )
+  ),
+  
+  action(
+    name = "make_stata_model_output",
+    run = "r:latest analysis/make_stata_model_output.R",
+    needs = as.list(paste0("stata_cox_ipw-",stata$name)),
+    moderately_sensitive = list(
+      stata_model_output = glue("output/stata_model_output.csv"),
+      stata_model_output_rounded = glue("output/stata_model_output_midpoint6.csv")
     )
   )
 )

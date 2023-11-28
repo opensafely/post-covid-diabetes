@@ -25,10 +25,7 @@ describe
 * Add cox_weight if missing
 
 capture confirm variable cox_weight
-if !_rc {
-	di in red "Variable cox_weight exists"
-}
-else {
+if _rc {
 	gen cox_weight = 1
 }
 
@@ -47,6 +44,9 @@ rename cov_cat_region region
 
 local prevax_cohort = regexm("`name'", "_pre")
 display "`prevax_cohort'"
+
+local gestationaldm = regexm("`name'", "gestationaldm")
+display "`gestationaldm'"
 
 * Replace NA with missing value that Stata recognises
 
@@ -164,11 +164,17 @@ tab time outcome_status
 di "Total follow-up in days: " fup_total
 bysort time: summarize(fup), detail
 
-stcox days* i.cov_cat_sex age_spline1 age_spline2, strata(region) vce(r)
-est store min, title(Age_Sex)
+if `gestationaldm'==1 {
+	stcox days* age_spline1 age_spline2, strata(region) vce(r)
+	est store min, title(Age_Sex)
+} else {
+	stcox days* i.cov_cat_sex age_spline1 age_spline2, strata(region) vce(r)
+	est store min, title(Age_Sex)
+}
+
 stcox days* age_spline1 age_spline2 i.cov_cat_* cov_num_* cov_bin_*, strata(region) vce(r)
 est store max, title(Maximal)
-
+	
 estout * using "output/stata_model_output-`name'.txt", cells("b se t ci_l ci_u p") stats(risk N_fail N_sub N N_clust) replace 
 
 * Calculate median follow-up among individuals with the outcome

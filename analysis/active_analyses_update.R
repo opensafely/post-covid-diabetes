@@ -172,6 +172,30 @@ df <- df[,c("cohort",
             "age_spline",
             "analysis")]
 
+# Add day 0 analyses -----------------------------------------------------------
+
+tmp <- df[df$outcome %in% c("out_date_t2dm","out_date_t2dm_extended_follow_up","out_date_t2dm_unvax_sens") & 
+            df$analysis %in% c("main","sub_covid_hospitalised","sub_covid_nonhospitalised"),]
+
+tmp$analysis <- paste0("day0_",tmp$analysis)
+
+tmp$cut_points <- gsub("28;","1;28;",tmp$cut_points)
+
+df <- rbind(df,tmp)
+
+# Add detailed analyses -----------------------------------------------------------
+
+tmp <- df[df$outcome %in% c("out_date_t2dm","out_date_t2dm_extended_follow_up","out_date_t2dm_unvax_sens") & 
+            df$analysis %in% c("main"),]
+
+tmp$analysis <- paste0("detailed_",tmp$analysis)
+
+tmp$cut_points <- ifelse(tmp$cohort=="prevax",
+                         "7;14;28;56;84;197;365;714",
+                         "7;14;28;56;84;197")
+
+df <- rbind(df,tmp)
+
 # Assign unique name -----------------------------------------------------------
 
 df$name <- paste0("cohort_",df$cohort, "-", 

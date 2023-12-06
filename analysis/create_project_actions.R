@@ -29,7 +29,10 @@ run_stata <- c("cohort_unvax-sub_covid_hospitalised-t2dm_unvax_sens",
                "cohort_vax-sub_covid_hospitalised-t2dm",
                "cohort_prevax-main-gestationaldm_extended_follow_up",
                "cohort_prevax-main-t1dm_extended_follow_up",
-               "cohort_unvax-day0_sub_covid_hospitalised-t2dm_unvax_sens")
+               "cohort_unvax-day0_sub_covid_hospitalised-t2dm_unvax_sens",
+               "cohort_prevax-day0_sub_covid_hospitalised-t2dm_extended_follow_up",
+               "cohort_vax-day0_sub_covid_hospitalised-t2dm",
+               "cohort_unvax-day0_main-t2dm_unvax_sens")
 
 stata <- active_analyses[active_analyses$name %in% run_stata,]
 stata$save_analysis_ready <-TRUE
@@ -529,7 +532,7 @@ actions_list <- splice(
   action(
     name = "make_model_output",
     run = "r:latest analysis/make_model_output.R",
-    needs = as.list(glue("cox_ipw-{active_analyses$name}")),
+    needs = as.list(paste0("stata_cox_ipw-",setdiff(active_analyses$name, stata$name))),
     moderately_sensitive = list(
       model_output = glue("output/model_output.csv"),
       model_output_midpoint6 = glue("output/model_output_midpoint6.csv")

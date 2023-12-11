@@ -87,7 +87,7 @@ df <- df[!grepl("_rec",df$outcome),]
 
 df <- df[(df$cohort=="prevax" & grepl("_extended_follow_up",df$outcome)) |
            (df$cohort=="vax") |
-           (df$cohort=="unvax" & grepl("_unvax_sens",df$outcome)),]
+           (df$cohort=="unvax"),]
 
 # NOTE: Obesity and pre-diabetes subgroups have previously been incorporated as
 # edited outcomes. This is not best practice for the current setup however has 

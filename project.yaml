@@ -355,6 +355,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-main-t1dm.csv
 
+  make_model_input-cohort_unvax-main-t1dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-main-t1dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-main-t1dm.rds
+
+  cox_ipw-cohort_unvax-main-t1dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-main-t1dm.rds --ipw=FALSE
+      --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-main-t1dm.csv
+    needs:
+    - make_model_input-cohort_unvax-main-t1dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-main-t1dm.csv
+
   make_model_input-cohort_vax-sub_covid_hospitalised-t1dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_hospitalised-t1dm
     needs:
@@ -377,6 +400,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_hospitalised-t1dm.csv
+
+  make_model_input-cohort_unvax-sub_covid_hospitalised-t1dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_hospitalised-t1dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-t1dm.rds
+
+  cox_ipw-cohort_unvax-sub_covid_hospitalised-t1dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_hospitalised-t1dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_hospitalised-t1dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_hospitalised-t1dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_hospitalised-t1dm.csv
 
   make_model_input-cohort_vax-sub_covid_nonhospitalised-t1dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_nonhospitalised-t1dm
@@ -401,6 +447,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_nonhospitalised-t1dm.csv
 
+  make_model_input-cohort_unvax-sub_covid_nonhospitalised-t1dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_nonhospitalised-t1dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-t1dm.rds
+
+  cox_ipw-cohort_unvax-sub_covid_nonhospitalised-t1dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_nonhospitalised-t1dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_nonhospitalised-t1dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_nonhospitalised-t1dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_nonhospitalised-t1dm.csv
+
   make_model_input-cohort_vax-main-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-main-t2dm
     needs:
@@ -423,6 +492,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-main-t2dm.csv
+
+  make_model_input-cohort_unvax-main-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-main-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-main-t2dm.rds
+
+  cox_ipw-cohort_unvax-main-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-main-t2dm.rds --ipw=FALSE
+      --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-main-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-main-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-main-t2dm.csv
 
   make_model_input-cohort_vax-sub_covid_hospitalised-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_hospitalised-t2dm
@@ -447,6 +539,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_hospitalised-t2dm.csv
 
+  make_model_input-cohort_unvax-sub_covid_hospitalised-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_hospitalised-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-t2dm.rds
+
+  cox_ipw-cohort_unvax-sub_covid_hospitalised-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_hospitalised-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_hospitalised-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_hospitalised-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_hospitalised-t2dm.csv
+
   make_model_input-cohort_vax-sub_covid_nonhospitalised-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_nonhospitalised-t2dm
     needs:
@@ -469,6 +584,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_nonhospitalised-t2dm.csv
+
+  make_model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_nonhospitalised-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm.rds
+
+  cox_ipw-cohort_unvax-sub_covid_nonhospitalised-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_nonhospitalised-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_nonhospitalised-t2dm.csv
 
   make_model_input-cohort_vax-sub_age_18_39-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_age_18_39-t2dm
@@ -493,6 +631,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_age_18_39-t2dm.csv
 
+  make_model_input-cohort_unvax-sub_age_18_39-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_age_18_39-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_age_18_39-t2dm.rds
+
+  cox_ipw-cohort_unvax-sub_age_18_39-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_age_18_39-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=FALSE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_age_18_39-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_age_18_39-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_age_18_39-t2dm.csv
+
   make_model_input-cohort_vax-sub_age_40_59-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_age_40_59-t2dm
     needs:
@@ -515,6 +676,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_age_40_59-t2dm.csv
+
+  make_model_input-cohort_unvax-sub_age_40_59-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_age_40_59-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_age_40_59-t2dm.rds
+
+  cox_ipw-cohort_unvax-sub_age_40_59-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_age_40_59-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=FALSE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_age_40_59-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_age_40_59-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_age_40_59-t2dm.csv
 
   make_model_input-cohort_vax-sub_age_60_79-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_age_60_79-t2dm
@@ -539,6 +723,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_age_60_79-t2dm.csv
 
+  make_model_input-cohort_unvax-sub_age_60_79-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_age_60_79-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_age_60_79-t2dm.rds
+
+  cox_ipw-cohort_unvax-sub_age_60_79-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_age_60_79-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=FALSE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_age_60_79-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_age_60_79-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_age_60_79-t2dm.csv
+
   make_model_input-cohort_vax-sub_age_80_110-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_age_80_110-t2dm
     needs:
@@ -561,6 +768,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_age_80_110-t2dm.csv
+
+  make_model_input-cohort_unvax-sub_age_80_110-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_age_80_110-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_age_80_110-t2dm.rds
+
+  cox_ipw-cohort_unvax-sub_age_80_110-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_age_80_110-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=FALSE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_age_80_110-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_age_80_110-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_age_80_110-t2dm.csv
 
   make_model_input-cohort_vax-sub_sex_male-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_sex_male-t2dm
@@ -585,6 +815,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_sex_male-t2dm.csv
 
+  make_model_input-cohort_unvax-sub_sex_male-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_sex_male-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_sex_male-t2dm.rds
+
+  cox_ipw-cohort_unvax-sub_sex_male-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_sex_male-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=NULL
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_sex_male-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_sex_male-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_sex_male-t2dm.csv
+
   make_model_input-cohort_vax-sub_sex_female-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_sex_female-t2dm
     needs:
@@ -607,6 +860,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_sex_female-t2dm.csv
+
+  make_model_input-cohort_unvax-sub_sex_female-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_sex_female-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_sex_female-t2dm.rds
+
+  cox_ipw-cohort_unvax-sub_sex_female-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_sex_female-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=NULL
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_sex_female-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_sex_female-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_sex_female-t2dm.csv
 
   make_model_input-cohort_vax-sub_ethnicity_white-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_ethnicity_white-t2dm
@@ -631,6 +907,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_ethnicity_white-t2dm.csv
 
+  make_model_input-cohort_unvax-sub_ethnicity_white-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_ethnicity_white-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_ethnicity_white-t2dm.rds
+
+  cox_ipw-cohort_unvax-sub_ethnicity_white-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_ethnicity_white-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_ethnicity_white-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_ethnicity_white-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_ethnicity_white-t2dm.csv
+
   make_model_input-cohort_vax-sub_ethnicity_mixed-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_ethnicity_mixed-t2dm
     needs:
@@ -653,6 +952,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_ethnicity_mixed-t2dm.csv
+
+  make_model_input-cohort_unvax-sub_ethnicity_mixed-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_ethnicity_mixed-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_ethnicity_mixed-t2dm.rds
+
+  cox_ipw-cohort_unvax-sub_ethnicity_mixed-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_ethnicity_mixed-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_ethnicity_mixed-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_ethnicity_mixed-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_ethnicity_mixed-t2dm.csv
 
   make_model_input-cohort_vax-sub_ethnicity_asian-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_ethnicity_asian-t2dm
@@ -677,6 +999,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_ethnicity_asian-t2dm.csv
 
+  make_model_input-cohort_unvax-sub_ethnicity_asian-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_ethnicity_asian-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_ethnicity_asian-t2dm.rds
+
+  cox_ipw-cohort_unvax-sub_ethnicity_asian-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_ethnicity_asian-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_ethnicity_asian-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_ethnicity_asian-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_ethnicity_asian-t2dm.csv
+
   make_model_input-cohort_vax-sub_ethnicity_black-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_ethnicity_black-t2dm
     needs:
@@ -699,6 +1044,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_ethnicity_black-t2dm.csv
+
+  make_model_input-cohort_unvax-sub_ethnicity_black-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_ethnicity_black-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_ethnicity_black-t2dm.rds
+
+  cox_ipw-cohort_unvax-sub_ethnicity_black-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_ethnicity_black-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_ethnicity_black-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_ethnicity_black-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_ethnicity_black-t2dm.csv
 
   make_model_input-cohort_vax-sub_ethnicity_other-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_ethnicity_other-t2dm
@@ -723,6 +1091,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_ethnicity_other-t2dm.csv
 
+  make_model_input-cohort_unvax-sub_ethnicity_other-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_ethnicity_other-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_ethnicity_other-t2dm.rds
+
+  cox_ipw-cohort_unvax-sub_ethnicity_other-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_ethnicity_other-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_ethnicity_other-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_ethnicity_other-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_ethnicity_other-t2dm.csv
+
   make_model_input-cohort_vax-sub_ethnicity_missing-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_ethnicity_missing-t2dm
     needs:
@@ -745,6 +1136,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_ethnicity_missing-t2dm.csv
+
+  make_model_input-cohort_unvax-sub_ethnicity_missing-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_ethnicity_missing-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_ethnicity_missing-t2dm.rds
+
+  cox_ipw-cohort_unvax-sub_ethnicity_missing-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_ethnicity_missing-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_ethnicity_missing-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_ethnicity_missing-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_ethnicity_missing-t2dm.csv
 
   make_model_input-cohort_vax-main-t2dm_pd:
     run: r:latest analysis/make_model_input.R cohort_vax-main-t2dm_pd
@@ -769,6 +1183,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-main-t2dm_pd.csv
 
+  make_model_input-cohort_unvax-main-t2dm_pd:
+    run: r:latest analysis/make_model_input.R cohort_unvax-main-t2dm_pd
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-main-t2dm_pd.rds
+
+  cox_ipw-cohort_unvax-main-t2dm_pd:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-main-t2dm_pd.rds --ipw=FALSE
+      --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-main-t2dm_pd.csv
+    needs:
+    - make_model_input-cohort_unvax-main-t2dm_pd
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-main-t2dm_pd.csv
+
   make_model_input-cohort_vax-sub_covid_hospitalised-t2dm_pd:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_hospitalised-t2dm_pd
     needs:
@@ -791,6 +1228,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_hospitalised-t2dm_pd.csv
+
+  make_model_input-cohort_unvax-sub_covid_hospitalised-t2dm_pd:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_hospitalised-t2dm_pd
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-t2dm_pd.rds
+
+  cox_ipw-cohort_unvax-sub_covid_hospitalised-t2dm_pd:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_hospitalised-t2dm_pd.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_hospitalised-t2dm_pd.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_hospitalised-t2dm_pd
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_hospitalised-t2dm_pd.csv
 
   make_model_input-cohort_vax-sub_covid_nonhospitalised-t2dm_pd:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_nonhospitalised-t2dm_pd
@@ -815,6 +1275,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_nonhospitalised-t2dm_pd.csv
 
+  make_model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_nonhospitalised-t2dm_pd
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd.rds
+
+  cox_ipw-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd.csv
+
   make_model_input-cohort_vax-main-t2dm_pd_no:
     run: r:latest analysis/make_model_input.R cohort_vax-main-t2dm_pd_no
     needs:
@@ -837,6 +1320,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-main-t2dm_pd_no.csv
+
+  make_model_input-cohort_unvax-main-t2dm_pd_no:
+    run: r:latest analysis/make_model_input.R cohort_unvax-main-t2dm_pd_no
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-main-t2dm_pd_no.rds
+
+  cox_ipw-cohort_unvax-main-t2dm_pd_no:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-main-t2dm_pd_no.rds --ipw=FALSE
+      --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-main-t2dm_pd_no.csv
+    needs:
+    - make_model_input-cohort_unvax-main-t2dm_pd_no
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-main-t2dm_pd_no.csv
 
   make_model_input-cohort_vax-sub_covid_hospitalised-t2dm_pd_no:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_hospitalised-t2dm_pd_no
@@ -861,6 +1367,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_hospitalised-t2dm_pd_no.csv
 
+  make_model_input-cohort_unvax-sub_covid_hospitalised-t2dm_pd_no:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_hospitalised-t2dm_pd_no
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-t2dm_pd_no.rds
+
+  cox_ipw-cohort_unvax-sub_covid_hospitalised-t2dm_pd_no:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_hospitalised-t2dm_pd_no.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_hospitalised-t2dm_pd_no.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_hospitalised-t2dm_pd_no
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_hospitalised-t2dm_pd_no.csv
+
   make_model_input-cohort_vax-sub_covid_nonhospitalised-t2dm_pd_no:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_nonhospitalised-t2dm_pd_no
     needs:
@@ -883,6 +1412,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_nonhospitalised-t2dm_pd_no.csv
+
+  make_model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd_no:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_nonhospitalised-t2dm_pd_no
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd_no.rds
+
+  cox_ipw-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd_no:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd_no.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd_no.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd_no
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd_no.csv
 
   make_model_input-cohort_vax-main-t2dm_obes:
     run: r:latest analysis/make_model_input.R cohort_vax-main-t2dm_obes
@@ -907,6 +1459,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-main-t2dm_obes.csv
 
+  make_model_input-cohort_unvax-main-t2dm_obes:
+    run: r:latest analysis/make_model_input.R cohort_unvax-main-t2dm_obes
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-main-t2dm_obes.rds
+
+  cox_ipw-cohort_unvax-main-t2dm_obes:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-main-t2dm_obes.rds --ipw=FALSE
+      --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-main-t2dm_obes.csv
+    needs:
+    - make_model_input-cohort_unvax-main-t2dm_obes
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-main-t2dm_obes.csv
+
   make_model_input-cohort_vax-sub_covid_hospitalised-t2dm_obes:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_hospitalised-t2dm_obes
     needs:
@@ -929,6 +1504,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_hospitalised-t2dm_obes.csv
+
+  make_model_input-cohort_unvax-sub_covid_hospitalised-t2dm_obes:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_hospitalised-t2dm_obes
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-t2dm_obes.rds
+
+  cox_ipw-cohort_unvax-sub_covid_hospitalised-t2dm_obes:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_hospitalised-t2dm_obes.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_hospitalised-t2dm_obes.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_hospitalised-t2dm_obes
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_hospitalised-t2dm_obes.csv
 
   make_model_input-cohort_vax-sub_covid_nonhospitalised-t2dm_obes:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_nonhospitalised-t2dm_obes
@@ -953,6 +1551,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_nonhospitalised-t2dm_obes.csv
 
+  make_model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_nonhospitalised-t2dm_obes
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes.rds
+
+  cox_ipw-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes.csv
+
   make_model_input-cohort_vax-main-t2dm_obes_no:
     run: r:latest analysis/make_model_input.R cohort_vax-main-t2dm_obes_no
     needs:
@@ -975,6 +1596,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-main-t2dm_obes_no.csv
+
+  make_model_input-cohort_unvax-main-t2dm_obes_no:
+    run: r:latest analysis/make_model_input.R cohort_unvax-main-t2dm_obes_no
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-main-t2dm_obes_no.rds
+
+  cox_ipw-cohort_unvax-main-t2dm_obes_no:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-main-t2dm_obes_no.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-main-t2dm_obes_no.csv
+    needs:
+    - make_model_input-cohort_unvax-main-t2dm_obes_no
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-main-t2dm_obes_no.csv
 
   make_model_input-cohort_vax-sub_covid_hospitalised-t2dm_obes_no:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_hospitalised-t2dm_obes_no
@@ -999,6 +1643,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_hospitalised-t2dm_obes_no.csv
 
+  make_model_input-cohort_unvax-sub_covid_hospitalised-t2dm_obes_no:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_hospitalised-t2dm_obes_no
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-t2dm_obes_no.rds
+
+  cox_ipw-cohort_unvax-sub_covid_hospitalised-t2dm_obes_no:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_hospitalised-t2dm_obes_no.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_hospitalised-t2dm_obes_no.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_hospitalised-t2dm_obes_no
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_hospitalised-t2dm_obes_no.csv
+
   make_model_input-cohort_vax-sub_covid_nonhospitalised-t2dm_obes_no:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_nonhospitalised-t2dm_obes_no
     needs:
@@ -1021,6 +1688,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_nonhospitalised-t2dm_obes_no.csv
+
+  make_model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes_no:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_nonhospitalised-t2dm_obes_no
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes_no.rds
+
+  cox_ipw-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes_no:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes_no.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes_no.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes_no
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes_no.csv
 
   make_model_input-cohort_vax-main-otherdm:
     run: r:latest analysis/make_model_input.R cohort_vax-main-otherdm
@@ -1045,6 +1735,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-main-otherdm.csv
 
+  make_model_input-cohort_unvax-main-otherdm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-main-otherdm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-main-otherdm.rds
+
+  cox_ipw-cohort_unvax-main-otherdm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-main-otherdm.rds --ipw=FALSE
+      --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-main-otherdm.csv
+    needs:
+    - make_model_input-cohort_unvax-main-otherdm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-main-otherdm.csv
+
   make_model_input-cohort_vax-sub_covid_hospitalised-otherdm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_hospitalised-otherdm
     needs:
@@ -1067,6 +1780,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_hospitalised-otherdm.csv
+
+  make_model_input-cohort_unvax-sub_covid_hospitalised-otherdm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_hospitalised-otherdm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-otherdm.rds
+
+  cox_ipw-cohort_unvax-sub_covid_hospitalised-otherdm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_hospitalised-otherdm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_hospitalised-otherdm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_hospitalised-otherdm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_hospitalised-otherdm.csv
 
   make_model_input-cohort_vax-sub_covid_nonhospitalised-otherdm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_nonhospitalised-otherdm
@@ -1091,6 +1827,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_nonhospitalised-otherdm.csv
 
+  make_model_input-cohort_unvax-sub_covid_nonhospitalised-otherdm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_nonhospitalised-otherdm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-otherdm.rds
+
+  cox_ipw-cohort_unvax-sub_covid_nonhospitalised-otherdm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_nonhospitalised-otherdm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_nonhospitalised-otherdm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_nonhospitalised-otherdm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_nonhospitalised-otherdm.csv
+
   make_model_input-cohort_vax-main-gestationaldm:
     run: r:latest analysis/make_model_input.R cohort_vax-main-gestationaldm
     needs:
@@ -1113,6 +1872,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-main-gestationaldm.csv
+
+  make_model_input-cohort_unvax-main-gestationaldm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-main-gestationaldm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-main-gestationaldm.rds
+
+  cox_ipw-cohort_unvax-main-gestationaldm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-main-gestationaldm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-main-gestationaldm.csv
+    needs:
+    - make_model_input-cohort_unvax-main-gestationaldm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-main-gestationaldm.csv
 
   make_model_input-cohort_vax-sub_covid_hospitalised-gestationaldm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_hospitalised-gestationaldm
@@ -1137,6 +1919,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_hospitalised-gestationaldm.csv
 
+  make_model_input-cohort_unvax-sub_covid_hospitalised-gestationaldm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_hospitalised-gestationaldm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-gestationaldm.rds
+
+  cox_ipw-cohort_unvax-sub_covid_hospitalised-gestationaldm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_hospitalised-gestationaldm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_hospitalised-gestationaldm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_hospitalised-gestationaldm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_hospitalised-gestationaldm.csv
+
   make_model_input-cohort_vax-sub_covid_nonhospitalised-gestationaldm:
     run: r:latest analysis/make_model_input.R cohort_vax-sub_covid_nonhospitalised-gestationaldm
     needs:
@@ -1159,6 +1964,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-sub_covid_nonhospitalised-gestationaldm.csv
+
+  make_model_input-cohort_unvax-sub_covid_nonhospitalised-gestationaldm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-sub_covid_nonhospitalised-gestationaldm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-gestationaldm.rds
+
+  cox_ipw-cohort_unvax-sub_covid_nonhospitalised-gestationaldm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-sub_covid_nonhospitalised-gestationaldm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-sub_covid_nonhospitalised-gestationaldm.csv
+    needs:
+    - make_model_input-cohort_unvax-sub_covid_nonhospitalised-gestationaldm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-sub_covid_nonhospitalised-gestationaldm.csv
 
   make_model_input-cohort_prevax-main-t1dm_extended_follow_up:
     run: r:latest analysis/make_model_input.R cohort_prevax-main-t1dm_extended_follow_up
@@ -2395,6 +3223,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-day0_main-t2dm.csv
 
+  make_model_input-cohort_unvax-day0_main-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-day0_main-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-day0_main-t2dm.rds
+
+  cox_ipw-cohort_unvax-day0_main-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-day0_main-t2dm.rds --ipw=FALSE
+      --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=1;28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-day0_main-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-day0_main-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-day0_main-t2dm.csv
+
   make_model_input-cohort_vax-day0_sub_covid_hospitalised-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-day0_sub_covid_hospitalised-t2dm
     needs:
@@ -2418,6 +3269,29 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-day0_sub_covid_hospitalised-t2dm.csv
 
+  make_model_input-cohort_unvax-day0_sub_covid_hospitalised-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-day0_sub_covid_hospitalised-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-day0_sub_covid_hospitalised-t2dm.rds
+
+  cox_ipw-cohort_unvax-day0_sub_covid_hospitalised-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-day0_sub_covid_hospitalised-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=1;28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-day0_sub_covid_hospitalised-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-day0_sub_covid_hospitalised-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-day0_sub_covid_hospitalised-t2dm.csv
+
   make_model_input-cohort_vax-day0_sub_covid_nonhospitalised-t2dm:
     run: r:latest analysis/make_model_input.R cohort_vax-day0_sub_covid_nonhospitalised-t2dm
     needs:
@@ -2440,6 +3314,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-day0_sub_covid_nonhospitalised-t2dm.csv
+
+  make_model_input-cohort_unvax-day0_sub_covid_nonhospitalised-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-day0_sub_covid_nonhospitalised-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-day0_sub_covid_nonhospitalised-t2dm.rds
+
+  cox_ipw-cohort_unvax-day0_sub_covid_nonhospitalised-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-day0_sub_covid_nonhospitalised-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=1;28;197 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_unvax-day0_sub_covid_nonhospitalised-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-day0_sub_covid_nonhospitalised-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-day0_sub_covid_nonhospitalised-t2dm.csv
 
   make_model_input-cohort_prevax-day0_main-t2dm_extended_follow_up:
     run: r:latest analysis/make_model_input.R cohort_prevax-day0_main-t2dm_extended_follow_up
@@ -2604,6 +3501,29 @@ actions:
     outputs:
       moderately_sensitive:
         model_output: output/model_output-cohort_vax-detailed_main-t2dm.csv
+
+  make_model_input-cohort_unvax-detailed_main-t2dm:
+    run: r:latest analysis/make_model_input.R cohort_unvax-detailed_main-t2dm
+    needs:
+    - stage1_data_cleaning_unvax
+    - stage1_end_date_table_unvax
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_unvax-detailed_main-t2dm.rds
+
+  cox_ipw-cohort_unvax-detailed_main-t2dm:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_unvax-detailed_main-t2dm.rds
+      --ipw=FALSE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
+      --study_stop=2021-12-14 --cut_points=7;14;28;56;84;197 --controls_per_case=20
+      --total_event_threshold=50 --episode_event_threshold=5 --covariate_threshold=5
+      --age_spline=TRUE --save_analysis_ready=FALSE --run_analysis=TRUE --df_output=model_output-cohort_unvax-detailed_main-t2dm.csv
+    needs:
+    - make_model_input-cohort_unvax-detailed_main-t2dm
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_unvax-detailed_main-t2dm.csv
 
   make_model_input-cohort_prevax-detailed_main-t2dm_extended_follow_up:
     run: r:latest analysis/make_model_input.R cohort_prevax-detailed_main-t2dm_extended_follow_up
@@ -2860,7 +3780,7 @@ actions:
 
   stata_cox_ipw-cohort_vax-day0_sub_covid_hospitalised-t2dm:
     run: stata-mp:latest analysis/cox_model.do cohort_vax-day0_sub_covid_hospitalised-t2dm
-      FALSE
+      TRUE
     needs:
     - ready-cohort_vax-day0_sub_covid_hospitalised-t2dm
     outputs:
@@ -2884,7 +3804,7 @@ actions:
 
   stata_cox_ipw-cohort_prevax-day0_sub_covid_hospitalised-t2dm_extended_follow_up:
     run: stata-mp:latest analysis/cox_model.do cohort_prevax-day0_sub_covid_hospitalised-t2dm_extended_follow_up
-      FALSE
+      TRUE
     needs:
     - ready-cohort_prevax-day0_sub_covid_hospitalised-t2dm_extended_follow_up
     outputs:
@@ -2908,7 +3828,7 @@ actions:
 
   stata_cox_ipw-cohort_unvax-day0_main-t2dm_unvax_sens:
     run: stata-mp:latest analysis/cox_model.do cohort_unvax-day0_main-t2dm_unvax_sens
-      FALSE
+      TRUE
     needs:
     - ready-cohort_unvax-day0_main-t2dm_unvax_sens
     outputs:
@@ -2932,7 +3852,7 @@ actions:
 
   stata_cox_ipw-cohort_unvax-day0_sub_covid_hospitalised-t2dm_unvax_sens:
     run: stata-mp:latest analysis/cox_model.do cohort_unvax-day0_sub_covid_hospitalised-t2dm_unvax_sens
-      FALSE
+      TRUE
     needs:
     - ready-cohort_unvax-day0_sub_covid_hospitalised-t2dm_unvax_sens
     outputs:
@@ -2944,39 +3864,75 @@ actions:
     run: r:latest analysis/make_model_output.R
     needs:
     - cox_ipw-cohort_vax-main-t1dm
+    - cox_ipw-cohort_unvax-main-t1dm
     - cox_ipw-cohort_vax-sub_covid_hospitalised-t1dm
+    - cox_ipw-cohort_unvax-sub_covid_hospitalised-t1dm
     - cox_ipw-cohort_vax-sub_covid_nonhospitalised-t1dm
+    - cox_ipw-cohort_unvax-sub_covid_nonhospitalised-t1dm
     - cox_ipw-cohort_vax-main-t2dm
+    - cox_ipw-cohort_unvax-main-t2dm
+    - cox_ipw-cohort_unvax-sub_covid_hospitalised-t2dm
     - cox_ipw-cohort_vax-sub_covid_nonhospitalised-t2dm
+    - cox_ipw-cohort_unvax-sub_covid_nonhospitalised-t2dm
     - cox_ipw-cohort_vax-sub_age_18_39-t2dm
+    - cox_ipw-cohort_unvax-sub_age_18_39-t2dm
     - cox_ipw-cohort_vax-sub_age_40_59-t2dm
+    - cox_ipw-cohort_unvax-sub_age_40_59-t2dm
     - cox_ipw-cohort_vax-sub_age_60_79-t2dm
+    - cox_ipw-cohort_unvax-sub_age_60_79-t2dm
     - cox_ipw-cohort_vax-sub_age_80_110-t2dm
+    - cox_ipw-cohort_unvax-sub_age_80_110-t2dm
     - cox_ipw-cohort_vax-sub_sex_male-t2dm
+    - cox_ipw-cohort_unvax-sub_sex_male-t2dm
     - cox_ipw-cohort_vax-sub_sex_female-t2dm
+    - cox_ipw-cohort_unvax-sub_sex_female-t2dm
     - cox_ipw-cohort_vax-sub_ethnicity_white-t2dm
+    - cox_ipw-cohort_unvax-sub_ethnicity_white-t2dm
     - cox_ipw-cohort_vax-sub_ethnicity_mixed-t2dm
+    - cox_ipw-cohort_unvax-sub_ethnicity_mixed-t2dm
     - cox_ipw-cohort_vax-sub_ethnicity_asian-t2dm
+    - cox_ipw-cohort_unvax-sub_ethnicity_asian-t2dm
     - cox_ipw-cohort_vax-sub_ethnicity_black-t2dm
+    - cox_ipw-cohort_unvax-sub_ethnicity_black-t2dm
     - cox_ipw-cohort_vax-sub_ethnicity_other-t2dm
+    - cox_ipw-cohort_unvax-sub_ethnicity_other-t2dm
     - cox_ipw-cohort_vax-sub_ethnicity_missing-t2dm
+    - cox_ipw-cohort_unvax-sub_ethnicity_missing-t2dm
     - cox_ipw-cohort_vax-main-t2dm_pd
+    - cox_ipw-cohort_unvax-main-t2dm_pd
     - cox_ipw-cohort_vax-sub_covid_hospitalised-t2dm_pd
+    - cox_ipw-cohort_unvax-sub_covid_hospitalised-t2dm_pd
     - cox_ipw-cohort_vax-sub_covid_nonhospitalised-t2dm_pd
+    - cox_ipw-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd
     - cox_ipw-cohort_vax-main-t2dm_pd_no
+    - cox_ipw-cohort_unvax-main-t2dm_pd_no
     - cox_ipw-cohort_vax-sub_covid_hospitalised-t2dm_pd_no
+    - cox_ipw-cohort_unvax-sub_covid_hospitalised-t2dm_pd_no
     - cox_ipw-cohort_vax-sub_covid_nonhospitalised-t2dm_pd_no
+    - cox_ipw-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd_no
     - cox_ipw-cohort_vax-main-t2dm_obes
+    - cox_ipw-cohort_unvax-main-t2dm_obes
     - cox_ipw-cohort_vax-sub_covid_hospitalised-t2dm_obes
+    - cox_ipw-cohort_unvax-sub_covid_hospitalised-t2dm_obes
     - cox_ipw-cohort_vax-sub_covid_nonhospitalised-t2dm_obes
+    - cox_ipw-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes
     - cox_ipw-cohort_vax-main-t2dm_obes_no
+    - cox_ipw-cohort_unvax-main-t2dm_obes_no
+    - cox_ipw-cohort_unvax-sub_covid_hospitalised-t2dm_obes_no
     - cox_ipw-cohort_vax-sub_covid_nonhospitalised-t2dm_obes_no
+    - cox_ipw-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes_no
     - cox_ipw-cohort_vax-main-otherdm
+    - cox_ipw-cohort_unvax-main-otherdm
     - cox_ipw-cohort_vax-sub_covid_hospitalised-otherdm
+    - cox_ipw-cohort_unvax-sub_covid_hospitalised-otherdm
     - cox_ipw-cohort_vax-sub_covid_nonhospitalised-otherdm
+    - cox_ipw-cohort_unvax-sub_covid_nonhospitalised-otherdm
     - cox_ipw-cohort_vax-main-gestationaldm
+    - cox_ipw-cohort_unvax-main-gestationaldm
     - cox_ipw-cohort_vax-sub_covid_hospitalised-gestationaldm
+    - cox_ipw-cohort_unvax-sub_covid_hospitalised-gestationaldm
     - cox_ipw-cohort_vax-sub_covid_nonhospitalised-gestationaldm
+    - cox_ipw-cohort_unvax-sub_covid_nonhospitalised-gestationaldm
     - cox_ipw-cohort_prevax-sub_covid_hospitalised-t1dm_extended_follow_up
     - cox_ipw-cohort_prevax-sub_covid_nonhospitalised-t1dm_extended_follow_up
     - cox_ipw-cohort_prevax-main-t2dm_extended_follow_up
@@ -3023,11 +3979,15 @@ actions:
     - cox_ipw-cohort_unvax-sub_covid_hospitalised-gestationaldm_unvax_sens
     - cox_ipw-cohort_unvax-sub_covid_nonhospitalised-gestationaldm_unvax_sens
     - cox_ipw-cohort_vax-day0_main-t2dm
+    - cox_ipw-cohort_unvax-day0_main-t2dm
+    - cox_ipw-cohort_unvax-day0_sub_covid_hospitalised-t2dm
     - cox_ipw-cohort_vax-day0_sub_covid_nonhospitalised-t2dm
+    - cox_ipw-cohort_unvax-day0_sub_covid_nonhospitalised-t2dm
     - cox_ipw-cohort_prevax-day0_main-t2dm_extended_follow_up
     - cox_ipw-cohort_prevax-day0_sub_covid_nonhospitalised-t2dm_extended_follow_up
     - cox_ipw-cohort_unvax-day0_sub_covid_nonhospitalised-t2dm_unvax_sens
     - cox_ipw-cohort_vax-detailed_main-t2dm
+    - cox_ipw-cohort_unvax-detailed_main-t2dm
     - cox_ipw-cohort_prevax-detailed_main-t2dm_extended_follow_up
     - cox_ipw-cohort_unvax-detailed_main-t2dm_unvax_sens
     outputs:

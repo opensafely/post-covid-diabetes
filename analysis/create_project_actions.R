@@ -36,6 +36,7 @@ run_stata <- c("cohort_unvax-sub_covid_hospitalised-t2dm_unvax_sens",
 
 stata <- active_analyses[active_analyses$name %in% run_stata,]
 stata$save_analysis_ready <-TRUE
+stata$day0 <- grepl("1;",stata$cut_points)
 
 # Create action function -------------------------------------------------------
 
@@ -524,7 +525,7 @@ actions_list <- splice(
                                                          episode_event_threshold = stata$episode_event_threshold[x],
                                                          covariate_threshold = stata$covariate_threshold[x],
                                                          age_spline = stata$age_spline[x],
-                                                         day0 = "FALSE")), 
+                                                         day0 = stata$day0[x])), 
            recursive = FALSE
     )
   ),

@@ -294,9 +294,17 @@ actions:
     run: r:latest analysis/table2.R vax
     needs:
     - make_model_input-cohort_vax-main-t1dm
+    - make_model_input-cohort_vax-sub_covid_hospitalised-t1dm
+    - make_model_input-cohort_vax-sub_covid_nonhospitalised-t1dm
     - make_model_input-cohort_vax-main-t2dm
+    - make_model_input-cohort_vax-sub_covid_hospitalised-t2dm
+    - make_model_input-cohort_vax-sub_covid_nonhospitalised-t2dm
     - make_model_input-cohort_vax-main-otherdm
+    - make_model_input-cohort_vax-sub_covid_hospitalised-otherdm
+    - make_model_input-cohort_vax-sub_covid_nonhospitalised-otherdm
     - make_model_input-cohort_vax-main-gestationaldm
+    - make_model_input-cohort_vax-sub_covid_hospitalised-gestationaldm
+    - make_model_input-cohort_vax-sub_covid_nonhospitalised-gestationaldm
     outputs:
       moderately_sensitive:
         table2: output/table2_vax.csv
@@ -308,9 +316,17 @@ actions:
     run: r:latest analysis/table2.R unvax
     needs:
     - make_model_input-cohort_unvax-main-t1dm
+    - make_model_input-cohort_unvax-sub_covid_hospitalised-t1dm
+    - make_model_input-cohort_unvax-sub_covid_nonhospitalised-t1dm
     - make_model_input-cohort_unvax-main-t2dm
+    - make_model_input-cohort_unvax-sub_covid_hospitalised-t2dm
+    - make_model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm
     - make_model_input-cohort_unvax-main-otherdm
+    - make_model_input-cohort_unvax-sub_covid_hospitalised-otherdm
+    - make_model_input-cohort_unvax-sub_covid_nonhospitalised-otherdm
     - make_model_input-cohort_unvax-main-gestationaldm
+    - make_model_input-cohort_unvax-sub_covid_hospitalised-gestationaldm
+    - make_model_input-cohort_unvax-sub_covid_nonhospitalised-gestationaldm
     outputs:
       moderately_sensitive:
         table2: output/table2_unvax.csv
@@ -322,10 +338,20 @@ actions:
     run: r:latest analysis/table2.R prevax
     needs:
     - make_model_input-cohort_prevax-main-t1dm_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_hospitalised-t1dm_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_nonhospitalised-t1dm_extended_follow_up
     - make_model_input-cohort_prevax-main-t2dm_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_hospitalised-t2dm_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_nonhospitalised-t2dm_extended_follow_up
     - make_model_input-cohort_prevax-main-otherdm_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_hospitalised-otherdm_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_nonhospitalised-otherdm_extended_follow_up
     - make_model_input-cohort_prevax-main-gestationaldm_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_hospitalised-gestationaldm_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_nonhospitalised-gestationaldm_extended_follow_up
     - make_model_input-cohort_prevax-main-t2dm_follow_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_nonhospitalised-t2dm_follow_extended_follow_up
     outputs:
       moderately_sensitive:
         table2: output/table2_prevax.csv

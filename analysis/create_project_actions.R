@@ -168,7 +168,9 @@ table2 <- function(cohort){
   
   table2_names <- active_analyses[active_analyses$cohort=={cohort} & 
                                     active_analyses$outcome %in% select & 
-                                    active_analyses$analysis=="main",]$name
+                                    active_analyses$analysis %in% c("main",
+                                                                    "sub_covid_hospitalised",
+                                                                    "sub_covid_nonhospitalised"),]$name
   
   splice(
     comment(glue("Table 2 - {cohort}")),

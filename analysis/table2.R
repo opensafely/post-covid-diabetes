@@ -44,7 +44,7 @@ if ({cohort}=="prevax") {
              "out_date_gestationaldm")
 }
 
-table2_names <- active_analyses[active_analyses$cohort=={cohort} & 
+table2_names <- active_analyses[active_analyses$cohort==cohort & 
                                   active_analyses$outcome %in% select & 
                                   active_analyses$analysis %in% c("main",
                                                                   "sub_covid_hospitalised",

@@ -30,7 +30,23 @@ if(length(args)==0){
 print('Load active analyses')
 
 active_analyses <- readr::read_rds("lib/active_analyses.rds")
-active_analyses <- active_analyses[active_analyses$cohort==cohort,]
+
+if ({cohort}=="prevax") {
+  select = c("out_date_t2dm_follow_extended_follow_up", 
+             "out_date_t2dm_extended_follow_up", 
+             "out_date_t1dm_extended_follow_up", 
+             "out_date_otherdm_extended_follow_up",
+             "out_date_gestationaldm_extended_follow_up")
+} else {
+  select = c("out_date_t1dm",
+             "out_date_t2dm",
+             "out_date_otherdm",
+             "out_date_gestationaldm")
+}
+
+active_analyses <- active_analyses[active_analyses$cohort==cohort & 
+                                  active_analyses$outcome %in% select & 
+                                  active_analyses$analysis=="main",]
 
 # Make empty table 2 -----------------------------------------------------------
 print('Make empty table 2')
@@ -73,20 +89,16 @@ for (i in 1:nrow(active_analyses)) {
   
   exposed <- df[!is.na(df$exp_date),c("patient_id","exp_date","out_date","end_date_outcome")]
   
-  head(exposed)
-  
   exposed <- exposed %>% dplyr::mutate(fup_start = exp_date,
                                        fup_end = min(end_date_outcome, out_date, na.rm = TRUE))
   
-  head(exposed)
   
+  exposed$fup_start <- as.Date(exposed$fup_start, origin = "1970-01-01")
+  exposed$fup_end <- as.Date(exposed$fup_end, origin = "1970-01-01")
+
   exposed <- exposed[exposed$fup_start<=exposed$fup_end,]
   
-  head(exposed)
-  
   exposed <- exposed %>% dplyr::mutate(person_days = as.numeric((fup_end - fup_start))+1)
-  
-  head(exposed)
   
   ## Make unexposed subset -----------------------------------------------------
   print('Make unexposed subset')

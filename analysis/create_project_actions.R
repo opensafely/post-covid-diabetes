@@ -150,17 +150,36 @@ apply_model_function <- function(name, cohort, analysis, ipw, strata,
   
 }
 
+
 table2 <- function(cohort){
+  
+  if ({cohort}=="prevax") {
+    select = c("out_date_t2dm_follow_extended_follow_up", 
+               "out_date_t2dm_extended_follow_up", 
+               "out_date_t1dm_extended_follow_up", 
+               "out_date_otherdm_extended_follow_up",
+               "out_date_gestationaldm_extended_follow_up")
+  } else {
+    select = c("out_date_t1dm",
+               "out_date_t2dm",
+               "out_date_otherdm",
+               "out_date_gestationaldm")
+  }
+  
+  table2_names <- active_analyses[active_analyses$cohort=={cohort} & 
+                                    active_analyses$outcome %in% select & 
+                                    active_analyses$analysis=="main",]$name
+  
   splice(
-    comment(glue("Stage 4 - Table 2 - {cohort} cohort")),
+    comment(glue("Table 2 - {cohort}")),
     action(
-      name = glue("stage4_table_2_{cohort}"),
-      run = "r:latest analysis/descriptives/table_2.R",
+      name = glue("table2_{cohort}"),
+      run = "r:latest analysis/table2.R",
       arguments = c(cohort),
-      needs = list("stage1_data_cleaning_prevax", "stage1_data_cleaning_vax", "stage1_data_cleaning_unvax",glue("stage1_end_date_table_{cohort}"),
-                   "add_persistent_diabetes_outcomes"),
+      needs = c(as.list(paste0("make_model_input-",table2_names))),
       moderately_sensitive = list(
-        input_table_2 = glue("output/review/descriptives/table2_{cohort}_*.csv")
+        table2 = glue("output/table2_{cohort}.csv"),
+        table2_rounded = glue("output/table2_{cohort}_rounded.csv")
       )
     )
   )
@@ -479,8 +498,10 @@ actions_list <- splice(
   
   #comment("Stage 4 - Create input for table2"),
   splice(
-    # over outcomes
-    unlist(lapply(cohort_to_run_all, function(x) table2(cohort = x)), recursive = FALSE)
+    unlist(lapply(unique(active_analyses$cohort), 
+                  function(x) table2(cohort = x)), 
+           recursive = FALSE
+    )
   ),
   
   comment("Stage 5 - Apply models"),

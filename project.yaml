@@ -288,47 +288,48 @@ actions:
       moderately_sensitive:
         flow_df: output/review/figure-data/diabetes_flow_values_unvax_*.csv
 
-  ## Stage 4 - Table 2 - prevax cohort 
+  ## Table 2 - vax 
 
-  stage4_table_2_prevax:
-    run: r:latest analysis/descriptives/table_2.R prevax
+  table2_vax:
+    run: r:latest analysis/table2.R vax
     needs:
-    - stage1_data_cleaning_prevax
-    - stage1_data_cleaning_vax
-    - stage1_data_cleaning_unvax
-    - stage1_end_date_table_prevax
-    - add_persistent_diabetes_outcomes
+    - make_model_input-cohort_vax-main-t1dm
+    - make_model_input-cohort_vax-main-t2dm
+    - make_model_input-cohort_vax-main-otherdm
+    - make_model_input-cohort_vax-main-gestationaldm
     outputs:
       moderately_sensitive:
-        input_table_2: output/review/descriptives/table2_prevax_*.csv
+        table2: output/table2_vax.csv
+        table2_rounded: output/table2_vax_rounded.csv
 
-  ## Stage 4 - Table 2 - vax cohort 
+  ## Table 2 - unvax 
 
-  stage4_table_2_vax:
-    run: r:latest analysis/descriptives/table_2.R vax
+  table2_unvax:
+    run: r:latest analysis/table2.R unvax
     needs:
-    - stage1_data_cleaning_prevax
-    - stage1_data_cleaning_vax
-    - stage1_data_cleaning_unvax
-    - stage1_end_date_table_vax
-    - add_persistent_diabetes_outcomes
+    - make_model_input-cohort_unvax-main-t1dm
+    - make_model_input-cohort_unvax-main-t2dm
+    - make_model_input-cohort_unvax-main-otherdm
+    - make_model_input-cohort_unvax-main-gestationaldm
     outputs:
       moderately_sensitive:
-        input_table_2: output/review/descriptives/table2_vax_*.csv
+        table2: output/table2_unvax.csv
+        table2_rounded: output/table2_unvax_rounded.csv
 
-  ## Stage 4 - Table 2 - unvax cohort 
+  ## Table 2 - prevax 
 
-  stage4_table_2_unvax:
-    run: r:latest analysis/descriptives/table_2.R unvax
+  table2_prevax:
+    run: r:latest analysis/table2.R prevax
     needs:
-    - stage1_data_cleaning_prevax
-    - stage1_data_cleaning_vax
-    - stage1_data_cleaning_unvax
-    - stage1_end_date_table_unvax
-    - add_persistent_diabetes_outcomes
+    - make_model_input-cohort_prevax-main-t1dm_extended_follow_up
+    - make_model_input-cohort_prevax-main-t2dm_extended_follow_up
+    - make_model_input-cohort_prevax-main-otherdm_extended_follow_up
+    - make_model_input-cohort_prevax-main-gestationaldm_extended_follow_up
+    - make_model_input-cohort_prevax-main-t2dm_follow_extended_follow_up
     outputs:
       moderately_sensitive:
-        input_table_2: output/review/descriptives/table2_unvax_*.csv
+        table2: output/table2_prevax.csv
+        table2_rounded: output/table2_prevax_rounded.csv
 
   ## Stage 5 - Apply models 
 

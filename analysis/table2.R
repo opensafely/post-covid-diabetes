@@ -73,12 +73,20 @@ for (i in 1:nrow(active_analyses)) {
   
   exposed <- df[!is.na(df$exp_date),c("patient_id","exp_date","out_date","end_date_outcome")]
   
+  head(exposed)
+  
   exposed <- exposed %>% dplyr::mutate(fup_start = exp_date,
                                        fup_end = min(end_date_outcome, out_date, na.rm = TRUE))
   
+  head(exposed)
+  
   exposed <- exposed[exposed$fup_start<=exposed$fup_end,]
   
+  head(exposed)
+  
   exposed <- exposed %>% dplyr::mutate(person_days = as.numeric((fup_end - fup_start))+1)
+  
+  head(exposed)
   
   ## Make unexposed subset -----------------------------------------------------
   print('Make unexposed subset')

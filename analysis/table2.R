@@ -44,11 +44,11 @@ if ({cohort}=="prevax") {
              "out_date_gestationaldm")
 }
 
-table2_names <- active_analyses[active_analyses$cohort==cohort & 
+active_analyses <- active_analyses[active_analyses$cohort==cohort & 
                                   active_analyses$outcome %in% select & 
                                   active_analyses$analysis %in% c("main",
                                                                   "sub_covid_hospitalised",
-                                                                  "sub_covid_nonhospitalised"),]$name
+                                                                  "sub_covid_nonhospitalised"),]
 
 # Make empty table 2 -----------------------------------------------------------
 print('Make empty table 2')

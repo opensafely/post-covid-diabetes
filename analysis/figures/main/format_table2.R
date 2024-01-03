@@ -22,141 +22,101 @@ library(stringr)
 active_analyses <- readr::read_rds("lib/active_analyses.RDS")
 
 # Get data from each cohort ----------------------------------------------------
-table2_pre_vax <- read.csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_prevax_diabetes.csv")
-table2_vax <- read.csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_vax_diabetes.csv")
-table2_unvax <- read.csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_unvax_diabetes.csv")
+table2_pre_vax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_prevax_rounded.csv")
+table2_vax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_vax_rounded.csv")
+table2_unvax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_unvax_rounded.csv")
 
-table2_pre_vax_gestational <- read.csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_prevax_diabetes_gestational.csv")
-table2_vax_gestational <- read.csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_vax_diabetes_gestational.csv")
-table2_unvax_gestational <- read.csv("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_unvax_diabetes_gestational.csv")
+df <-rbind(table2_pre_vax, table2_unvax, table2_vax)
+# tidying prevax outcome names
+df$outcome <- stringr::str_remove(df$outcome, "_extended_follow_up")
 
+# Keep totals ------------------------------------------------------------------
+print("Keep totals")
 
-# Format data from each cohort -------------------------------------------------
-format_table_2_short<- function(df, cohort){
-  table2_raw <- df
-  
-  table2_raw <- table2_raw %>% select(subgroup,event,unexposed_event_count, post_exposure_event_count, unexposed_person_days, total_person_days)%>%
-    filter(subgroup %in% c("covid_pheno_hospitalised","covid_pheno_non_hospitalised"))
-  
-  table2_raw$post_exposure_person_days <- table2_raw$total_person_days - table2_raw$unexposed_person_days
-  
-  table2_pre_expo <- table2_raw %>% select(subgroup, event, unexposed_event_count, unexposed_person_days)
-  table2_pre_expo$period <- "unexposed"
-  table2_pre_expo <- table2_pre_expo %>% dplyr::rename(event_count = unexposed_event_count,
-                                                person_days = unexposed_person_days)
-  
-  table2_post_expo <- table2_raw %>% select(subgroup, event, post_exposure_event_count, post_exposure_person_days)
-  table2_post_expo$period <- "post_expo"
-  table2_post_expo <- table2_post_expo %>% dplyr::rename(event_count = post_exposure_event_count,
-                                                  person_days = post_exposure_person_days )
-  
-  table2 <- rbind(table2_pre_expo,table2_post_expo)
-  rm(table2_pre_expo,table2_post_expo,table2_raw)
-  
-  table2 <- table2 %>% mutate(across(c("event_count","person_days"), as.numeric))
-  
-  # Add in incidence rate
-  table2[,"Incidence rate (per 100,000 person-years)"] <- add_commas(round((table2$event_count/(table2$person_days/365.25))*100000))
-  table2[,"Event counts/100,000 person-years"] <- paste0(add_commas(table2$event_count), "/", add_commas(round((table2$person_days/365.25))))
-  
-  
-  table2$period <- ifelse(table2$period=="unexposed","No COVID-19",table2$period)
-  table2$period <- ifelse(table2$period=="post_expo" & table2$subgroup == "covid_pheno_hospitalised","After hospitalised COVID-19",table2$period)
-  table2$period <- ifelse(table2$period=="post_expo" & table2$subgroup == "covid_pheno_non_hospitalised","After non-hospitalised COVID-19",table2$period)
-  
-  table2[,c("subgroup","person_days")] <- NULL
-  table2 <- table2[!duplicated(table2), ]
-  
-  
-  # Tidy event labels ----------------------------------------------------------
-  table2 <- table2 %>% left_join(active_analyses %>% select(outcome_variable,outcome), by=c("event"="outcome_variable"))
-  table2$outcome <- ifelse(table2$event == "out_date_t2dm_4months_follow_up_no_cox_only_table_2","Type 2 diabetes with 4 months follow up", table2$outcome)
-  table2$outcome <- ifelse(table2$event == "out_date_t2dm_4months_follow_up_no_cox_only_table_2_extended_follow_up","Type 2 diabetes with 4 months follow up - extended follow up", table2$outcome)
-  
-  table2$event <- NULL
-  
-  #Split primary position event
-  table2 <- table2 %>% dplyr::rename(Outcome = outcome)
-  
-  # table2 <- table2 %>% filter(!grepl('Primary position',Outcome))
-  
-  # -> Not using primary position results for table 2 in CVD paper
-  #table2_primary_position <- table2 %>% filter(grepl('Primary position',Outcome))
-  
-  # Re-order columns -----------------------------------------------------------
-  table2 <- table2 %>% select("Outcome","period","Event counts/100,000 person-years","Incidence rate (per 100,000 person-years)")
-  
-  table2$cohort <- cohort
-  
-  return(table2)
-}
+totals <- subset(df, grepl("t2dm", df$outcome))
+totals <- unique(totals[totals$analysis=="main", c("cohort","sample_size")])
 
-table2_pre_vax_formatted <- format_table_2_short(table2_pre_vax,"Pre-vaccination")
-table2_vax_formatted <- format_table_2_short(table2_vax,"Vaccinated")
-table2_unvax_formatted <- format_table_2_short(table2_unvax,"Unvaccinated")
+totals <- tidyr::pivot_wider(totals,
+                             names_from = "cohort",
+                             values_from = c("sample_size"))
 
-table2_pre_vax_formatted_gestational <- format_table_2_short(table2_pre_vax_gestational,"Pre-vaccination")
-table2_vax_formatted_gestational <- format_table_2_short(table2_vax_gestational,"Vaccinated")
-table2_unvax_formatted_gestational <- format_table_2_short(table2_unvax_gestational,"Unvaccinated")
+totals <-dplyr::rename(totals,
+                       "event_personyears_prevax" = "prevax",
+                       "event_personyears_vax" = "vax",
+                       "event_personyears_unvax" = "unvax")
 
-rm(table2_pre_vax,table2_pre_vax_gestational,table2_vax,table2_vax_gestational,table2_unvax,table2_unvax_gestational)
+totals$outcome_label <- "N"
 
-# Combine results for all cohorts ----------------------------------------------
-table2_merged <- rbind(table2_pre_vax_formatted,table2_vax_formatted,table2_unvax_formatted,
-                       table2_pre_vax_formatted_gestational,table2_vax_formatted_gestational,table2_unvax_formatted_gestational)
+# Filter data ------------------------------------------------------------------
+print("Filter data")
 
-rm(table2_pre_vax_formatted,table2_vax_formatted,table2_unvax_formatted,
-   table2_pre_vax_formatted_gestational,table2_vax_formatted_gestational,table2_unvax_formatted_gestational)
+df <- df[df$analysis %in% c("main","sub_covid_hospitalised","sub_covid_nonhospitalised"),]
 
-# remove prevax outcomes without extended follow up 
+df$events <- ifelse(df$analysis=="main", df$unexposed_events, df$exposed_events)
+df$person_days <- ifelse(df$analysis=="main", df$unexposed_person_days, df$exposed_person_days)
 
-table2_merged <- table2_merged %>%
-  dplyr::filter(!(!str_detect(Outcome, 'extended') & str_detect(cohort, 'Pre')))
+df <- df[,c("cohort","analysis","outcome","events","person_days")]
 
-# remove unvax outcomes with extended follow up (sensitivity analyses - in separate table)
+# Add plot labels --------------------------------------------------------------
+print("Add plot labels")
 
-table2_merged <- table2_merged %>%
-  dplyr::filter(!(str_detect(Outcome, 'extended') & cohort == "Unvaccinated"))
+plot_labels <- readr::read_csv("C:/Users/rd16568/Documents/Github/post-covid-diabetes/lib/plot_labels.csv",
+                               show_col_types = FALSE)
 
-# remove extended follow up text
-table2_merged$Outcome <- gsub("\\ - extended follow up*","",table2_merged$Outcome)
+df$outcome <- gsub("out_date_","",df$outcome)
+df <- merge(df, plot_labels, by.x = "outcome", by.y = "term", all.x = TRUE)
+df <- dplyr::rename(df, "outcome_label" = "label")
 
-# Make columns for cohort ------------------------------------------------------
+df <- merge(df, plot_labels, by.x = "analysis", by.y = "term", all.x = TRUE)
+df <- dplyr::rename(df, "covid19_severity" = "label")
+df$covid19_severity <- ifelse(df$covid19_severity=="All COVID-19","No COVID-19",df$covid19_severity)
+df$covid19_severity <- factor(df$covid19_severity, levels = c("No COVID-19","Hospitalised COVID-19","Non-hospitalised COVID-19"))
 
-#table2_transposed <- tidyr::pivot_wider(table2_merged, names_from = "cohort", values_from = "Event counts/100,000 person-years")
-table2_transposed <- tidyr::pivot_wider(table2_merged, names_from = "cohort", values_from = c("Event counts/100,000 person-years","Incidence rate (per 100,000 person-years)"))
+# Add other columns ------------------------------------------------------------
+print("Add other columns")
 
-# Add labels and re-order rows -------------------------------------------------
-table2_transposed <- table2_transposed[,c("Outcome","period","Event counts/100,000 person-years_Pre-vaccination","Incidence rate (per 100,000 person-years)_Pre-vaccination",
-                                          "Event counts/100,000 person-years_Vaccinated","Incidence rate (per 100,000 person-years)_Vaccinated",
-                                          "Event counts/100,000 person-years_Unvaccinated","Incidence rate (per 100,000 person-years)_Unvaccinated")]
+df$event_personyears <- paste0(df$events,"/", round((df$person_days/365.25)))
+df$incidencerate <- round(df$events/((df$person_days/365.25)/100000))
 
-colnames(table2_transposed) <- c("Outcome","period","Pre-vaccination cohort (N=15,211,471)","Pre-vaccination cohort (N=15,211,471)",
-                                 "Vaccinated cohort (N=11,822,640)","Vaccinated cohort (N=11,822,640)",
-                                 "Unvaccinated cohort (N=2,851,183)","Unvaccinated cohort (N=2,851,183)") 
+# Pivot table ------------------------------------------------------------------
+print("Pivot table")
 
-table2_transposed$Outcome <- as.factor(table2_transposed$Outcome)
+df <- df[,c("cohort","outcome_label","covid19_severity","event_personyears","incidencerate")]
 
-levels(table2_transposed$Outcome) <- list("Type 1 diabetes"="type 1 diabetes",
-                                          "Type 2 diabetes"="type 2 diabetes",
-                                          "Other or non-specified diabetes"="other or non-specific diabetes",
-                                          "Gestational diabetes" = "gestational diabetes",
-                                          "Type 2 diabetes (4 months follow up" = "Type 2 diabetes with 4 months follow up",
-                                          "Persistent type 2 diabetes" = "type 2 diabetes - persistant")
+df <- tidyr::pivot_wider(df, 
+                         names_from = "cohort",
+                         values_from = c("event_personyears","incidencerate"))
 
+# Add totals to table ----------------------------------------------------------
+print("Add totals to table")
 
-table2_transposed$Outcome <- factor(table2_transposed$Outcome, levels=c("Type 2 diabetes",
-                                                                        "Type 1 diabetes",
-                                                                        "Gestational diabetes",
-                                                                        "Other or non-specified diabetes",
-                                                                        "Type 2 diabetes (4 months follow up",
-                                                                        "Persistent type 2 diabetes"))
+df <- plyr::rbind.fill(totals, df)
 
-table2_transposed$period <- factor(table2_transposed$period, levels = c("No COVID-19",
-                                                                        "After hospitalised COVID-19",
-                                                                        "After non-hospitalised COVID-19"))
+# Order outcomes ---------------------------------------------------------------
+print("Order outcomes")
 
-table2_transposed <- table2_transposed[order(table2_transposed$Outcome, table2_transposed$period),]
+df$outcome_label <- factor(df$outcome_label,
+                           levels = c("N",
+                                      "Type 2 Diabetes",
+                                      "Type 1 Diabetes",
+                                      "Gestational Diabetes",
+                                      "Other or non-specified Diabetes",
+                                      "Persistent type 2 diabetes"))
 
+# Tidy table -------------------------------------------------------------------
+print("Tidy table")
 
-write.csv(table2_transposed, paste0("C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-tables/formatted_table_2.csv"),row.names = F)
+df <- df[order(df$outcome_label,df$covid19_severity),
+         c("outcome_label","covid19_severity",
+           paste0(c("event_personyears","incidencerate"),"_prevax"),
+           paste0(c("event_personyears","incidencerate"),"_vax"),
+           paste0(c("event_personyears","incidencerate"),"_unvax"))]
+
+df <- dplyr::rename(df,
+                    "Outcome" = "outcome_label",
+                    "COVID-19 severity" = "covid19_severity")
+
+# Save table -------------------------------------------------------------------
+print("Save table")
+
+write.csv(df, paste0("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-tables/formatted_table_2.csv"),row.names = F)

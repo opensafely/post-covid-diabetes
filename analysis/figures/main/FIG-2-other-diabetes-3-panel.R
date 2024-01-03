@@ -7,109 +7,42 @@ library(ggplot2)
 library(ggpubr)
 library(grid)
 
-dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
-setwd(dir)
+#dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
+#setwd(dir)
 
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/")
-output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/")
+results_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/model/"
+output_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-figures/"
 
 #-------------------------#
-# 2. Get outcomes to plot #
+# 1. Restrict outcomes and models to plot #
 #-------------------------#
-active_analyses <- read_rds("lib/active_analyses.rds") %>% filter(active == "TRUE")
+# Load all estimates
+estimates <- read.csv(paste0(results_dir,"/master_hr_file.csv"))
+unique(estimates$event)
+unique(estimates$outcome_name)
 
-outcome_name_table <- active_analyses %>% 
-  select(outcome, outcome_variable) %>% 
-  mutate(outcome_name=active_analyses$outcome_variable %>% str_replace("out_date_", ""))
+outcomes_to_plot <- c("gestationaldm_extended_follow_up","otherdm_extended_follow_up",
+                      "t1dm_extended_follow_up","gestationaldm","otherdm","t1dm")
 
-outcomes_to_plot <- outcome_name_table$outcome_name
-outcomes_to_plot <- c("t1dm_extended_follow_up", "gestationaldm_extended_follow_up", "otherdm_extended_follow_up")
+# Remove days_pre
+estimates <- estimates %>% filter(!(term == "days_pre"))
 
-#---------------------------------------------#
-# 3. Load all estimates #
-#---------------------------------------------#
+# Restrict to outcomes needed for Table 3
+estimates <- estimates %>% filter(estimates$event %in% c(outcomes_to_plot))
 
-hr_files=list.files(path = results_dir, pattern = "extended")
-hr_files=hr_files[endsWith(hr_files,".csv")]
-hr_files=paste0(results_dir,"/", hr_files)
-hr_file_paths <- pmap(list(hr_files),
-                      function(fpath){
-                        df <- fread(fpath)
-                        return(df)
-                      })
-estimates <- rbindlist(hr_file_paths, fill=TRUE)
+# restrict models
+main_estimates <- estimates %>% filter(subgroup %in% c("main") & model=="mdl_max_adj") %>%
+  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,model,median_follow_up,outcome_name)
 
-#Calculate median follow-up for plotting
-estimates$median_follow_up <- as.numeric(estimates$median_follow_up)
-estimates$add_to_median <- sub("days","",estimates$term)
-estimates$add_to_median <- as.numeric(sub("\\_.*","",estimates$add_to_median))
-
-estimates$median_follow_up <- ((estimates$median_follow_up + estimates$add_to_median)-1)/7
-estimates$add_to_median <- NULL
-
-# GET ESTIMATES FROM VAX / UNVAX AND RBIND
-
-estimates_other <- read.csv(paste0(results_dir,"hr_output_formatted-fig1.csv"))
-
-outcomes_other <- c("t1dm", "gestationaldm", "otherdm")
-
-estimates_other <- estimates_other %>% filter(subgroup %in% c("main") 
-                                              & event %in% outcomes_other 
-                                              & term %in% term[grepl("^days",term)]
-                                              & model == "mdl_max_adj"
-                                              & time_points == "reduced"
-                                              & (cohort == "vax" | cohort == "unvax")) %>%
-  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,median_follow_up)
-
-# Get estimates for main analyses and list of outcomes from active analyses
-
-main_estimates <- estimates %>% filter(subgroup %in% c("main") 
-                                       & event %in% outcomes_to_plot 
-                                       & term %in% term[grepl("^days",term)]
-                                       & model == "mdl_max_adj"
-                                       & time_points == "reduced") %>%
-  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,median_follow_up)
-
-main_estimates$event <- gsub('_extended_follow_up', '', main_estimates$event)
-
-main_estimates <- rbind(main_estimates, estimates_other)
-
-main_estimates <- main_estimates %>% dplyr::mutate(across(c(estimate,conf_low,conf_high,median_follow_up),as.numeric))
-
-# remove duplicate rows
-main_estimates <- main_estimates[!duplicated(main_estimates), ]
-
-# We want to plot the figures using the same time-points across all cohorts so that they can be compared
-# If any cohort uses reduced time points then all cohorts will be plotted with reduced time points
-main_estimates <- main_estimates %>%
-  group_by(event,subgroup,cohort) %>%
-  dplyr::mutate(time_period_to_plot = case_when(
-    any(time_points == "normal") ~ "normal",
-    TRUE ~ "reduced"))
-
-main_estimates <- main_estimates %>%
-  group_by(event,subgroup) %>%
-  dplyr::mutate(time_period_to_plot = case_when(
-    any(time_period_to_plot == "reduced") ~ "reduced",
-    TRUE ~ "normal"))
-
-#---------------------------Specify time to plot--------------------------------
-# main_estimates$add_to_median <- sub("days","",main_estimates$term)
-# main_estimates$add_to_median <- as.numeric(sub("\\_.*","",main_estimates$add_to_median))
-# 
-# main_estimates$median_follow_up <- ((main_estimates$median_follow_up + main_estimates$add_to_median)-1)/7
-# main_estimates$median_follow_up <- ifelse(main_estimates$median_follow_up == 0, 0.001,main_estimates$median_follow_up )
-
-
-#term_to_time <- data.frame(term = c("days0_7","days7_14", "days14_28", "days28_56", "days56_84", "days84_197","days197_535", 
-#                                    "days0_28","days28_197","days28_535"),
-#                           time = c(0.5,1.5,3,6,10,20,52,
-#                                    2,16,40))
-#main_estimates <- merge(main_estimates, term_to_time, by = c("term"), all.x = TRUE)
-
+# rename event so standardised across all three cohorts
+#new outcome name
+main_estimates <- main_estimates %>%  
+  mutate(event = case_when(grepl("t1dm", event) ~ "t1dm",
+                                  grepl("gest", event) ~ "gestationaldm",
+                                  grepl("other", event, ignore.case = TRUE) ~ "otherdm"))
 
 #------------------------------------------#
-# 4. Specify groups and their line colours #
+# 2. Specify groups and their line colours #
 #------------------------------------------#
 # Specify colours
 main_estimates$colour <- ""
@@ -127,11 +60,11 @@ levels(main_estimates$cohort) <- list("Pre-Vaccination (1 Jan 2020 to 18 Jun 202
 
 # Order outcomes for plotting
 # Use the nice names from active_analyses table i.e. outcome_name_table
-main_estimates <- main_estimates %>% left_join(outcome_name_table %>% select(outcome, outcome_name), by = c("event"="outcome_name"))
-main_estimates$outcome <- str_to_title(main_estimates$outcome)
-main_estimates$outcome <- factor(main_estimates$outcome, levels=c("Type 2 Diabetes"))
+#main_estimates <- main_estimates %>% left_join(outcome_name_table %>% select(outcome, outcome_name), by = c("event"="outcome_name"))
+main_estimates$outcome_name <- str_to_title(main_estimates$outcome_name)
+main_estimates$outcome_name <- factor(main_estimates$outcome_name, levels=c("Type 1 Diabetes", "Gestational Diabetes", "Other Or Non-Specified Diabetes"))
 
-df <- main_estimates %>% dplyr::filter(time_points == "reduced")
+df <- main_estimates 
 
 
 # TYPE 1 --------------------------------------------------------------------
@@ -153,7 +86,8 @@ t1dm <- ggplot2::ggplot(data=df_t1dm,
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
+  #ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.25,64), breaks = c(0.25,0.5,1,2,4,8,16,32,64), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
@@ -194,7 +128,8 @@ gest <- ggplot2::ggplot(data=df_gest,
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
+  #ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.25,64), breaks = c(0.25,0.5,1,2,4,8,16,32,64), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
@@ -235,7 +170,8 @@ other <- ggplot2::ggplot(data=df_other,
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
+  #ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.25,64), breaks = c(0.25,0.5,1,2,4,8,16,32,64), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
@@ -259,70 +195,110 @@ other <- ggplot2::ggplot(data=df_other,
 
 
 # COMBINE TO MULTIPANEL ---------------------------------------------------
-# PLOT WITHOUT TABLE ------------------------------------------------------
+#PLOT WITHOUT TABLE ------------------------------------------------------
 
-# png(paste0(output_dir,"Figure_2_subtypes_3panel.png"),
-#     units = "mm", width=330, height=180, res = 1000)
-# ggpubr::ggarrange(t1dm, gest, other, ncol=3, nrow=1, common.legend = TRUE, legend="bottom",
-#                   labels = c("A: Type 1 Diabetes", "B: Gestational Diabetes", "C: Other or Non-Specified Diabetes"),
-#                   hjust = -0.1,
-#                   font.label = list(size = 12)) +
-#   theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"))
-# dev.off() 
+ png(paste0(output_dir,"Figure_2_subtypes_3panel.png"),
+     units = "mm", width=330, height=180, res = 1000)
+ ggpubr::ggarrange(t1dm, gest, other, ncol=3, nrow=1, common.legend = TRUE, legend="bottom",
+                   labels = c("A: Type 1 Diabetes", "B: Gestational Diabetes", "C: Other or Non-Specified Diabetes"),
+                   hjust = -0.1,
+                   font.label = list(size = 12)) +
+   theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"))
+ dev.off() 
 
 # ADD EVENT COUNTS TO PLOT TABLE  -------------------------------------------------------
 
-table2 <- read.csv("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-tables/formatted_table_2.csv",
-                   check.names = FALSE)
+table2 <- read.csv("/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-tables/formatted_table_2.csv",
+                   check.names = FALSE, col.names = c("Outcome","analysis","Prevax_events","Prevax_IR","Vax_events","Vax_IR","Unvax_events","Unvax_IR"))
 
-# temporarily use type 2 diabetes as gestational results until I get table 2 gestational diabetes results out
-table2$Outcome <- gsub("Type 2 Diabetes", "Gestational Diabetes", table2$Outcome)
+ls(table2) 
+rm()
 
-table2 <- table2 %>%
-  dplyr::filter(Outcome != "Type 2 Diabetes") %>%
-  dplyr::mutate(`All COVID-19` = `After hospitalised COVID-19` + `After non-hospitalised COVID-19`) %>%
-  dplyr::rename(`Total events` = Total,
-                `Events after COVID-19` = `All COVID-19`) %>%
-  dplyr::select(-c(`No COVID-19`)) %>%
-  mutate(`Number of people` = ifelse(Cohort == "Pre-vaccination (1 Jan 2020 to 14 Dec 2021)", 15211471,
-                                     ifelse(Cohort == "Vaccinated (1 Jun 2021 to 14 Dec 2021)", 11822640,
-                                            ifelse(Cohort == "Unvaccinated (1 Jun 2021 to 14 Dec 2021)", 2851183, NA)))) %>%
-  relocate(`Total events`, .after = `Cohort`) %>%
-  relocate(`Number of people`, .after = `Cohort`) %>%
-  relocate(`Events after COVID-19`, .after = `Total events`) %>%
-  relocate(Outcome, .after = `Cohort`) %>%
-  mutate(Outcome=factor(Outcome)) %>% 
-  mutate(Outcome=fct_relevel(Outcome,c("Type 1 Diabetes","Gestational Diabetes","Other Or Non-Specified Diabetes"))) %>%
-  arrange(Outcome) %>%
-  replace(is.na(.), "-") %>%
-  select(-c(`After hospitalised COVID-19`, `After non-hospitalised COVID-19`))
+table2[c('n_prevax', 'fu_prevax')] <- str_split_fixed(table2$Prevax_events, '/', 2)
+table2[c('n_vax', 'fu_vax')] <- str_split_fixed(table2$Vax_events, '/', 2)
+table2[c('n_unvax', 'fu_unvax')] <- str_split_fixed(table2$Unvax_events, '/', 2)
 
-table2[,3:5] <- format(table2[,3:5], big.mark = ",", scientific = FALSE)
+table2_short <- table2 %>% 
+  dplyr::select(Outcome,analysis,n_prevax,n_vax,n_unvax,fu_prevax,fu_vax,fu_unvax) %>%
+  dplyr::filter(Outcome == "Type 1 Diabetes"|Outcome == "Gestational Diabetes"|Outcome == "Other or non-specified Diabetes") 
+  
+table2_short <- pivot_wider(table2_short, names_from = analysis, values_from = c(n_prevax,n_vax,n_unvax,fu_prevax,fu_vax,fu_unvax))
+table2_short <- table2_short %>% select(-contains("fu"))
 
-# table2$Cohort <- as.factor(table2$Cohort)
-# levels(table2$Cohort) <- list("Pre-Vaccination"="Pre-vaccination (1 Jan 2020 to 18 Jun 2021)",
-#                               "Vaccinated"="Vaccinated (1 Jun 2021 to 14 Dec 2021)", "Unvaccinated"="Unvaccinated (1 Jun 2021 to 14 Dec 2021)")
+table2_nocovid <- table2_short %>% pivot_longer(cols=c("n_prevax_No COVID-19","n_unvax_No COVID-19","n_vax_No COVID-19" ),
+                                              names_to='cohort',
+                                              values_to='No COVID events') %>%
+                                   mutate(`Cohort` = case_when(cohort == "n_prevax_No COVID-19" ~ "Pre-vaccination (1 Jan 2020 to 14 Dec 2021)", 
+                                                cohort == "n_vax_No COVID-19" ~ "Vaccinated (1 Jun 2021 to 14 Dec 2021)", 
+                                                cohort == "n_unvax_No COVID-19" ~ "Unvaccinated (1 Jun 2021 to 14 Dec 2021)")) %>%
+                                   select(Outcome, Cohort, 'No COVID events')
+
+table2_afternonhosp <- table2_short %>% pivot_longer(cols=c("n_prevax_Non-hospitalised COVID-19","n_vax_Non-hospitalised COVID-19","n_unvax_Non-hospitalised COVID-19" ),
+                                                names_to='cohort',
+                                                values_to='Non hospitalised events') %>%
+                                   mutate(`Cohort` = case_when(cohort == "n_prevax_Non-hospitalised COVID-19" ~ "Pre-vaccination (1 Jan 2020 to 14 Dec 2021)", 
+                                                cohort == "n_vax_Non-hospitalised COVID-19" ~ "Vaccinated (1 Jun 2021 to 14 Dec 2021)", 
+                                                cohort == "n_unvax_Non-hospitalised COVID-19" ~ "Unvaccinated (1 Jun 2021 to 14 Dec 2021)")) %>%
+                                  select(Outcome, Cohort, 'Non hospitalised events')
+
+table2_afterhosp <- table2_short %>% pivot_longer(cols=c("n_prevax_Hospitalised COVID-19","n_vax_Hospitalised COVID-19","n_unvax_Hospitalised COVID-19" ),
+                                                     names_to='cohort',
+                                                     values_to='Hospitalised events') %>%
+                                     mutate(`Cohort` = case_when(cohort == "n_prevax_Hospitalised COVID-19" ~ "Pre-vaccination (1 Jan 2020 to 14 Dec 2021)", 
+                                                     cohort == "n_vax_Hospitalised COVID-19" ~ "Vaccinated (1 Jun 2021 to 14 Dec 2021)", 
+                                                     cohort == "n_unvax_Hospitalised COVID-19" ~ "Unvaccinated (1 Jun 2021 to 14 Dec 2021)")) %>%
+                                    select(Outcome, Cohort, 'Hospitalised events')
+
+cols <- list(table2_nocovid, table2_afternonhosp, table2_afterhosp)
+table2_short <- cols %>% reduce(full_join, by=c('Cohort', 'Outcome'))
+rm(table2_nocovid, table2_afternonhosp, table2_afterhosp)
+
+table2_short <- table2_short %>%
+  mutate(across(everything(), gsub, pattern = ",", replacement = "")) %>%
+  mutate(across(everything(), gsub, pattern = "NA", replacement = "0"))
+
+table2_short$'No COVID events' = as.numeric(table2_short$'No COVID events')
+table2_short$'Non hospitalised events' = as.numeric(table2_short$'Non hospitalised events')
+table2_short$'Hospitalised events' = as.numeric(table2_short$'Hospitalised events')
+
+table2_short$"Total events" <- table2_short$"No COVID events" + table2_short$"Non hospitalised events" + table2_short$"Hospitalised events"
+table2_short$"After COVID events" <- table2_short$"Non hospitalised events" + table2_short$"Hospitalised events"
+
+table2_short <- table2_short %>%
+              select(Cohort, Outcome,"Total events","After COVID events")
+
+table2_short <- table2_short %>%
+   pivot_wider(names_from = Outcome, values_from = c("Total events","After COVID events"))
+
+table2_short <- table2_short %>% 
+  mutate(`Number of people` = case_when(Cohort == "Pre-vaccination (1 Jan 2020 to 14 Dec 2021)" ~ 15211471,
+                                        Cohort == "Vaccinated (1 Jun 2021 to 14 Dec 2021)" ~ 11822640,
+                                        Cohort == "Unvaccinated (1 Jun 2021 to 14 Dec 2021)" ~ 2851183))
+
+table2_short <- table2_short %>% 
+  dplyr::arrange(factor(Cohort, levels = c("Pre-vaccination (1 Jan 2020 to 14 Dec 2021)", "Vaccinated (1 Jun 2021 to 14 Dec 2021)", "Unvaccinated (1 Jun 2021 to 14 Dec 2021)")))
+
+table2_short[table2_short == 0] <- NA
 
 ## MAKE SEPARATE TABLES
 
-table_cohort <- table2 %>%
-  dplyr::filter(Outcome == "Type 1 Diabetes") %>%
+table_cohort <- table2_short %>%
   dplyr::select(Cohort, `Number of people`) 
 
-table_t1dm <- table2 %>%
-  dplyr::filter(Outcome == "Type 1 Diabetes") %>%
-  dplyr::select(`Total events`, `Events after COVID-19`) %>%
-  dplyr::rename(`Total Type 1 Diabetes events` = `Total events`)
+table_t1dm <- table2_short %>%
+  dplyr::select(`Total events_Type 1 Diabetes`, `After COVID events_Type 1 Diabetes`) %>%
+  dplyr::rename(`Total Type 1 Diabetes events` = `Total events_Type 1 Diabetes`) %>%
+  dplyr::rename(`Events after COVID-19` = `After COVID events_Type 1 Diabetes`)
 
-table_gdm <- table2 %>%
-  dplyr::filter(Outcome == "Gestational Diabetes") %>%
-  dplyr::select(`Total events`, `Events after COVID-19`) %>%
-  dplyr::rename(`Total Gestational Diabetes events` = `Total events`)
+table_gdm <- table2_short %>%
+  dplyr::select(`Total events_Gestational Diabetes`, `After COVID events_Gestational Diabetes`) %>%
+  dplyr::rename(`Total Gestational Diabetes events` = `Total events_Gestational Diabetes`) %>%
+  dplyr::rename(`Events after COVID-19` = `After COVID events_Gestational Diabetes`)
 
-table_otherdm <- table2 %>%
-  dplyr::filter(Outcome == "Other Or Non-Specified Diabetes") %>%
-  dplyr::select(`Total events`, `Events after COVID-19`) %>%
-  dplyr::rename(`Total Other Diabetes events` = `Total events`)
+table_otherdm <- table2_short %>%
+  dplyr::select(`Total events_Other or non-specified Diabetes`, `After COVID events_Other or non-specified Diabetes`) %>%
+  dplyr::rename(`Total Other Diabetes events` = `Total events_Other or non-specified Diabetes`) %>%
+  dplyr::rename(`Events after COVID-19` = `After COVID events_Other or non-specified Diabetes`)
 
 table.p_cohort <- ggtexttable(table_cohort, rows = NULL,
                               theme = ttheme(

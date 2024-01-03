@@ -2,7 +2,7 @@ subgroup_fig <- function(cohort){
 #-----------------------Determine active outcome events-------------------------
 # We are not using active analysis here. "t2dm" is directly selected in the next section of the code
 
-active_analyses <- read_rds("lib/active_analyses.rds")
+#active_analyses <- read_rds("lib/active_analyses.rds")
 #active_analyses$outcome_variable <- gsub("out_date_","",active_analyses$outcome_variable)
 
 #active_analyses_table <- subset(active_analyses, active_analyses$active =="TRUE" & grepl("t2dm", active_analyses$outcome_variable)) 
@@ -13,17 +13,17 @@ active_analyses <- read_rds("lib/active_analyses.rds")
 
 combined_hr <- read.csv(paste0(results_dir,"/master_hr_file.csv"))
 
-
 # Get estimates for subgroup analyses for t2dm
-
-# 1- Select subgroup analyses run as main analysis (obesity, pre-diabetes)
-subgroup_table1 <- subset(combined_hr, subgroup == "main" & event %in% event[grep("t2dm_",event)] & event != "t2dm_extended_follow_up")
+# Select subgroup analyses run as main analysis (obesity, pre-diabetes)
+subgroup_table1 <- combined_hr %>%
+  filter(grepl("obes|pd", combined_hr$event) & combined_hr$subgroup=="main")
 subgroup_table1$subgroup <- gsub("t2dm_","",subgroup_table1$event)
 subgroup_table1$event <- "t2dm"
 
 subgroup_table2 <- subset(combined_hr, event %in% c("t2dm","t2dm_extended_follow_up"))
 
 combined_hr <- rbind(subgroup_table1,subgroup_table2)
+combined_hr <- combined_hr[!duplicated(combined_hr),]
 
 if (cohort == "prevax"){
   combined_hr <- combined_hr %>% filter(cohort == "prevax"
@@ -42,37 +42,30 @@ if (cohort == "prevax"){
 
 #-------------------------Filter to active outcomes-----------------------------
 
-combined_hr <- combined_hr %>% filter(event == "t2dm") %>%
-  filter(time_points == "reduced")
-combined_hr <- combined_hr %>% filter(model == "mdl_max_adj")
-# combined_hr <- combined_hr %>% filter(subgroup != "covid_pheno_hospitalised" & subgroup !="covid_history" & subgroup !="covid_pheno_non_hospitalised")
 combined_hr <- combined_hr %>% mutate_at(c("estimate","conf_low","conf_high", "median_follow_up"), as.numeric)
 
-#combined_hr <- combined_hr %>% filter(model == "mdl_max_adj"| (model == "mdl_agesex" & subgroup == "main"))
-
-
 ### REMOVE SUBGROUPS THAT ARE NOT NEEDED IN FIGURES
+combined_hr$subgroup <- gsub("sub_","", combined_hr$subgroup)
 
-combined_hr <- subset(combined_hr, subgroup == "agegp_18_39" | subgroup == "agegp_40_59" | subgroup == "agegp_60_79" | subgroup == "agegp_80_110" |
-                        subgroup == "ethnicity_Black" | subgroup == "ethnicity_Missing" | subgroup == "ethnicity_Other" | subgroup == "ethnicity_South_Asian" |
-                        subgroup == "ethnicity_White" | subgroup == "obes" | subgroup == "obes_no" | subgroup == "pd" |
-                        subgroup == "pd_no" | subgroup == "sex_Female" | subgroup == "sex_Male")
+combined_hr <- subset(combined_hr, subgroup == "age_18_39" | subgroup == "age_40_59" | subgroup == "age_60_79" | subgroup == "age_80_110" |
+                        subgroup == "ethnicity_black" | subgroup == "ethnicity_missing" | subgroup == "ethnicity_other" | subgroup == "ethnicity_asian" |
+                        subgroup == "ethnicity_white" | subgroup == "ethnicity_mixed" | subgroup == "obes" | subgroup == "obes_no" | subgroup == "pd" |
+                        subgroup == "pd_no" | subgroup == "sex_female" | subgroup == "sex_male")
 
 
 # Rename subgroup to 'nice' format------------------------------------------------
-
-combined_hr$subgroup <- ifelse(combined_hr$subgroup=="agegp_18_39","Age group: 18-39",combined_hr$subgroup)
-combined_hr$subgroup <- ifelse(combined_hr$subgroup=="agegp_40_59","Age group: 40-59",combined_hr$subgroup)
-combined_hr$subgroup <- ifelse(combined_hr$subgroup=="agegp_60_79","Age group: 60-79",combined_hr$subgroup)
-combined_hr$subgroup <- ifelse(combined_hr$subgroup=="agegp_80_110","Age group: 80-110",combined_hr$subgroup)
-combined_hr$subgroup <- ifelse(combined_hr$subgroup=="sex_Male","Sex: Male",combined_hr$subgroup)
-combined_hr$subgroup <- ifelse(combined_hr$subgroup=="sex_Female","Sex: Female",combined_hr$subgroup)
-combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_White","Ethnicity: White",combined_hr$subgroup)
-combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_Mixed","Ethnicity: Mixed",combined_hr$subgroup)
-combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_South_Asian","Ethnicity: South Asian",combined_hr$subgroup)
-combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_Black","Ethnicity: Black",combined_hr$subgroup)
-combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_Other","Ethnicity: Other Ethnic Groups",combined_hr$subgroup)
-combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_Missing","Ethnicity: Missing",combined_hr$subgroup)
+combined_hr$subgroup <- ifelse(combined_hr$subgroup=="age_18_39","Age group: 18-39",combined_hr$subgroup)
+combined_hr$subgroup <- ifelse(combined_hr$subgroup=="age_40_59","Age group: 40-59",combined_hr$subgroup)
+combined_hr$subgroup <- ifelse(combined_hr$subgroup=="age_60_79","Age group: 60-79",combined_hr$subgroup)
+combined_hr$subgroup <- ifelse(combined_hr$subgroup=="age_80_110","Age group: 80-110",combined_hr$subgroup)
+combined_hr$subgroup <- ifelse(combined_hr$subgroup=="sex_male","Sex: Male",combined_hr$subgroup)
+combined_hr$subgroup <- ifelse(combined_hr$subgroup=="sex_female","Sex: Female",combined_hr$subgroup)
+combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_white","Ethnicity: White",combined_hr$subgroup)
+combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_mixed","Ethnicity: Mixed",combined_hr$subgroup)
+combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_asian","Ethnicity: South Asian",combined_hr$subgroup)
+combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_black","Ethnicity: Black",combined_hr$subgroup)
+combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_other","Ethnicity: Other Ethnic Groups",combined_hr$subgroup)
+combined_hr$subgroup <- ifelse(combined_hr$subgroup=="ethnicity_missing","Ethnicity: Missing",combined_hr$subgroup)
 combined_hr$subgroup <- ifelse(combined_hr$subgroup=="obes","History of obesity",combined_hr$subgroup)
 combined_hr$subgroup <- ifelse(combined_hr$subgroup=="obes_no","No history of obesity",combined_hr$subgroup)
 combined_hr$subgroup <- ifelse(combined_hr$subgroup=="pd","History of pre-diabetes",combined_hr$subgroup)
@@ -119,7 +112,7 @@ combined_hr$colour <- ifelse(combined_hr$subgroup=="No history of pre-diabetes",
 
 # Make event names 'nice' ------------------------------------------------------
 
-combined_hr <- combined_hr %>% left_join(active_analyses %>% select(outcome, outcome_variable), by = c("event"="outcome_variable"))
+#combined_hr <- combined_hr %>% left_join(active_analyses %>% select(outcome, outcome), by = c("event"="outcome"))
 
 #Add in which subgroup stratified-----------------------------------------------------------
 

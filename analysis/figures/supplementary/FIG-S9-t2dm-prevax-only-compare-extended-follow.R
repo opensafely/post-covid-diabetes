@@ -7,23 +7,28 @@ library(ggplot2)
 library(ggpubr)
 library(grid)
 
-dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
-setwd(dir)
-
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/")
-output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/supplementary/")
+results_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/model/"
+output_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-tables/"
 
 #-------------------------#
 # 2. Get outcomes to plot #
 #-------------------------#
-active_analyses <- read_rds("lib/active_analyses.rds") %>% filter(active == "TRUE")
+# Load all estimates
+estimates <- read.csv(paste0(results_dir,"/master_hr_file.csv"))
+unique(estimates$event)
 
-outcome_name_table <- active_analyses %>% 
-  select(outcome, outcome_variable) %>% 
-  mutate(outcome_name=active_analyses$outcome_variable %>% str_replace("out_date_", ""))
+# remove unnecessary columns and models
+estimates <- estimates %>% filter(cohort == "prevax"
+                                  & term %in% term[grepl("^days",term)])%>%
+  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,model)
 
-outcomes_to_plot <- outcome_name_table$outcome_name
-outcomes_to_plot <- c("t2dm_extended_follow_up", "t2dm")
+estimates <- estimates %>% filter(((subgroup == "main" & model %in% c("mdl_max_adj","mdl_age_sex"))
+                                   | (subgroup %in% c("sub_covid_hospitalised","sub_covid_nonhospitalised") & model=="mdl_max_adj")) 
+                                  & event %in% outcomes_to_plot
+                                  & cohort == "prevax"
+                                  & term %in% term[grepl("^days",term)])%>%
+  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,model)
+
 
 #---------------------------------------------#
 # 3. Load all estimates #

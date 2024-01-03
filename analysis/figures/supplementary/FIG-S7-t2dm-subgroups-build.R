@@ -8,9 +8,9 @@ rm(list = ls())
 # You will need to ensure that you have created a shortcut to the group-EHR sharepoint in your OneDrive folder to 
 # run this script
 # Change user ID  to your own
-staff_ID <- "zy21123"
-results_dir <- paste0("C:/Users/",staff_ID,"/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/")
-output_dir <- paste0("C:/Users/",staff_ID,"/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/supplementary/")
+staff_ID <- "rd16568"
+results_dir <- paste0("C:/Users/",staff_ID,"/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/model/")
+output_dir <- paste0("C:/Users/",staff_ID,"/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-figures/supplementary/")
 
 # ------------------------------------######## ------------------------------------#######
 # FIGURE 3: TYPE-2 DIABETES SUBGROUPS --------------------------------------------------------------

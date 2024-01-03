@@ -6,17 +6,19 @@ library(purrr)
 library(tidyr)
 rm(list = ls())
 
-results_dir <- "C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/model/"
-output_dir <- "C:/Users/zy21123/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-tables/"
+results_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/model/"
+output_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-tables/"
 
 #dir.create(file.path(output_dir), recursive =TRUE, showWarnings = FALSE)
 
 #----------------------------Get outcomes-----------------------------------
 # Load all estimates
 estimates <- read.csv(paste0(results_dir,"/master_hr_file.csv"))
+unique(estimates$event)
 
 # Select subgroup analyses run as main analysis (obesity, pre-diabetes)
-subgroup_table1 <- subset(estimates, subgroup == "main" & event %in% event[grep("t2dm_",event)] & event != "t2dm_extended_follow_up")
+subgroup_table1 <- estimates %>%
+            filter(grepl("obes|pd", estimates$event) & estimates$subgroup=="main")
 subgroup_table1$subgroup <- gsub("t2dm_","",subgroup_table1$event)
 subgroup_table1$event <- "t2dm"
 
@@ -27,33 +29,34 @@ estimates <- estimates[!duplicated(estimates),]
 
 estimates <- estimates %>% filter(((event == "t2dm" & cohort %in% c("vax","unvax")) | (cohort == "prevax" & (event == "t2dm_extended_follow_up" | grepl("extended_follow_up",subgroup) )))
                                   & model == "mdl_max_adj"
-                                  & term %in% term[grepl("^days",term)]
-                                  & time_points == "reduced") %>%
-  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,model)
+                                  & term %in% term[grepl("^days",term)]) %>%
+  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,model)
 
 estimates$subgroup <- gsub("_extended_follow_up","",estimates$subgroup)
+estimates <- subset(estimates, term!="days_pre")
 
 ### REMOVE SUBGROUPS THAT ARE NOT NEEDED IN FIGURES
+estimates$subgroup <- gsub("sub_","", estimates$subgroup)
 
-estimates <- subset(estimates, subgroup == "agegp_18_39" | subgroup == "agegp_40_59" | subgroup == "agegp_60_79" | subgroup == "agegp_80_110" |
-                        subgroup == "ethnicity_Black" | subgroup == "ethnicity_Missing" | subgroup == "ethnicity_Other" | subgroup == "ethnicity_South_Asian" |
-                        subgroup == "ethnicity_White" | subgroup == "obes" | subgroup == "obes_no" | subgroup == "pd" |
-                        subgroup == "pd_no" | subgroup == "sex_Female" | subgroup == "sex_Male")
+estimates <- subset(estimates, subgroup == "age_18_39" | subgroup == "age_40_59" | subgroup == "age_60_79" | subgroup == "age_80_110" |
+                        subgroup == "ethnicity_black" | subgroup == "ethnicity_missing" | subgroup == "ethnicity_other" | subgroup == "ethnicity_asian" |
+                        subgroup == "ethnicity_white" | subgroup == "ethnicity_mixed" | subgroup == "obes" | subgroup == "obes_no" | subgroup == "pd" |
+                        subgroup == "pd_no" | subgroup == "sex_female" | subgroup == "sex_male")
 
 # Rename subgroup to 'nice' format------------------------------------------------
 
-estimates$subgroup <- ifelse(estimates$subgroup=="agegp_18_39","Age group: 18-39",estimates$subgroup)
-estimates$subgroup <- ifelse(estimates$subgroup=="agegp_40_59","Age group: 40-59",estimates$subgroup)
-estimates$subgroup <- ifelse(estimates$subgroup=="agegp_60_79","Age group: 60-79",estimates$subgroup)
-estimates$subgroup <- ifelse(estimates$subgroup=="agegp_80_110","Age group: 80-110",estimates$subgroup)
-estimates$subgroup <- ifelse(estimates$subgroup=="sex_Male","Sex: Male",estimates$subgroup)
-estimates$subgroup <- ifelse(estimates$subgroup=="sex_Female","Sex: Female",estimates$subgroup)
-estimates$subgroup <- ifelse(estimates$subgroup=="ethnicity_White","Ethnicity: White",estimates$subgroup)
-estimates$subgroup <- ifelse(estimates$subgroup=="ethnicity_Mixed","Ethnicity: Mixed",estimates$subgroup)
-estimates$subgroup <- ifelse(estimates$subgroup=="ethnicity_South_Asian","Ethnicity: South Asian",estimates$subgroup)
-estimates$subgroup <- ifelse(estimates$subgroup=="ethnicity_Black","Ethnicity: Black",estimates$subgroup)
-estimates$subgroup <- ifelse(estimates$subgroup=="ethnicity_Other","Ethnicity: Other Ethnic Groups",estimates$subgroup)
-estimates$subgroup <- ifelse(estimates$subgroup=="ethnicity_Missing","Ethnicity: Missing",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup=="age_18_39","Age group: 18-39",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup=="age_40_59","Age group: 40-59",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup=="age_60_79","Age group: 60-79",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup=="age_80_110","Age group: 80-110",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup=="sex_male","Sex: Male",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup=="sex_female","Sex: Female",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup=="ethnicity_white","Ethnicity: White",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup=="ethnicity_mixed","Ethnicity: Mixed",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup=="ethnicity_asian","Ethnicity: South Asian",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup=="ethnicity_black","Ethnicity: Black",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup=="ethnicity_other","Ethnicity: Other Ethnic Groups",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup=="ethnicity_missing","Ethnicity: Missing",estimates$subgroup)
 estimates$subgroup <- ifelse(estimates$subgroup=="obes","History of obesity",estimates$subgroup)
 estimates$subgroup <- ifelse(estimates$subgroup=="obes_no","No history of obesity",estimates$subgroup)
 estimates$subgroup <- ifelse(estimates$subgroup=="pd","History of pre-diabetes",estimates$subgroup)
@@ -79,7 +82,7 @@ levels(estimates$cohort) <- list("Pre-vaccination cohort"="prevax", "Vaccinated 
 
 # Remove unnecessary variables -----------------------------------------------
 
-estimates[,c("estimate","conf_low","conf_high","model","time_points")] <- NULL
+estimates[,c("estimate","conf_low","conf_high","model")] <- NULL
 
 # Convert long to wide -------------------------------------------------------
 estimates <- tidyr::pivot_wider(estimates, names_from = cohort, values_from = est)

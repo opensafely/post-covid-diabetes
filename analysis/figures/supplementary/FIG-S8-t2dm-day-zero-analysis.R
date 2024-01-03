@@ -7,46 +7,36 @@ library(ggplot2)
 library(ggpubr)
 library(grid)
 
-dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
-setwd(dir)
+#dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
+#setwd(dir)
 
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/release-31-01-2023/")
-output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/results/generated-figures/supplementary/")
+results_dir <- paste0("/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/release-31-01-2023/")
+output_dir <- paste0("/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-figures/supplementary/")
 
 #-------------------------#
 # 2. Get outcomes to plot #
 #-------------------------#
-active_analyses <- read_rds("lib/active_analyses.rds") %>% filter(active == "TRUE")
+#active_analyses <- read_rds("lib/active_analyses.rds") %>% filter(active == "TRUE")
 
-outcome_name_table <- active_analyses %>% 
-  select(outcome, outcome_variable) %>% 
-  mutate(outcome_name=active_analyses$outcome_variable %>% str_replace("out_date_", ""))
+#outcome_name_table <- active_analyses %>% 
+#  select(outcome, outcome_variable) %>% 
+#  mutate(outcome_name=active_analyses$outcome_variable %>% str_replace("out_date_", ""))
 
-outcomes_to_plot <- outcome_name_table$outcome_name
-outcomes_to_plot <- "t2dm"
+#outcomes_to_plot <- outcome_name_table$outcome_name
+outcomes_to_plot <- c("t2dm", "t2dm_extended_follow_up")
 
 #---------------------------------------------#
 # 3. Load all estimates #
 #---------------------------------------------#
 
 # Load all estimates
-estimates <- read.csv(paste0(results_dir,"/hr_output_formatted_for_day0_extended.csv"))
-
-# keep only Stata results for all hosp analyses
-
-# estimates <- estimates[!(estimates$source == "R" & estimates$subgroup == "covid_pheno_hospitalised"),] 
-
-# KEep only stata results for full figure 
-
-# estimates <- estimates[!(estimates$source == "R"),] 
 
 # Get estimates for main analyses and list of outcomes from active analyses
 main_estimates <- estimates %>% filter(event %in% outcomes_to_plot 
                                        & term %in% term[grepl("^days",term)]
                                        & model == "mdl_max_adj"
-                                       & time_points == "day_zero_reduced"
-                                       & source == "stata") %>%
-  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,time_points,median_follow_up, source)
+                                       & subgroup %in% subgroup[grepl("day0", subgroup)]) %>%
+  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,median_follow_up)
 
 
 main_estimates <- main_estimates %>% dplyr::mutate(across(c(estimate,conf_low,conf_high,median_follow_up),as.numeric))

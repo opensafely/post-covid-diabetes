@@ -23,19 +23,17 @@ output_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Project
 
 
 #---------------Focus on first 8 CVD outcomes (remove ate and vte)--------------
-outcomes_to_plot <- c("t2dm","t2dm_unvax_sens")
+outcomes_to_plot <- c("t2dm_extended_follow_up", "t2dm")
 
 # Load all estimates
 estimates <- read.csv(paste0(results_dir,"/master_hr_file.csv"))
 unique(estimates$event)
 
 # remove unnecessary columns and models
-estimates <- estimates %>% filter(((subgroup == "main" & model %in% c("mdl_max_adj","mdl_age_sex"))
-                                   | (subgroup %in% c("sub_covid_hospitalised","sub_covid_nonhospitalised") & model=="mdl_max_adj")) 
+estimates <- estimates %>% filter((subgroup %in% c("day0_main", "day0_sub_covid_hospitalised","day0_sub_covid_nonhospitalised") & model=="mdl_max_adj") 
                                   & event %in% outcomes_to_plot
-                                  & cohort == "unvax"
                                   & term %in% term[grepl("^days",term)])%>%
-  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,model)
+  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,model,N_events_midpoint6)
 
 estimates <- subset(estimates, term!="days_pre")
 
@@ -46,23 +44,17 @@ estimates$est <- ifelse(is.na(estimates$estimate),NA,paste0(ifelse(estimates$est
                                                             "-",ifelse(estimates$conf_high>=10,sprintf("%.1f",estimates$conf_high),sprintf("%.2f",estimates$conf_high)),")"))
 
 # Specify estimate order -----------------------------------------------------
-estimates$subgroup <- ifelse(estimates$model == "mdl_max_adj" & estimates$subgroup == "main", "All COVID-19, maximally adjusted",estimates$subgroup)
-estimates$subgroup <- ifelse(estimates$model == "mdl_age_sex" & estimates$subgroup == "main", "All COVID-19, age/sex/region adjusted",estimates$subgroup)
-estimates$subgroup <- ifelse(estimates$subgroup == "sub_covid_hospitalised", "Hospitalised COVID-19, maximally adjusted",estimates$subgroup)
-estimates$subgroup <- ifelse(estimates$subgroup == "sub_covid_nonhospitalised", "Non-hospitalised COVID-19, maximally adjusted",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup == "day0_main", "All",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup == "day0_sub_covid_hospitalised", "Hospitalised COVID-19",estimates$subgroup)
+estimates$subgroup <- ifelse(estimates$subgroup == "day0_sub_covid_nonhospitalised", "Non-hospitalised COVID-19",estimates$subgroup)
 
-estimates$subgroup <- factor(estimates$subgroup, levels = c("All COVID-19, age/sex/region adjusted",
-                                                            "All COVID-19, maximally adjusted",
-                                                            "Hospitalised COVID-19, maximally adjusted",
-                                                            "Non-hospitalised COVID-19, maximally adjusted"))
-
-estimates$cohort <- ifelse(estimates$event == "t2dm", "Unvaccinated cohort","Unvaccinated cohort without censoring at vaccination")
+estimates$subgroup <- factor(estimates$subgroup, levels = c("All",
+                                                            "Hospitalised COVID-19",
+                                                            "Non-hospitalised COVID-19"))
 
 
-estimates$cohort <- factor(estimates$cohort, levels=c("Unvaccinated cohort","Unvaccinated cohort without censoring at vaccination")) 
-
-estimates$term <- ifelse(estimates$term == "days0_28","1-4","5-28")
-estimates$term <- factor(estimates$term, levels = c("1-4","5-28"))
+#estimates$term <- ifelse(estimates$term == "days0_28","1-4","5-28")
+#estimates$term <- factor(estimates$term, levels = c("1-4","5-28"))
 
 estimates <- estimates[order(estimates$cohort,estimates$subgroup,estimates$term),]
 # Remove unnecessary variables -----------------------------------------------
@@ -70,11 +62,9 @@ estimates <- estimates[order(estimates$cohort,estimates$subgroup,estimates$term)
 estimates[,c("event","estimate","conf_low","conf_high","model")] <- NULL
 
 # Convert long to wide -------------------------------------------------------
-estimates <- tidyr::pivot_wider(estimates, names_from = cohort, values_from = est)
-estimates <-  estimates %>% select(subgroup, term, `Unvaccinated cohort`,`Unvaccinated cohort without censoring at vaccination`)
-
-
-write.csv(estimates, file = paste0(output_dir,"supp_table5_unvax_sensitivity.csv"),row.names = F)
+estimates <- tidyr::pivot_wider(estimates, names_from = cohort, values_from = c("est", "N_events_midpoint6"))
+estimates <- estimates[, c("subgroup", "term", "N_events_midpoint6_prevax", "est_prevax", "N_events_midpoint6_vax", "est_vax", "N_events_midpoint6_unvax", "est_unvax")] 
+write.csv(estimates, file = paste0(output_dir,"supp_table6_day0.csv"),row.names = F)
 
 
 # END

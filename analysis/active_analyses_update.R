@@ -196,6 +196,16 @@ tmp$cut_points <- ifelse(tmp$cohort=="prevax",
 
 df <- rbind(df,tmp)
 
+# Add 4-month prevax analyses --------------------------------------------------
+
+tmp <- df[df$cohort=="prevax" & 
+            df$outcome %in% c("out_date_t2dm_follow_extended_follow_up","out_date_t2dm_extended_follow_up") & 
+            df$analysis=="main",]
+
+tmp$analysis <- "fup4m"
+
+df <- rbind(df,tmp)
+
 # Assign unique name -----------------------------------------------------------
 
 df$name <- paste0("cohort_",df$cohort, "-", 

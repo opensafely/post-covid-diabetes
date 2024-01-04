@@ -62,6 +62,12 @@ for (i in 1:nrow(active_analyses)) {
   
   end_dates <- readr::read_rds(paste0("output/follow_up_end_dates_",active_analyses$cohort[i],"_diabetes",suffix,".rds"))
   
+  
+  # Add indicator for 4 months (= 4 * 28 = 112 days) follow-up ------------------
+  print('Add indicator for 4 months (= 4 * 28 = 112 days) follow-up')
+  
+  input$fup4m <- (input$end_date - input$index_date) > 112
+  
   # Add end dates --------------------------------------------------------------
   print("Add end dates")
   
@@ -99,6 +105,7 @@ for (i in 1:nrow(active_analyses)) {
   print('Restrict to required variables')
   
   input <- input[,unique(c("patient_id",
+                           "fup4m",
                            "index_date",
                            "end_date_exposure",
                            "end_date_outcome",
@@ -139,7 +146,7 @@ for (i in 1:nrow(active_analyses)) {
     
     df <- input[input$sub_bin_covid19_confirmed_history==FALSE,]
     
-    df[,colnames(df)[grepl("sub_",colnames(df))]] <- NULL
+    df[,c(colnames(df)[grepl("sub_",colnames(df))],"fup4m")] <- NULL
     
     check_vitals(df)
     readr::write_rds(df, file.path("output", paste0("model_input-",active_analyses$name[i],".rds")), compress = "gz")
@@ -148,6 +155,22 @@ for (i in 1:nrow(active_analyses)) {
     
   }
   
+  # Make model input: fup4m ----------------------------------------------------
+  
+  if (grepl("fup4m",active_analyses$analysis[i])) {
+    
+    print(paste0('Make model input: ',active_analyses$analysis[i]))
+    
+    df <- input[input$sub_bin_covid19_confirmed_history==FALSE & input$fup4m==TRUE,]
+    
+    df[,c(colnames(df)[grepl("sub_",colnames(df))],"fup4m")] <- NULL
+    
+    check_vitals(df)
+    readr::write_rds(df, file.path("output", paste0("model_input-",active_analyses$name[i],".rds")), compress = "gz")
+    print(paste0("Saved: output/model_input-",active_analyses$name[i],".rds"))
+    rm(df)
+    
+  }
   # Make model input: sub_covid_hospitalised -----------------------------------
   
   if (grepl("sub_covid_hospitalised",active_analyses$analysis[i])) {
@@ -163,7 +186,7 @@ for (i in 1:nrow(active_analyses)) {
     
     df <- df[df$end_date_outcome>=df$index_date,]
     
-    df[,colnames(df)[grepl("sub_",colnames(df))]] <- NULL
+    df[,c(colnames(df)[grepl("sub_",colnames(df))],"fup4m")] <- NULL
     
     check_vitals(df)
     readr::write_rds(df, file.path("output", paste0("model_input-",active_analyses$name[i],".rds")), compress = "gz")
@@ -188,7 +211,7 @@ for (i in 1:nrow(active_analyses)) {
     df <- df[df$end_date_outcome>=df$index_date,]
     df$index_date <- as.Date(df$index_date)
     
-    df[,colnames(df)[grepl("sub_",colnames(df))]] <- NULL
+    df[,c(colnames(df)[grepl("sub_",colnames(df))],"fup4m")] <- NULL
     
     check_vitals(df)
     readr::write_rds(df, file.path("output", paste0("model_input-",active_analyses$name[i],".rds")), compress = "gz")
@@ -230,7 +253,7 @@ for (i in 1:nrow(active_analyses)) {
                   input$cov_num_age>=min_age &
                   input$cov_num_age<ifelse(max_age==110,max_age+1,max_age),]
     
-    df[,colnames(df)[grepl("sub_",colnames(df))]] <- NULL
+    df[,c(colnames(df)[grepl("sub_",colnames(df))],"fup4m")] <- NULL
     
     check_vitals(df)
     readr::write_rds(df, file.path("output", paste0("model_input-",active_analyses$name[i],".rds")), compress = "gz")
@@ -251,7 +274,7 @@ for (i in 1:nrow(active_analyses)) {
     df <- input[input$sub_bin_covid19_confirmed_history==FALSE & 
                   input$cov_cat_ethnicity==ethnicity,]
     
-    df[,colnames(df)[grepl("sub_",colnames(df))]] <- NULL
+    df[,c(colnames(df)[grepl("sub_",colnames(df))],"fup4m")] <- NULL
     
     check_vitals(df)
     readr::write_rds(df, file.path("output", paste0("model_input-",active_analyses$name[i],".rds")), compress = "gz")

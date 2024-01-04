@@ -352,6 +352,8 @@ actions:
     - make_model_input-cohort_prevax-main-t2dm_follow_extended_follow_up
     - make_model_input-cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up
     - make_model_input-cohort_prevax-sub_covid_nonhospitalised-t2dm_follow_extended_follow_up
+    - make_model_input-cohort_prevax-sub_fup4m-t2dm_extended_follow_up
+    - make_model_input-cohort_prevax-sub_fup4m-t2dm_follow_extended_follow_up
     outputs:
       moderately_sensitive:
         table2: output/table2_prevax.csv

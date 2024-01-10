@@ -576,6 +576,21 @@ actions_list <- splice(
       stata_model_output = glue("output/stata_model_output.csv"),
       stata_model_output_rounded = glue("output/stata_model_output_midpoint6.csv")
     )
+  ),
+  
+  comment("Make absolute excess risk (AER) input"),
+  
+  action(
+    name = "make_aer_input",
+    run = "r:latest analysis/make_aer_input.R",
+    needs = as.list(paste0("make_model_input-",
+                           c("cohort_vax-main-t2dm",
+                             "cohort_unvax-main-t2dm",
+                             "cohort_prevax-main-t2dm_extended_follow_up"))),
+    moderately_sensitive = list(
+      aer_input = glue("output/aer_input-main.csv"),
+      aer_input_rounded = glue("output/aer_input-main-rounded.csv")
+    )
   )
 )
 

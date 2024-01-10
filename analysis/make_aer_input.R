@@ -15,31 +15,24 @@ print('Source common functions')
 
 source("analysis/utility.R")
 
-# Specify arguments ------------------------------------------------------------
-print('Specify arguments')
-
-args <- commandArgs(trailingOnly=TRUE)
-
-if(length(args)==0){
-  analysis <- "main"
-} else {
-  analysis <- args[[1]]
-}
-
-
 # Load active analyses ---------------------------------------------------------
 print('Load active analyses')
 
 active_analyses <- readr::read_rds("lib/active_analyses.rds")
-active_analyses <- active_analyses[active_analyses$cohort %in% c("prevax_extf","unvax_extf","vax"),]
 
 # Format active analyses -------------------------------------------------------
 print('Format active analyses')
 
-active_analyses <- active_analyses[active_analyses$analysis==analysis,
+analysis <- "main"
+
+active_analyses <- active_analyses[active_analyses$name %in% c("cohort_vax-main-t2dm",
+                                                               "cohort_unvax-main-t2dm",
+                                                               "cohort_prevax-main-t2dm_extended_follow_up"),
                                    c("cohort","outcome","name")]
 
 active_analyses$outcome <- gsub("out_date_","",active_analyses$outcome)
+
+print(active_analyses)
 
 # Make empty AER input ---------------------------------------------------------
 print('Make empty AER input')
@@ -99,7 +92,7 @@ for (i in 1:nrow(active_analyses)) {
       
       exposed <- exposed[exposed$fup_start<=exposed$fup_end,]
       
-      exposed <- exposed %>% dplyr::mutate(person_days = as.numeric((fup_end - fup_start))+1)
+      exposed <- exposed %>% dplyr::mutate(person_days = (as.numeric(fup_end) - as.numeric(fup_start))+1)
       
       ## Make unexposed subset -------------------------------------------------
       print('Make unexposed subset')
@@ -112,7 +105,7 @@ for (i in 1:nrow(active_analyses)) {
       
       unexposed <- unexposed[unexposed$fup_start<=unexposed$fup_end,]
       
-      unexposed <- unexposed %>% dplyr::mutate(person_days = as.numeric((fup_end - fup_start))+1)
+      unexposed <- unexposed %>% dplyr::mutate(person_days = (as.numeric(fup_end) - as.numeric(fup_start))+1)
       
       ## Append to AER input ---------------------------------------------------
       print('Append to AER input')
@@ -141,7 +134,7 @@ write.csv(input, paste0("output/aer_input-",analysis,".csv"), row.names = FALSE)
 print('Perform redaction')
 
 input[,setdiff(colnames(input),c("aer_sex","aer_age","analysis","cohort","outcome"))] <- lapply(input[,setdiff(colnames(input),c("aer_sex","aer_age","analysis","cohort","outcome"))],
-                                                                                     FUN=function(y){roundmid_any(as.numeric(y), to=threshold)})
+                                                                                                FUN=function(y){roundmid_any(as.numeric(y), to=threshold)})
 
 # Save rounded AER input -------------------------------------------------------
 print('Save rounded AER input')

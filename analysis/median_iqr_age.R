@@ -17,7 +17,7 @@ for (cohort in c("prevax","vax","unvax")) {
   # Load data ------------------------------------------------------------------
   print(paste0("Load data for cohort: ",cohort))
   
-  tmp <- readr::read_rds(paste0("output/input_",cohort,"_stage1.rds"))
+  tmp <- readr::read_rds(paste0("output/input_",cohort,"_stage1_diabetes.rds"))
   
   # Calculate median (IQR) age -------------------------------------------------
   print("Calculate median (IQR) age")

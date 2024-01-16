@@ -12,7 +12,7 @@ df <- data.frame(cohort = character(),
 # Loop over cohorts ------------------------------------------------------------
 print("Loop over cohorts")
 
-for (cohort in c("prevax_extf","vax","unvax_extf")) {
+for (cohort in c("prevax","vax","unvax")) {
  
   # Load data ------------------------------------------------------------------
   print(paste0("Load data for cohort: ",cohort))

@@ -4202,3 +4202,15 @@ actions:
         aer_input: output/aer_input-main.csv
         aer_input_rounded: output/aer_input-main-rounded.csv
 
+  ## Calculate median (IQR) for age 
+
+  median_iqr_age:
+    run: r:latest analysis/median_iqr_age.R
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    outputs:
+      moderately_sensitive:
+        model_output: output/median_iqr_age.csv
+

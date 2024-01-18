@@ -12,26 +12,39 @@ source("analysis/utility.R")
 print('Create empty results table')
 
 df <- data.frame(cohort = character(),
-                 death28days = numeric(),
-                 sample_size = numeric())
+                 exposed_death28days = numeric(),
+                 exposed_total = numeric())
 
 # Repeat for each cohort -------------------------------------------------------
 print('Repeat for each cohort')
 
 for (cohort in c("prevax","vax","unvax")) {
   
-  ## Load data -----------------------------------------------------------------
-  print('Load data')
+  # Define data suffix ---------------------------------------------------------
+  print('Define data suffix')
+
+  suffix <- ifelse(cohort=="prevax","_extended_follow_up","")  
+
+  # Load data ------------------------------------------------------------------
+  print("Load data")
   
-  input <- dplyr::as_tibble(readr::read_rds(paste0("output/input_",cohort,"_stage1_diabetes.rds")))
+  input <- dplyr::as_tibble(readr::read_rds(paste0("output/model_input-cohort_",cohort,"-main-t2dm",suffix,".rds")))
+  input <- input[,c("patient_id","exp_date")]
   
-  input <- input[input$sub_bin_covid19_confirmed_history==FALSE,
-                 c("patient_id","index_date","death_date")]
+  stage1 <- dplyr::as_tibble(readr::read_rds(paste0("output/input_",cohort,"_stage1_diabetes.rds")))
+  stage1 <- stage1[, c("patient_id","death_date")]
+  
+  input <- merge(input, stage1, by = "patient_id")
+
+  ## Restrict to exposed individuals -------------------------------------------
+  print('Restrict to exposed individuals')
+  
+  input <- input[!is.na(input$exp_date),]
   
   ## Create variable for died within 28 days -----------------------------------
   print('Create variable for died within 28 days')
   
-  input$death28days <- !is.na(input$death_date) & (input$death_date-input$index_date)<28
+  input$death28days <- !is.na(input$death_date) & (input$death_date-input$exp_date)<28
   
   ## Record number died within 28 days -----------------------------------------
   print('Record number died within 28 days')
@@ -48,9 +61,9 @@ write.csv(df, "output/death28days.csv", row.names = FALSE)
 # Perform rounding -------------------------------------------------------------
 print('Perform rounding')
 
-df$death28days_midpoint6 <- roundmid_any(as.numeric(df$death28days), threshold)
-df$sample_size_midpoint6  <- roundmid_any(as.numeric(df$sample_size), threshold)
-df[,c("death28days","sample_size")] <- NULL
+df$exposed_death28days_midpoint6 <- roundmid_any(as.numeric(df$exposed_death28days), threshold)
+df$exposed_total_midpoint6  <- roundmid_any(as.numeric(df$exposed_total), threshold)
+df[,c("exposed_death28days","exposed_total")] <- NULL
 
 # Save rounded results ---------------------------------------------------------
 print('Save rounded results')

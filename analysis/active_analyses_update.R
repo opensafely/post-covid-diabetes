@@ -200,9 +200,9 @@ df <- rbind(df,tmp)
 
 tmp <- df[df$cohort=="prevax" & 
             df$outcome %in% c("out_date_t2dm_follow_extended_follow_up","out_date_t2dm_extended_follow_up") & 
-            df$analysis=="main",]
+            df$analysis %in% c("main","sub_covid_hospitalised","sub_covid_nonhospitalised"),]
 
-tmp$analysis <- "sub_fup4m"
+tmp$analysis <- paste0(tmp$analysis,"_fup4m")
 
 df <- rbind(df,tmp)
 

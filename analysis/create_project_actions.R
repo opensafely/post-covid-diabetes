@@ -146,8 +146,6 @@ apply_model_function <- function(name, cohort, analysis, ipw, strata,
     )
   }
   
- 
-  
 }
 
 
@@ -171,7 +169,10 @@ table2 <- function(cohort){
                                     active_analyses$analysis %in% c("main",
                                                                     "sub_covid_hospitalised",
                                                                     "sub_covid_nonhospitalised",
-                                                                    "sub_fup4m"),]$name
+                                                                    "main_fup4m",
+                                                                    "sub_covid_hospitalised_fup4m",
+                                                                    "sub_covid_nonhospitalised_fup4m"),]$name
+  
   
   splice(
     comment(glue("Table 2 - {cohort}")),
@@ -603,6 +604,20 @@ actions_list <- splice(
                  "stage1_data_cleaning_unvax"),
     moderately_sensitive = list(
       model_output = glue("output/median_iqr_age.csv")
+    )
+  ),
+  
+  comment("Record deaths within 28 days of COVID-19"),
+  
+  action(
+    name = "death28days",
+    run = "r:latest analysis/death28days.R",
+    needs = list("stage1_data_cleaning_prevax",
+                 "stage1_data_cleaning_vax",
+                 "stage1_data_cleaning_unvax"),
+    moderately_sensitive = list(
+      death28days = glue("output/death28days.csv"),
+      death28days_rounded = glue("output/death28days_rounded.csv")
     )
   )
   

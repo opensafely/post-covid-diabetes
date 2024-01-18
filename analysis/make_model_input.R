@@ -15,7 +15,7 @@ print('Specify arguments')
 args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
-  name <- "cohort_prevax-sub_fup4m-t2dm_follow_extended_follow_up"
+  name <- "all" #cohort_prevax-main-t2dm_extended_follow_up"
   # name <- "all" # prepare datasets for all active analyses 
   # name <- "cohort_vax-sub_history_none-depression" # prepare datasets for all active analyses whose name contains X
   # name <- "vax-depression-main;vax-depression-sub_covid_hospitalised;vax-depression-sub_covid_nonhospitalised" # prepare datasets for specific active analyses
@@ -122,23 +122,23 @@ for (i in 1:nrow(active_analyses)) {
                          "exp_date" = active_analyses$exposure[i])
   
   # Remove exposures outside of follow-up time ----------------------------------
-  print('Remove outcomes outside of follow-up time')
-  
-  input <- input %>% 
-    dplyr::mutate(exp_date = replace(exp_date, which(exp_date>end_date_exposure | exp_date<index_date), NA),
+  print('Remove exposures outside of follow-up time')
+
+  input <- input %>%
+    dplyr::mutate(exp_date = replace(exp_date, which(exp_date>end_date_exposure | exp_date<index_date | exp_date>end_date | exp_date>out_date), NA),
                   sub_cat_covid19_hospital = replace(sub_cat_covid19_hospital, which(is.na(exp_date)),"no_infection"))
+
+  # Remove outcomes outside of follow-up time ----------------------------------
+  print('Remove outcomes outside of follow-up time')
+
+  input <- input %>%
+    dplyr::mutate(out_date = replace(out_date, which(out_date>end_date_outcome | out_date<index_date | out_date>end_date), NA))
   
   # Add indicator for 4 months (4*28=112) follow-up post-exposure --------------
   print('Add indicator for 4 months (4*28=112) follow-up post-exposure')
   
   input$sub_bin_fup4m <- ((input$end_date - input$exp_date) > 112) | is.na(input$exp_date)
   input$end_date <- NULL
-  
-  # Remove outcomes outside of follow-up time ----------------------------------
-  print('Remove outcomes outside of follow-up time')
-  
-  input <- input %>% 
-    dplyr::mutate(out_date = replace(out_date, which(out_date>end_date_outcome | out_date<index_date), NA))
   
   # Update end date to be outcome date where applicable ------------------------
   print('Update end date to be outcome date where applicable')
@@ -155,22 +155,9 @@ for (i in 1:nrow(active_analyses)) {
     
     df <- input[input$sub_bin_covid19_confirmed_history==FALSE,]
     
-    df[,colnames(df)[grepl("sub_",colnames(df))]] <- NULL
-    
-    check_vitals(df)
-    readr::write_rds(df, file.path("output", paste0("model_input-",active_analyses$name[i],".rds")), compress = "gz")
-    print(paste0("Saved: output/model_input-",active_analyses$name[i],".rds"))
-    rm(df)
-    
-  }
-  
-  # Make model input: fup4m ----------------------------------------------------
-  
-  if (grepl("sub_fup4m",active_analyses$analysis[i])) {
-    
-    print(paste0('Make model input: ',active_analyses$analysis[i]))
-    
-    df <- input[input$sub_bin_covid19_confirmed_history==FALSE & input$sub_bin_fup4m==TRUE,]
+    if (grepl("_fup4m",active_analyses$analysis[i])) {
+      df <-  df[df$sub_bin_fup4m==TRUE,]
+    }
     
     df[,colnames(df)[grepl("sub_",colnames(df))]] <- NULL
     
@@ -180,6 +167,7 @@ for (i in 1:nrow(active_analyses)) {
     rm(df)
     
   }
+  
   # Make model input: sub_covid_hospitalised -----------------------------------
   
   if (grepl("sub_covid_hospitalised",active_analyses$analysis[i])) {
@@ -194,6 +182,10 @@ for (i in 1:nrow(active_analyses)) {
                     out_date = replace(out_date, which(out_date>end_date_outcome), NA))
     
     df <- df[df$end_date_outcome>=df$index_date,]
+    
+    if (grepl("_fup4m",active_analyses$analysis[i])) {
+      df <-  df[df$sub_bin_fup4m==TRUE,]
+    }
     
     df[,colnames(df)[grepl("sub_",colnames(df))]] <- NULL
     
@@ -219,6 +211,10 @@ for (i in 1:nrow(active_analyses)) {
     
     df <- df[df$end_date_outcome>=df$index_date,]
     df$index_date <- as.Date(df$index_date)
+    
+    if (grepl("_fup4m",active_analyses$analysis[i])) {
+      df <-  df[df$sub_bin_fup4m==TRUE,]
+    }
     
     df[,colnames(df)[grepl("sub_",colnames(df))]] <- NULL
     

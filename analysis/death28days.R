@@ -48,8 +48,8 @@ write.csv(df, "output/death28days.csv", row.names = FALSE)
 # Perform rounding -------------------------------------------------------------
 print('Perform rounding')
 
-df$death28days_midpoint6 <- roundmid_any(as.numeric(df$death28days))
-df$sample_size_midpoint6  <- roundmid_any(as.numeric(df$sample_size))
+df$death28days_midpoint6 <- roundmid_any(as.numeric(df$death28days), threshold)
+df$sample_size_midpoint6  <- roundmid_any(as.numeric(df$sample_size), threshold)
 df[,c("death28days","sample_size")] <- NULL
 
 # Save rounded results ---------------------------------------------------------

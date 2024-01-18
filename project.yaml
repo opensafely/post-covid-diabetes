@@ -4318,3 +4318,16 @@ actions:
       moderately_sensitive:
         model_output: output/median_iqr_age.csv
 
+  ## Record deaths within 28 days of COVID-19 
+
+  death28days:
+    run: r:latest analysis/death28days.R
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
+    outputs:
+      moderately_sensitive:
+        death28days: output/death28days.csv
+        death28days_rounded: output/death28days_rounded.csv
+

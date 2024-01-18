@@ -605,6 +605,20 @@ actions_list <- splice(
     moderately_sensitive = list(
       model_output = glue("output/median_iqr_age.csv")
     )
+  ),
+  
+  comment("Record deaths within 28 days of COVID-19"),
+  
+  action(
+    name = "death28days",
+    run = "r:latest analysis/death28days.R",
+    needs = list("stage1_data_cleaning_prevax",
+                 "stage1_data_cleaning_vax",
+                 "stage1_data_cleaning_unvax"),
+    moderately_sensitive = list(
+      death28days = glue("output/death28days.csv"),
+      death28days_rounded = glue("output/death28days_rounded.csv")
+    )
   )
   
 )

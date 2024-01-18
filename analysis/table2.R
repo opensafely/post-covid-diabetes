@@ -21,7 +21,7 @@ print('Specify arguments')
 args <- commandArgs(trailingOnly=TRUE)
 
 if(length(args)==0){
-  cohort <- "vax"
+  cohort <- "prevax"
 } else {
   cohort <- args[[1]]
 }
@@ -49,7 +49,9 @@ active_analyses <- active_analyses[active_analyses$cohort==cohort &
                                      active_analyses$analysis %in% c("main",
                                                                      "sub_covid_hospitalised",
                                                                      "sub_covid_nonhospitalised",
-                                                                     "sub_fup4m"),]
+                                                                     "main_fup4m",
+                                                                     "sub_covid_hospitalised_fup4m",
+                                                                     "sub_covid_nonhospitalised_fup4m"),]
 
 # Make empty table 2 -----------------------------------------------------------
 print('Make empty table 2')
@@ -67,7 +69,8 @@ table2 <- data.frame(name = character(),
                      total_events = numeric(),
                      day0_events = numeric(),
                      total_exposed = numeric(),
-                     sample_size = numeric())
+                     sample_size = numeric(),
+                     fup_median_iqr = character())
 
 # Record number of events and person days for each active analysis -------------
 print('Record number of events and person days for each active analysis')
@@ -116,6 +119,14 @@ for (i in 1:nrow(active_analyses)) {
   
   unexposed <- unexposed %>% dplyr::mutate(person_days = as.numeric((fup_end - fup_start))+1)
   
+  ## Calculate median (IQR) follow-up -------------------------------------------
+  print('Calculate median (IQR) follow-up')
+  
+  tmp <- rbind(exposed[,c("patient_id","person_days")],
+               unexposed[,c("patient_id","person_days")])
+  
+  tmp <- aggregate(person_days ~ patient_id, tmp, sum)
+  
   ## Append to table 2 ---------------------------------------------------------
   print('Append to table 2')
   
@@ -132,7 +143,8 @@ for (i in 1:nrow(active_analyses)) {
                                total_events = nrow(unexposed[!is.na(unexposed$out_date),]) + nrow(exposed[!is.na(exposed$out_date),]),
                                day0_events = nrow(exposed[exposed$exp_date==exposed$out_date & !is.na(exposed$exp_date) & !is.na(exposed$out_date),]),
                                total_exposed = nrow(exposed),
-                               sample_size = nrow(df))
+                               sample_size = nrow(df),
+                               fup_median_iqr = paste0(quantile(tmp$person_days)[3]," (", quantile(tmp$person_days)[2],"-",quantile(tmp$person_days)[4],")"))
 
 }
 
@@ -144,8 +156,28 @@ write.csv(table2, paste0("output/table2_",cohort,".csv"), row.names = FALSE)
 # Perform redaction ------------------------------------------------------------
 print('Perform redaction')
 
-table2[,setdiff(colnames(table2),c("name","cohort","exposure","outcome","analysis"))] <- lapply(table2[,setdiff(colnames(table2),c("name","cohort","exposure","outcome","analysis"))],
-                                            FUN=function(y){roundmid_any(as.numeric(y), to=threshold)})
+table2$sample_size_midpoint6 <- roundmid_any(as.numeric(table2$sample_size))
+table2$day0_events_midpoint6 <- roundmid_any(as.numeric(table2$day0_events))
+table2$total_exposed_midpoint6 <- roundmid_any(as.numeric(table2$total_exposed))
+table2$unexposed_events_midpoint6 <- roundmid_any(as.numeric(table2$unexposed_events))
+table2$exposed_events_midpoint6 <- roundmid_any(as.numeric(table2$exposed_events))
+table2$total_events_midpoint6_derived <- table2$unexposed_events_midpoint6 + table2$exposed_events_midpoint6
+
+table2 <- table2[,c("name",
+                    "cohort",
+                    "exposure",
+                    "outcome",
+                    "analysis",
+                    "unexposed_person_days",
+                    "unexposed_events_midpoint6",
+                    "exposed_person_days",
+                    "exposed_events_midpoint6",
+                    "total_person_days",
+                    "total_events_midpoint6_derived",
+                    "day0_events_midpoint6",
+                    "total_exposed_midpoint6",
+                    "sample_size_midpoint6",
+                    "fup_median_iqr")]
 
 # Save Table 2 -----------------------------------------------------------------
 print('Save rounded Table 2')

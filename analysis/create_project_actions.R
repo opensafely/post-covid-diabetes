@@ -146,8 +146,6 @@ apply_model_function <- function(name, cohort, analysis, ipw, strata,
     )
   }
   
- 
-  
 }
 
 
@@ -171,7 +169,10 @@ table2 <- function(cohort){
                                     active_analyses$analysis %in% c("main",
                                                                     "sub_covid_hospitalised",
                                                                     "sub_covid_nonhospitalised",
-                                                                    "sub_fup4m"),]$name
+                                                                    "main_fup4m",
+                                                                    "sub_covid_hospitalised_fup4m",
+                                                                    "sub_covid_nonhospitalised_fup4m"),]$name
+  
   
   splice(
     comment(glue("Table 2 - {cohort}")),

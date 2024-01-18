@@ -352,8 +352,12 @@ actions:
     - make_model_input-cohort_prevax-main-t2dm_follow_extended_follow_up
     - make_model_input-cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up
     - make_model_input-cohort_prevax-sub_covid_nonhospitalised-t2dm_follow_extended_follow_up
-    - make_model_input-cohort_prevax-sub_fup4m-t2dm_extended_follow_up
-    - make_model_input-cohort_prevax-sub_fup4m-t2dm_follow_extended_follow_up
+    - make_model_input-cohort_prevax-main_fup4m-t2dm_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_extended_follow_up
+    - make_model_input-cohort_prevax-main_fup4m-t2dm_follow_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_follow_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_follow_extended_follow_up
     outputs:
       moderately_sensitive:
         table2: output/table2_prevax.csv
@@ -3601,53 +3605,149 @@ actions:
       moderately_sensitive:
         model_output: output/model_output-cohort_unvax-detailed_main-t2dm_unvax_sens.csv
 
-  make_model_input-cohort_prevax-sub_fup4m-t2dm_extended_follow_up:
-    run: r:latest analysis/make_model_input.R cohort_prevax-sub_fup4m-t2dm_extended_follow_up
+  make_model_input-cohort_prevax-main_fup4m-t2dm_extended_follow_up:
+    run: r:latest analysis/make_model_input.R cohort_prevax-main_fup4m-t2dm_extended_follow_up
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
-        model_input: output/model_input-cohort_prevax-sub_fup4m-t2dm_extended_follow_up.rds
+        model_input: output/model_input-cohort_prevax-main_fup4m-t2dm_extended_follow_up.rds
 
-  cox_ipw-cohort_prevax-sub_fup4m-t2dm_extended_follow_up:
-    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_prevax-sub_fup4m-t2dm_extended_follow_up.rds
+  cox_ipw-cohort_prevax-main_fup4m-t2dm_extended_follow_up:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_prevax-main_fup4m-t2dm_extended_follow_up.rds
       --ipw=TRUE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
       --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
       --study_stop=2021-12-14 --cut_points=28;197;365;714 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
-      --run_analysis=TRUE --df_output=model_output-cohort_prevax-sub_fup4m-t2dm_extended_follow_up.csv
+      --run_analysis=TRUE --df_output=model_output-cohort_prevax-main_fup4m-t2dm_extended_follow_up.csv
     needs:
-    - make_model_input-cohort_prevax-sub_fup4m-t2dm_extended_follow_up
+    - make_model_input-cohort_prevax-main_fup4m-t2dm_extended_follow_up
     outputs:
       moderately_sensitive:
-        model_output: output/model_output-cohort_prevax-sub_fup4m-t2dm_extended_follow_up.csv
+        model_output: output/model_output-cohort_prevax-main_fup4m-t2dm_extended_follow_up.csv
 
-  make_model_input-cohort_prevax-sub_fup4m-t2dm_follow_extended_follow_up:
-    run: r:latest analysis/make_model_input.R cohort_prevax-sub_fup4m-t2dm_follow_extended_follow_up
+  make_model_input-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_extended_follow_up:
+    run: r:latest analysis/make_model_input.R cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_extended_follow_up
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
-        model_input: output/model_input-cohort_prevax-sub_fup4m-t2dm_follow_extended_follow_up.rds
+        model_input: output/model_input-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_extended_follow_up.rds
 
-  cox_ipw-cohort_prevax-sub_fup4m-t2dm_follow_extended_follow_up:
-    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_prevax-sub_fup4m-t2dm_follow_extended_follow_up.rds
+  cox_ipw-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_extended_follow_up:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_extended_follow_up.rds
       --ipw=TRUE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
       --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
       --study_stop=2021-12-14 --cut_points=28;197;365;714 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
-      --run_analysis=TRUE --df_output=model_output-cohort_prevax-sub_fup4m-t2dm_follow_extended_follow_up.csv
+      --run_analysis=TRUE --df_output=model_output-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_extended_follow_up.csv
     needs:
-    - make_model_input-cohort_prevax-sub_fup4m-t2dm_follow_extended_follow_up
+    - make_model_input-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_extended_follow_up
     outputs:
       moderately_sensitive:
-        model_output: output/model_output-cohort_prevax-sub_fup4m-t2dm_follow_extended_follow_up.csv
+        model_output: output/model_output-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_extended_follow_up.csv
+
+  make_model_input-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_extended_follow_up:
+    run: r:latest analysis/make_model_input.R cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_extended_follow_up
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_end_date_table_prevax
+    - add_persistent_diabetes_outcomes
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_extended_follow_up.rds
+
+  cox_ipw-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_extended_follow_up:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_extended_follow_up.rds
+      --ipw=TRUE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
+      --study_stop=2021-12-14 --cut_points=28;197;365;714 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_extended_follow_up.csv
+    needs:
+    - make_model_input-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_extended_follow_up
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_extended_follow_up.csv
+
+  make_model_input-cohort_prevax-main_fup4m-t2dm_follow_extended_follow_up:
+    run: r:latest analysis/make_model_input.R cohort_prevax-main_fup4m-t2dm_follow_extended_follow_up
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_end_date_table_prevax
+    - add_persistent_diabetes_outcomes
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_prevax-main_fup4m-t2dm_follow_extended_follow_up.rds
+
+  cox_ipw-cohort_prevax-main_fup4m-t2dm_follow_extended_follow_up:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_prevax-main_fup4m-t2dm_follow_extended_follow_up.rds
+      --ipw=TRUE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
+      --study_stop=2021-12-14 --cut_points=28;197;365;714 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_prevax-main_fup4m-t2dm_follow_extended_follow_up.csv
+    needs:
+    - make_model_input-cohort_prevax-main_fup4m-t2dm_follow_extended_follow_up
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_prevax-main_fup4m-t2dm_follow_extended_follow_up.csv
+
+  make_model_input-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_follow_extended_follow_up:
+    run: r:latest analysis/make_model_input.R cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_follow_extended_follow_up
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_end_date_table_prevax
+    - add_persistent_diabetes_outcomes
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_follow_extended_follow_up.rds
+
+  cox_ipw-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_follow_extended_follow_up:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_follow_extended_follow_up.rds
+      --ipw=TRUE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
+      --study_stop=2021-12-14 --cut_points=28;197;365;714 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_follow_extended_follow_up.csv
+    needs:
+    - make_model_input-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_follow_extended_follow_up
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_follow_extended_follow_up.csv
+
+  make_model_input-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_follow_extended_follow_up:
+    run: r:latest analysis/make_model_input.R cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_follow_extended_follow_up
+    needs:
+    - stage1_data_cleaning_prevax
+    - stage1_end_date_table_prevax
+    - add_persistent_diabetes_outcomes
+    outputs:
+      highly_sensitive:
+        model_input: output/model_input-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_follow_extended_follow_up.rds
+
+  cox_ipw-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_follow_extended_follow_up:
+    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_follow_extended_follow_up.rds
+      --ipw=TRUE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
+      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
+      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
+      --study_stop=2021-12-14 --cut_points=28;197;365;714 --controls_per_case=20 --total_event_threshold=50
+      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=FALSE
+      --run_analysis=TRUE --df_output=model_output-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_follow_extended_follow_up.csv
+    needs:
+    - make_model_input-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_follow_extended_follow_up
+    outputs:
+      moderately_sensitive:
+        model_output: output/model_output-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_follow_extended_follow_up.csv
 
   ready-cohort_vax-sub_covid_hospitalised-t2dm:
     run: cox-ipw:v0.0.30 --df_input=model_input-cohort_vax-sub_covid_hospitalised-t2dm.rds
@@ -4158,8 +4258,12 @@ actions:
     - cox_ipw-cohort_unvax-detailed_main-t2dm
     - cox_ipw-cohort_prevax-detailed_main-t2dm_extended_follow_up
     - cox_ipw-cohort_unvax-detailed_main-t2dm_unvax_sens
-    - cox_ipw-cohort_prevax-sub_fup4m-t2dm_extended_follow_up
-    - cox_ipw-cohort_prevax-sub_fup4m-t2dm_follow_extended_follow_up
+    - cox_ipw-cohort_prevax-main_fup4m-t2dm_extended_follow_up
+    - cox_ipw-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_extended_follow_up
+    - cox_ipw-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_extended_follow_up
+    - cox_ipw-cohort_prevax-main_fup4m-t2dm_follow_extended_follow_up
+    - cox_ipw-cohort_prevax-sub_covid_hospitalised_fup4m-t2dm_follow_extended_follow_up
+    - cox_ipw-cohort_prevax-sub_covid_nonhospitalised_fup4m-t2dm_follow_extended_follow_up
     outputs:
       moderately_sensitive:
         model_output: output/model_output.csv

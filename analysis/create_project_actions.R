@@ -614,7 +614,10 @@ actions_list <- splice(
     run = "r:latest analysis/death28days.R",
     needs = list("stage1_data_cleaning_prevax",
                  "stage1_data_cleaning_vax",
-                 "stage1_data_cleaning_unvax"),
+                 "stage1_data_cleaning_unvax",
+                 "make_model_input-cohort_prevax-main-t2dm_extended_follow_up",
+                 "make_model_input-cohort_vax-main-t2dm",
+                 "make_model_input-cohort_unvax-main-t2dm"),
     moderately_sensitive = list(
       death28days = glue("output/death28days.csv"),
       death28days_rounded = glue("output/death28days_rounded.csv")

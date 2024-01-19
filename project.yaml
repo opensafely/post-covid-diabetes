@@ -4326,6 +4326,9 @@ actions:
     - stage1_data_cleaning_prevax
     - stage1_data_cleaning_vax
     - stage1_data_cleaning_unvax
+    - make_model_input-cohort_prevax-main-t2dm_extended_follow_up
+    - make_model_input-cohort_vax-main-t2dm
+    - make_model_input-cohort_unvax-main-t2dm
     outputs:
       moderately_sensitive:
         death28days: output/death28days.csv

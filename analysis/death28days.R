@@ -30,11 +30,15 @@ for (cohort in c("prevax","vax","unvax")) {
   
   input <- dplyr::as_tibble(readr::read_rds(paste0("output/model_input-cohort_",cohort,"-main-t2dm",suffix,".rds")))
   input <- input[,c("patient_id","exp_date")]
+  input$patient_id <- as.character(input$patient_id)
+  input$exp_date <- as.Date(input$exp_date)
   
-  stage1 <- dplyr::as_tibble(readr::read_rds(paste0("output/input_",cohort,"_stage1_diabetes.rds")))
-  stage1 <- stage1[, c("patient_id","death_date")]
+  studydef <- arrow::read_feather(file = "output/input_prelim.feather")
+  studydef <- studydef[, c("patient_id","death_date")]
+  studydef$patient_id <- as.character(studydef$patient_id)
+  studydef$death_date <- as.Date(studydef$death_date)
   
-  input <- merge(input, stage1, by = "patient_id")
+  input <- merge(input, studydef, by = "patient_id")
 
   ## Restrict to exposed individuals -------------------------------------------
   print('Restrict to exposed individuals')

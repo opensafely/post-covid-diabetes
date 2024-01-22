@@ -612,9 +612,7 @@ actions_list <- splice(
   action(
     name = "death28days",
     run = "r:latest analysis/death28days.R",
-    needs = list("stage1_data_cleaning_prevax",
-                 "stage1_data_cleaning_vax",
-                 "stage1_data_cleaning_unvax",
+    needs = list("generate_study_population_prelim",
                  "make_model_input-cohort_prevax-main-t2dm_extended_follow_up",
                  "make_model_input-cohort_vax-main-t2dm",
                  "make_model_input-cohort_unvax-main-t2dm"),

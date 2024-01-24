@@ -32,13 +32,13 @@ for (cohort in c("prevax","vax","unvax")) {
   input <- input[,c("patient_id","exp_date")]
   input$patient_id <- as.character(input$patient_id)
   input$exp_date <- as.Date(input$exp_date)
-  Hmisc::describe(input)
+  print(Hmisc::describe(input))
   
   studydef <- arrow::read_feather(file = "output/input_prelim.feather")
   studydef <- studydef[, c("patient_id","death_date")]
   studydef$patient_id <- as.character(studydef$patient_id)
   studydef$death_date <- as.Date(studydef$death_date)
-  Hmisc::describe(studydef)
+  print(Hmisc::describe(studydef))
   
   input <- merge(input, studydef, by = "patient_id")
 

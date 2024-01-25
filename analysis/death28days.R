@@ -58,7 +58,7 @@ for (cohort in c("prevax","vax","unvax")) {
   ## Record number died within 28 days -----------------------------------------
   print('Record number died within 28 days')
   
-  print(paste0("Among ",nrow(input)," exposed individuals, ",sum(input$death28days), " die within 28 days of COVID-19."))
+  print(paste0("Among ",nrow(input)," exposed individuals, ",sum(input$death28days), " die within 28 days of COVID-19 and ",sum(!is.na(input$death_date)), " die at any time after exposure."))
   df[nrow(df)+1,] <- c(cohort, sum(input$death28days), nrow(input))
   
 }

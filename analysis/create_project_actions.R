@@ -36,10 +36,11 @@ run_stata <- c("cohort_unvax-sub_covid_hospitalised-t2dm_unvax_sens",
                "cohort_unvax-day0_sub_covid_hospitalised-t2dm",
                "cohort_unvax-day0_main-t2dm",
                "cohort_unvax-sub_covid_hospitalised-t2dm",
-               "cohort_unvax-sub_covid_hospitalised-t2dm_pd_no")
+               "cohort_unvax-sub_covid_hospitalised-t2dm_pd_no",
+               "cohort_prevax-sub_age_80_110-t2dm_extended_follow_up")
 
 stata <- active_analyses[active_analyses$name %in% run_stata,]
-stata$save_analysis_ready <-TRUE
+stata$save_analysis_ready <- TRUE
 stata$day0 <- grepl("1;",stata$cut_points)
 
 # Create action function -------------------------------------------------------

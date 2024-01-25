@@ -41,6 +41,9 @@ for (cohort in c("prevax","vax","unvax")) {
   print(Hmisc::describe(studydef))
   
   input <- merge(input, studydef, by = "patient_id")
+  print(Hmisc::describe(studydef))
+  
+  print(paste0("Among ",nrow(input)," individuals in the cohort, ",sum(!is.na(input$death_date)), " individuals die during follow-up."))
 
   ## Restrict to exposed individuals -------------------------------------------
   print('Restrict to exposed individuals')
@@ -55,6 +58,7 @@ for (cohort in c("prevax","vax","unvax")) {
   ## Record number died within 28 days -----------------------------------------
   print('Record number died within 28 days')
   
+  print(paste0("Among ",nrow(input)," exposed individuals, ",sum(input$death28days), " die within 28 days of COVID-19."))
   df[nrow(df)+1,] <- c(cohort, sum(input$death28days), nrow(input))
   
 }

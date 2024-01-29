@@ -186,6 +186,16 @@ table2 <- function(cohort){
         table2 = glue("output/table2_{cohort}.csv"),
         table2_rounded = glue("output/table2_{cohort}_rounded.csv")
       )
+    ),
+    comment(glue("Table 2 - {cohort}")),
+    action(
+      name = glue("table2_midpoint6_{cohort}"),
+      run = "r:latest analysis/table2_midpoint6.R",
+      arguments = c(cohort),
+      needs = c(as.list(glue("table2_{cohort}"))),
+      moderately_sensitive = list(
+        table2_midpoint6 = glue("output/table2_{cohort}_midpoint6.csv")
+      )
     )
   )
 }

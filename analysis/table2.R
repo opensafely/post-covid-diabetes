@@ -156,11 +156,11 @@ write.csv(table2, paste0("output/table2_",cohort,".csv"), row.names = FALSE)
 # Perform redaction ------------------------------------------------------------
 print('Perform redaction')
 
-table2$sample_size_midpoint6 <- roundmid_any(as.numeric(table2$sample_size))
-table2$day0_events_midpoint6 <- roundmid_any(as.numeric(table2$day0_events))
-table2$total_exposed_midpoint6 <- roundmid_any(as.numeric(table2$total_exposed))
-table2$unexposed_events_midpoint6 <- roundmid_any(as.numeric(table2$unexposed_events))
-table2$exposed_events_midpoint6 <- roundmid_any(as.numeric(table2$exposed_events))
+table2$sample_size_midpoint6 <- roundmid_any(as.numeric(table2$sample_size), threshold)
+table2$day0_events_midpoint6 <- roundmid_any(as.numeric(table2$day0_events), threshold)
+table2$total_exposed_midpoint6 <- roundmid_any(as.numeric(table2$total_exposed), threshold)
+table2$unexposed_events_midpoint6 <- roundmid_any(as.numeric(table2$unexposed_events), threshold)
+table2$exposed_events_midpoint6 <- roundmid_any(as.numeric(table2$exposed_events), threshold)
 table2$total_events_midpoint6_derived <- table2$unexposed_events_midpoint6 + table2$exposed_events_midpoint6
 
 table2 <- table2[,c("name",

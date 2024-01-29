@@ -310,6 +310,16 @@ actions:
         table2: output/table2_vax.csv
         table2_rounded: output/table2_vax_rounded.csv
 
+  ## Table 2 - vax 
+
+  table2_midpoint6_vax:
+    run: r:latest analysis/table2_midpoint6.R vax
+    needs:
+    - table2_vax
+    outputs:
+      moderately_sensitive:
+        table2_midpoint6: output/table2_vax_midpoint6.csv
+
   ## Table 2 - unvax 
 
   table2_unvax:
@@ -331,6 +341,16 @@ actions:
       moderately_sensitive:
         table2: output/table2_unvax.csv
         table2_rounded: output/table2_unvax_rounded.csv
+
+  ## Table 2 - unvax 
+
+  table2_midpoint6_unvax:
+    run: r:latest analysis/table2_midpoint6.R unvax
+    needs:
+    - table2_unvax
+    outputs:
+      moderately_sensitive:
+        table2_midpoint6: output/table2_unvax_midpoint6.csv
 
   ## Table 2 - prevax 
 
@@ -362,6 +382,16 @@ actions:
       moderately_sensitive:
         table2: output/table2_prevax.csv
         table2_rounded: output/table2_prevax_rounded.csv
+
+  ## Table 2 - prevax 
+
+  table2_midpoint6_prevax:
+    run: r:latest analysis/table2_midpoint6.R prevax
+    needs:
+    - table2_prevax
+    outputs:
+      moderately_sensitive:
+        table2_midpoint6: output/table2_prevax_midpoint6.csv
 
   ## Stage 5 - Apply models 
 

@@ -109,24 +109,35 @@ apply_model_function <- function(name, cohort, analysis, ipw, strata,
                                  covariate_threshold, age_spline){
   
   if ({cohort}=="prevax") {
-    splice(
-      action(
-        name = glue("make_model_input-{name}"),
-        run = glue("r:latest analysis/make_model_input.R {name}"),
-        needs = list(glue("stage1_data_cleaning_{cohort}"),
-                     glue("stage1_end_date_table_{cohort}"),
-                     "add_persistent_diabetes_outcomes"),
-        highly_sensitive = list(
-          model_input = glue("output/model_input-{name}.rds")
+    if (grepl("_reduced",{name})) {
+      splice(
+        action(
+          name = glue("cox_ipw-{name}"),
+          run = glue("cox-ipw:v0.0.30 --df_input=model_input-{name}.rds --ipw={ipw} --exposure=exp_date --outcome=out_date --strata={strata} --covariate_sex={covariate_sex} --covariate_age={covariate_age} --covariate_other={covariate_other} --cox_start={cox_start} --cox_stop={cox_stop} --study_start={study_start} --study_stop={study_stop} --cut_points={cut_points} --controls_per_case={controls_per_case} --total_event_threshold={total_event_threshold} --episode_event_threshold={episode_event_threshold} --covariate_threshold={covariate_threshold} --age_spline={age_spline} --save_analysis_ready=FALSE --run_analysis=TRUE --df_output=model_output-{name}.csv"),
+          needs = list(paste0("make_model_input-",gsub("_reduced","",{name}))),
+          moderately_sensitive = list(model_output = glue("output/model_output-{name}.csv"))
         )
-      ),
-      action(
-        name = glue("cox_ipw-{name}"),
-        run = glue("cox-ipw:v0.0.30 --df_input=model_input-{name}.rds --ipw={ipw} --exposure=exp_date --outcome=out_date --strata={strata} --covariate_sex={covariate_sex} --covariate_age={covariate_age} --covariate_other={covariate_other} --cox_start={cox_start} --cox_stop={cox_stop} --study_start={study_start} --study_stop={study_stop} --cut_points={cut_points} --controls_per_case={controls_per_case} --total_event_threshold={total_event_threshold} --episode_event_threshold={episode_event_threshold} --covariate_threshold={covariate_threshold} --age_spline={age_spline} --save_analysis_ready=FALSE --run_analysis=TRUE --df_output=model_output-{name}.csv"),
-        needs = list(glue("make_model_input-{name}")),
-        moderately_sensitive = list(model_output = glue("output/model_output-{name}.csv"))
       )
-    )
+    } else {
+      splice(
+        action(
+          name = glue("make_model_input-{name}"),
+          run = glue("r:latest analysis/make_model_input.R {name}"),
+          needs = list(glue("stage1_data_cleaning_{cohort}"),
+                       glue("stage1_end_date_table_{cohort}"),
+                       "add_persistent_diabetes_outcomes"),
+          highly_sensitive = list(
+            model_input = glue("output/model_input-{name}.rds")
+          )
+        ),
+        action(
+          name = glue("cox_ipw-{name}"),
+          run = glue("cox-ipw:v0.0.30 --df_input=model_input-{name}.rds --ipw={ipw} --exposure=exp_date --outcome=out_date --strata={strata} --covariate_sex={covariate_sex} --covariate_age={covariate_age} --covariate_other={covariate_other} --cox_start={cox_start} --cox_stop={cox_stop} --study_start={study_start} --study_stop={study_stop} --cut_points={cut_points} --controls_per_case={controls_per_case} --total_event_threshold={total_event_threshold} --episode_event_threshold={episode_event_threshold} --covariate_threshold={covariate_threshold} --age_spline={age_spline} --save_analysis_ready=FALSE --run_analysis=TRUE --df_output=model_output-{name}.csv"),
+          needs = list(glue("make_model_input-{name}")),
+          moderately_sensitive = list(model_output = glue("output/model_output-{name}.csv"))
+        )
+      ) 
+    }
   } else {
     splice(
       action(

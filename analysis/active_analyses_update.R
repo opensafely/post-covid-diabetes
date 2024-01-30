@@ -206,6 +206,13 @@ tmp$analysis <- paste0(tmp$analysis,"_fup4m")
 
 df <- rbind(df,tmp)
 
+# Repeat prevax with reduced time periods --------------------------------------
+
+tmp <- df[df$cohort=="prevax",]
+tmp$cut_points <- gsub("365;714","714",tmp$cut_points)
+tmp$analysis <- paste0(tmp$analysis,"_reduced")
+df <- rbind(df,tmp)
+
 # Assign unique name -----------------------------------------------------------
 
 df$name <- paste0("cohort_",df$cohort, "-", 

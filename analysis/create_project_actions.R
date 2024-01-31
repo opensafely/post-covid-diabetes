@@ -37,7 +37,9 @@ run_stata <- c("cohort_unvax-sub_covid_hospitalised-t2dm_unvax_sens",
                "cohort_unvax-day0_main-t2dm",
                "cohort_unvax-sub_covid_hospitalised-t2dm",
                "cohort_unvax-sub_covid_hospitalised-t2dm_pd_no",
-               "cohort_prevax-sub_age_80_110-t2dm_extended_follow_up")
+               "cohort_prevax-sub_age_80_110-t2dm_extended_follow_up",
+               "cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up",
+               "cohort_prevax-sub_covid_hospitalised_reduced-t2dm_follow_extended_follow_up")
 
 stata <- active_analyses[active_analyses$name %in% run_stata,]
 stata$save_analysis_ready <- TRUE

@@ -18,7 +18,7 @@ df <- data.frame(cohort = character(),
 # Repeat for each cohort -------------------------------------------------------
 print('Repeat for each cohort')
 
-for (cohort in c("prevax","vax","unvax")) {
+for (cohort in c("vax")) { # Limit cohorts for testing, usually c("prevax","vax","unvax")
   
   # Define data suffix ---------------------------------------------------------
   print('Define data suffix')
@@ -32,16 +32,25 @@ for (cohort in c("prevax","vax","unvax")) {
   input <- input[,c("patient_id","exp_date")]
   input$patient_id <- as.character(input$patient_id)
   input$exp_date <- as.Date(input$exp_date)
+  print(paste0("output/model_input-cohort_",cohort,"-main-t2dm",suffix,".rds"))
   print(Hmisc::describe(input))
   
   studydef <- arrow::read_feather(file = "output/input_prelim.feather")
   studydef <- studydef[, c("patient_id","death_date")]
   studydef$patient_id <- as.character(studydef$patient_id)
   studydef$death_date <- as.Date(studydef$death_date)
+  print("output/input_prelim.feather:")
   print(Hmisc::describe(studydef))
   
+  print(paste0("Unique patient IDs in model_input: ", length(unique(input$patient_id))))
+  print(paste0("Unique rows in model_input: ", nrow(input)))
+  print(paste0("Unique patient IDs in studydef: ", length(unique(studydef$patient_id))))
+  print(paste0("Unique rows in studydef: ", nrow(studydef)))
+  print(paste0("Intersect of patient IDs in model_input and studydef: ", length(intersect(studydef$patient_id,input$patient_id))))
+
   input <- merge(input, studydef, by = "patient_id")
-  print(Hmisc::describe(studydef))
+  print("Merged data:")
+  print(Hmisc::describe(input))
   
   print(paste0("Among ",nrow(input)," individuals in the cohort, ",sum(!is.na(input$death_date)), " individuals die during follow-up."))
 

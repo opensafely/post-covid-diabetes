@@ -10,8 +10,8 @@ library(grid)
 #dir <- ("~/Library/CloudStorage/OneDrive-UniversityofBristol/ehr_postdoc/projects/post-covid-diabetes")
 #setwd(dir)
 
-results_dir <- paste0("/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/release-31-01-2023/")
-output_dir <- paste0("/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-figures/supplementary/")
+results_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/model/"
+output_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-figures/supplementary/"
 
 #-------------------------#
 # 2. Get outcomes to plot #
@@ -30,6 +30,9 @@ outcomes_to_plot <- c("t2dm", "t2dm_extended_follow_up")
 #---------------------------------------------#
 
 # Load all estimates
+estimates <- read.csv(paste0(results_dir,"/master_hr_file.csv"))
+unique(estimates$event)
+unique(estimates$subgroup)
 
 # Get estimates for main analyses and list of outcomes from active analyses
 main_estimates <- estimates %>% filter(event %in% outcomes_to_plot 
@@ -81,49 +84,54 @@ main_estimates$colour <- ifelse(main_estimates$cohort=="unvax","#0018a8",main_es
 
 #Specify lines
 main_estimates$linetype <- ""
-main_estimates$linetype <- ifelse(main_estimates$subgroup=="covid_pheno_hospitalised","solid",main_estimates$linetype)
-main_estimates$linetype <- ifelse(main_estimates$subgroup=="covid_pheno_non_hospitalised","dashed",main_estimates$linetype)
+main_estimates$linetype <- ifelse(main_estimates$subgroup=="day0_sub_covid_hospitalised","solid",main_estimates$linetype)
+main_estimates$linetype <- ifelse(main_estimates$subgroup=="day0_sub_covid_nonhospitalised","dashed",main_estimates$linetype)
 
 # Factor variables for ordering
 main_estimates$cohort <- factor(main_estimates$cohort, levels=c("prevax","vax","unvax")) 
 main_estimates$colour <- factor(main_estimates$colour, levels=c("#d2ac47","#58764c","#0018a8"))
 main_estimates$linetype <- factor(main_estimates$linetype,levels = c("solid","dashed"))
-main_estimates$subgroup <- factor(main_estimates$subgroup,levels = c("main", "covid_pheno_hospitalised","covid_pheno_non_hospitalised"))
+main_estimates$subgroup <- factor(main_estimates$subgroup,levels = c("day0_main", "day0_sub_covid_hospitalised","day0_sub_covid_nonhospitalised"))
 
 # Rename adjustment groups
 levels(main_estimates$cohort) <- list("Pre-Vaccination (2020-01-01 - 2021-06-18)"="prevax", "Vaccinated (2021-06-01 - 2021-12-14)"="vax","Unvaccinated (2021-06-01 - 2021-12-14)"="unvax")
 
 # Order outcomes for plotting
 # Use the nice names from active_analyses table i.e. outcome_name_table
-main_estimates <- main_estimates %>% left_join(outcome_name_table %>% select(outcome, outcome_name), by = c("event"="outcome_name"))
+main_estimates$outcome==""
+main_estimates <- main_estimates %>% mutate(outcome = case_when(subgroup=="day0_main" ~ "All COVID-19",
+                                                      subgroup=="day0_sub_covid_hospitalised" ~ "Hospitalised COVID-19",
+                                                      subgroup=="day0_sub_covid_nonhospitalised" ~ "Non-hospitalised COVID-19"))
 main_estimates$outcome <- str_to_title(main_estimates$outcome)
 main_estimates$outcome <- factor(main_estimates$outcome, levels=c("Type 2 Diabetes"))
 
 # df <- main_estimates %>% dplyr::filter(time_points == "reduced")
 
 df <- main_estimates
+df <- df[df$term!="days_pre",]
 
-# MAIN - PREVAX --------------------------------------------------------------------
+# MAIN --------------------------------------------------------------------
 
 # set desired dodge width
-pd <- position_dodge2(width = 0.3)
+pd <- position_dodge2(width = 0.5)
 
 df_main <- df %>%
   # hospitalise 
-  dplyr::filter(subgroup=="main" & cohort == "Pre-Vaccination (2020-01-01 - 2021-06-18)")
+  dplyr::filter(subgroup=="day0_main")
 
-main_prevax <- ggplot2::ggplot(data=df_main,
+main <- ggplot2::ggplot(data=df_main,
                         mapping = ggplot2::aes(x=median_follow_up, y = estimate, color = cohort, shape= cohort, fill= cohort))+
   #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
   ggplot2::geom_point(aes(),size = 2, position = pd) +
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
   ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
-                                                            ymax = ifelse(conf_high>256,256,conf_high),  
+                                                            ymax = ifelse(conf_high>512,512,conf_high),  
                                                             width = 0))+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
-  ggplot2::geom_line(position = pd) +
+   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
+  #ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.25,512), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256,512), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
@@ -141,108 +149,36 @@ main_prevax <- ggplot2::ggplot(data=df_main,
                  legend.position="bottom",
                  plot.background = ggplot2::element_rect(fill = "white", colour = "white"),
                  plot.margin = margin(1,1,1,1, "cm")) +   
-  theme(text = element_text(size = 12)) +
-  theme(legend.text = element_blank())
+  theme(text = element_text(size = 12)) # +
+#  theme(legend.text = element_blank())
 
-# MAIN - VAX --------------------------------------------------------------------
 
-# set desired dodge width
-pd <- position_dodge2(width = 0.3)
 
-df_main_vax <- df %>%
-  # hospitalise 
-  dplyr::filter(subgroup=="main" & cohort == "Vaccinated (2021-06-01 - 2021-12-14)")
-
-main_vax <- ggplot2::ggplot(data=df_main_vax,
-                        mapping = ggplot2::aes(x=median_follow_up, y = estimate, color = cohort, shape= cohort, fill= cohort))+
-  #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
-  ggplot2::geom_point(aes(),size = 2, position = pd) +
-  ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
-  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
-                                                            ymax = ifelse(conf_high>256,256,conf_high),  
-                                                            width = 0))+   
-  ggplot2::geom_line(position = pd) +
-  ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
-  ggplot2::scale_fill_manual(values = "#58764c")+ 
-  ggplot2::scale_color_manual(values = "#58764c") +
-  ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df_main_vax$cohort)) +
-  ggplot2::labs(x = "\n ", y = NULL) +
-  ggplot2::theme_minimal() +
-  ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
-                 panel.grid.minor = ggplot2::element_blank(),
-                 panel.spacing.x = ggplot2::unit(0.5, "lines"),
-                 panel.spacing.y = ggplot2::unit(0, "lines"),
-                 # legend.key = ggplot2::element_rect(colour = NA, fill = NA),
-                 # legend.title = ggplot2::element_blank(),
-                 legend.position="none",
-                 plot.background = ggplot2::element_rect(fill = "white", colour = "white"),
-                 plot.margin = margin(1,1,1,1, "cm")) +   
-  theme(text = element_text(size = 12)) +
-  theme(legend.text = element_blank()) 
-
-# MAIN - UNVAX --------------------------------------------------------------------
-
-# set desired dodge width
-pd <- position_dodge2(width = 0.3)
-
-df_main_unvax <- df %>%
-  # hospitalise 
-  dplyr::filter(subgroup=="main" & cohort == "Unvaccinated (2021-06-01 - 2021-12-14)")
-
-main_unvax <- ggplot2::ggplot(data=df_main_unvax,
-                            mapping = ggplot2::aes(x=median_follow_up, y = estimate, color = cohort, shape= cohort, fill= cohort))+
-  #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
-  ggplot2::geom_point(aes(),size = 2, position = pd) +
-  ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
-  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
-                                                            ymax = ifelse(conf_high>256,256,conf_high),  
-                                                            width = 0))+   
-  ggplot2::geom_line(position = pd) +
-  ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
-  ggplot2::scale_fill_manual(values = "#0018a8")+ 
-  ggplot2::scale_color_manual(values = "#0018a8") +
-  ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df_main_unvax$cohort)) +
-  ggplot2::labs(x = "\n ", y = NULL) +
-  ggplot2::theme_minimal() +
-  ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
-                 panel.grid.minor = ggplot2::element_blank(),
-                 panel.spacing.x = ggplot2::unit(0.5, "lines"),
-                 panel.spacing.y = ggplot2::unit(0, "lines"),
-                 # legend.key = ggplot2::element_rect(colour = NA, fill = NA),
-                 # legend.title = ggplot2::element_blank(),
-                 legend.position="none",
-                 plot.background = ggplot2::element_rect(fill = "white", colour = "white"),
-                 plot.margin = margin(1,1,1,1, "cm")) +   
-  theme(text = element_text(size = 12)) +
-  theme(legend.text = element_blank()) 
-
-# HOSPITALISED - PREVAX ------------------------------------------------------------
+# HOSPITALISED ------------------------------------------------------------
 
 df_hosp <- df %>%
   # hospitalise 
-  dplyr::filter(subgroup=="covid_pheno_hospitalised" & cohort == "Pre-Vaccination (2020-01-01 - 2021-06-18)")
+  dplyr::filter(subgroup=="day0_sub_covid_hospitalised")
 
-hosp_prevax <- ggplot2::ggplot(data=df_hosp,
+hosp <- ggplot2::ggplot(data=df_hosp,
                         mapping = ggplot2::aes(x=median_follow_up, y = estimate, color = cohort, shape= cohort, fill= cohort))+
   #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
-  ggplot2::geom_point(aes(),size = 2, position = pd) +
+  ggplot2::geom_point(aes(),size = 2, position = pd) + 
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
   ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
-                                                            ymax = ifelse(conf_high>256,256,conf_high),  
-                                                            width = 0), 
-                         position = pd)+   
+                                                            ymax = ifelse(conf_high>512,512,conf_high),  
+                                                            width = 0))+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
+  #ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.25,512), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256,512), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$cohort)) +
   #ggplot2::scale_linetype_manual(values = levels(df$linetype), labels = levels(df$subgroup)) +
-  ggplot2::labs(x = "\n ", y = "Hazard ratio and 95% confidence interval") +
+  ggplot2::labs(x = "\nWeeks since COVID-19 diagnosis", y = NULL) +
   ggplot2::guides(fill=ggplot2::guide_legend(ncol = 1, nrow = 3, byrow = TRUE)) +
   ggplot2::theme_minimal() +
   ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
@@ -254,105 +190,38 @@ hosp_prevax <- ggplot2::ggplot(data=df_hosp,
                  legend.position="bottom",
                  plot.background = ggplot2::element_rect(fill = "white", colour = "white"),
                  plot.margin = margin(1,1,1,1, "cm")) +   
-  theme(text = element_text(size = 12)) +
-  theme(legend.text = element_blank())
+  theme(text = element_text(size = 12)) # +
+#  theme(legend.text = element_blank())
 
 # ggplot2::ggsave(paste0(output_dir,"Figure2_covid_pheno_HOSP_all_cohorts_TEST.png"), height = 297, width = 230, unit = "mm", dpi = 600, scale = 1)
 
-# HOSPITALISED - VAX ------------------------------------------------------------
 
-df_hosp_vax <- df %>%
-  # hospitalise 
-  dplyr::filter(subgroup=="covid_pheno_hospitalised" & cohort == "Vaccinated (2021-06-01 - 2021-12-14)")
+# NON HOSPITALISED --------------------------------------------------------
 
-hosp_vax <- ggplot2::ggplot(data=df_hosp_vax,
-                            mapping = ggplot2::aes(x=median_follow_up, y = estimate, color = cohort, shape= cohort, fill= cohort))+
-  #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
-  ggplot2::geom_point(aes(),size = 2, position = pd) +
-  ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
-  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
-                                                            ymax = ifelse(conf_high>256,256,conf_high),  
-                                                            width = 0))+   
-  ggplot2::geom_line(position = pd) +
-  ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
-  ggplot2::scale_fill_manual(values = "#58764c")+ 
-  ggplot2::scale_color_manual(values = "#58764c") +
-  ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df_hosp_vax$cohort)) +
-  ggplot2::labs(x = "\n ", y = NULL) +
-  ggplot2::theme_minimal() +
-  ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
-                 panel.grid.minor = ggplot2::element_blank(),
-                 panel.spacing.x = ggplot2::unit(0.5, "lines"),
-                 panel.spacing.y = ggplot2::unit(0, "lines"),
-                 # legend.key = ggplot2::element_rect(colour = NA, fill = NA),
-                 # legend.title = ggplot2::element_blank(),
-                 legend.position="none",
-                 plot.background = ggplot2::element_rect(fill = "white", colour = "white"),
-                 plot.margin = margin(1,1,1,1, "cm")) +   
-  theme(text = element_text(size = 12)) +
-  theme(legend.text = element_blank()) 
-
-# HOSPITALISED - UNVAX ------------------------------------------------------------
-
-df_hosp_unvax <- df %>%
-  # hospitalise 
-  dplyr::filter(subgroup=="covid_pheno_hospitalised" & cohort == "Unvaccinated (2021-06-01 - 2021-12-14)")
-
-hosp_unvax <- ggplot2::ggplot(data=df_hosp_unvax,
-                              mapping = ggplot2::aes(x=median_follow_up, y = estimate, color = cohort, shape= cohort, fill= cohort))+
-  #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
-  ggplot2::geom_point(aes(),size = 2, position = pd) +
-  ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
-  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
-                                                            ymax = ifelse(conf_high>256,256,conf_high),  
-                                                            width = 0))+   
-  ggplot2::geom_line(position = pd) +
-  ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
-  ggplot2::scale_fill_manual(values = "#0018a8")+ 
-  ggplot2::scale_color_manual(values = "#0018a8") +
-  ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df_hosp_unvax$cohort)) +
-  ggplot2::labs(x = "\n ", y = NULL) +
-  ggplot2::theme_minimal() +
-  ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
-                 panel.grid.minor = ggplot2::element_blank(),
-                 panel.spacing.x = ggplot2::unit(0.5, "lines"),
-                 panel.spacing.y = ggplot2::unit(0, "lines"),
-                 # legend.key = ggplot2::element_rect(colour = NA, fill = NA),
-                 # legend.title = ggplot2::element_blank(),
-                 legend.position="none",
-                 plot.background = ggplot2::element_rect(fill = "white", colour = "white"),
-                 plot.margin = margin(1,1,1,1, "cm")) +   
-  theme(text = element_text(size = 12)) +
-  theme(legend.text = element_blank()) 
-
-
-# NON HOSPITALISED - PREVAX --------------------------------------------------------
 
 df_nonhosp <- df %>%
   # hospitalise 
-  dplyr::filter(subgroup=="covid_pheno_non_hospitalised" & cohort == "Pre-Vaccination (2020-01-01 - 2021-06-18)")
+  dplyr::filter(subgroup=="day0_sub_covid_nonhospitalised")
 
-non_hosp_prevax <- ggplot2::ggplot(data=df_nonhosp,
+non_hosp <- ggplot2::ggplot(data=df_nonhosp,
                             mapping = ggplot2::aes(x=median_follow_up, y = estimate, color = cohort, shape= cohort, fill= cohort))+
   #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
   ggplot2::geom_point(aes(), size = 2, position = pd) +
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
   ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
-                                                            ymax = ifelse(conf_high>256,256,conf_high),  
-                                                            width = 0), 
-                         position = pd)+   
+                                                            ymax = ifelse(conf_high>512,512,conf_high),  
+                                                            width = 0))+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
+  #ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.25,512), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256,512), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
   ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df$cohort)) +
   #ggplot2::scale_linetype_manual(values = levels(df$linetype), labels = levels(df$subgroup)) +
-  ggplot2::labs(x = "\nWeeks since COVID-19 diagnosis", y = "Hazard ratio and 95% confidence interval") +
+  ggplot2::labs(x = "\n ", y = NULL) +
   ggplot2::guides(fill=ggplot2::guide_legend(ncol = 1, nrow = 3, byrow = TRUE)) +
   ggplot2::theme_minimal() +
   ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
@@ -365,98 +234,28 @@ non_hosp_prevax <- ggplot2::ggplot(data=df_nonhosp,
                  legend.spacing.y = unit(0.01, 'cm'),
                  plot.background = ggplot2::element_rect(fill = "white", colour = "white"),
                  plot.margin = margin(1,1,1,1, "cm")) +   
-  theme(text = element_text(size = 12)) +
-  theme(legend.text = element_blank())
+  theme(text = element_text(size = 12)) # +
+#  theme(legend.text = element_blank())
 
 # ggplot2::ggsave(paste0(output_dir,"Figure2_covid_pheno_NON_HOSP_all_cohorts_TEST.png"), height = 297, width = 230, unit = "mm", dpi = 600, scale = 1)
 
-# NON HOSPITALISED - VAX --------------------------------------------------------
+# PLOT WITHOUT TABLE ------------------------------------------------------
 
-df_nonhosp_vax <- df %>%
-  # hospitalise 
-  dplyr::filter(subgroup=="covid_pheno_non_hospitalised" & cohort == "Vaccinated (2021-06-01 - 2021-12-14)")
-
-nonhosp_vax <- ggplot2::ggplot(data=df_nonhosp_vax,
-                            mapping = ggplot2::aes(x=median_follow_up, y = estimate, color = cohort, shape= cohort, fill= cohort))+
-  #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
-  ggplot2::geom_point(aes(),size = 2, position = pd) +
-  ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
-  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
-                                                            ymax = ifelse(conf_high>256,256,conf_high),  
-                                                            width = 0))+   
-  ggplot2::geom_line(position = pd) +
-  ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
-  ggplot2::scale_fill_manual(values = "#58764c")+ 
-  ggplot2::scale_color_manual(values = "#58764c") +
-  ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df_nonhosp_vax$cohort)) +
-  ggplot2::labs(x = "\nWeeks since COVID-19 diagnosis", y = NULL) +
-  ggplot2::theme_minimal() +
-  ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
-                 panel.grid.minor = ggplot2::element_blank(),
-                 panel.spacing.x = ggplot2::unit(0.5, "lines"),
-                 panel.spacing.y = ggplot2::unit(0, "lines"),
-                 # legend.key = ggplot2::element_rect(colour = NA, fill = NA),
-                 # legend.title = ggplot2::element_blank(),
-                 legend.position="none",
-                 plot.background = ggplot2::element_rect(fill = "white", colour = "white"),
-                 plot.margin = margin(1,1,1,1, "cm")) +   
-  theme(text = element_text(size = 12)) +
-  theme(legend.text = element_blank()) 
+png(paste0(output_dir,"t2dm_day0_extended_3plots.png"),
+    units = "mm", width=330, height=195, res = 1000)
+ggpubr::ggarrange(main, hosp, non_hosp, ncol=3, nrow=1, common.legend = TRUE, legend="bottom",
+                  labels = c("A: All COVID-19", "B: Hospitalised-COVID-19", "C: Non-Hospitalised-COVID-19"),
+                  hjust = -0.1,
+                  font.label = list(size = 12)) +
+  theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm")) 
+dev.off() 
 
 
-# NON HOSPITALISED - UNVAX --------------------------------------------------------
 
-df_nonhosp_unvax <- df %>%
-  # hospitalise 
-  dplyr::filter(subgroup=="covid_pheno_non_hospitalised" & cohort == "Unvaccinated (2021-06-01 - 2021-12-14)")
 
-nonhosp_unvax <- ggplot2::ggplot(data=df_nonhosp_unvax,
-                              mapping = ggplot2::aes(x=median_follow_up, y = estimate, color = cohort, shape= cohort, fill= cohort))+
-  #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
-  ggplot2::geom_point(aes(),size = 2, position = pd) +
-  ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
-  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
-                                                            ymax = ifelse(conf_high>256,256,conf_high),  
-                                                            width = 0))+   
-  ggplot2::geom_line(position = pd) +
-  ggplot2::scale_y_continuous(lim = c(0.25,256), breaks = c(0.25,0.5,1,2,4,8,16,32,64,128,256), trans = "log") +
-  ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
-  ggplot2::scale_fill_manual(values = "#0018a8")+ 
-  ggplot2::scale_color_manual(values = "#0018a8") +
-  ggplot2::scale_shape_manual(values = c(rep(21,22)), labels = levels(df_nonhosp_unvax$cohort)) +
-  ggplot2::labs(x = "\nWeeks since COVID-19 diagnosis", y = NULL) +
-  ggplot2::theme_minimal() +
-  ggplot2::theme(panel.grid.major.x = ggplot2::element_blank(),
-                 panel.grid.minor = ggplot2::element_blank(),
-                 panel.spacing.x = ggplot2::unit(0.5, "lines"),
-                 panel.spacing.y = ggplot2::unit(0, "lines"),
-                 # legend.key = ggplot2::element_rect(colour = NA, fill = NA),
-                 # legend.title = ggplot2::element_blank(),
-                 legend.position="none",
-                 plot.background = ggplot2::element_rect(fill = "white", colour = "white"),
-                 plot.margin = margin(1,1,1,1, "cm")) +   
-  theme(text = element_text(size = 12)) +
-  theme(legend.text = element_blank()) 
 
-# PLOT MULTI PANEL ------------------------------------------------------
 
-plot <- ggpubr::ggarrange(main_prevax, hosp_prevax, non_hosp_prevax,
-                          main_vax, hosp_vax, nonhosp_vax,
-                          main_unvax, hosp_unvax, nonhosp_unvax,
-                          ncol=3, nrow=3, legend="none",
-                          labels = c("All COVID-19 - Pre-vaccination", "Hospitalised-COVID-19 - Pre-vaccination", "Non-Hospitalised COVID-19 - Pre-vaccination", 
-                                     "All COVID-19 - Vaccinated", "Hospitalised-COVID-19 - Vaccinated", "Non-Hospitalised-COVID-19 - Vaccinated", 
-                                     "All COVID-19 - Unvaccinated", "Hospitalised-COVID-19 - Unvaccinated", "Non-Hospitalised-COVID-19 - Unvaccinated"),
-                          hjust = -0.1,
-                          vjust = -0.2,
-                          font.label = list(size = 12)) +
-  theme(plot.margin = margin(0.5,0.5,0.5,0.5, "cm"))
-
-png(paste0(output_dir,"t2dm_dayzero_extended.png"),
-    units = "mm", width=300, height=300, res = 1000)
-annotate_figure(plot, top = text_grob("Type 2 diabetes day zero analyses\n", 
-                                      color = "black", face = "bold", size = 14))
-dev.off()
-
-# END
+######################################################################################################
+######################################################################################################
+######################################################################################################
+######################################################################################################

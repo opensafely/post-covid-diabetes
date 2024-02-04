@@ -93,7 +93,7 @@ df <- main_estimates
     #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
     ggplot2::geom_line(position = pd) +
     #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
-    ggplot2::scale_y_continuous(lim = c(0.5,16), breaks = c(0.5,1,2,4,8,16), trans = "log") +
+    ggplot2::scale_y_continuous(lim = c(0.5,32), breaks = c(0.5,1,2,4,8,16,32), trans = "log") +
     ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
     ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
     ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
@@ -114,7 +114,7 @@ df <- main_estimates
 #  +    
   #    ggplot2::facet_wrap(outcome~., ncol = 2)
   
-  ggplot2::ggsave(paste0(output_dir,"t2dm_full_timepoint","t2dm","_.png"), height = 297, width = 220, unit = "mm", dpi = 600, scale = 1)
+  ggplot2::ggsave(paste0(output_dir,"t2dm_full_timepoint","t2dm","_.png"), height = 210, width = 297, unit = "mm", dpi = 600, scale = 1)
   
   
 

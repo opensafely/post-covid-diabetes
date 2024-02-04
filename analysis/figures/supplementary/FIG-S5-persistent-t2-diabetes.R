@@ -22,6 +22,8 @@ output_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Project
 estimates <- read.csv(paste0(results_dir,"/master_hr_file.csv"))
 unique(estimates$event)
 unique(estimates$outcome_name)
+unique(estimates$subgroup)
+
 
 outcomes_to_plot <- c("t2dm_extended_follow_up","t2dm_follow_extended_follow_up")
 
@@ -33,15 +35,15 @@ estimates <- estimates %>% filter(estimates$event %in% c(outcomes_to_plot))
 
 # restrict models
 estimates <- estimates %>% filter(cohort=="prevax") %>%
-                           filter(subgroup %in% c("main", "sub_covid_hospitalised","sub_covid_nonhospitalised") & model=="mdl_max_adj") %>%
+                           filter(subgroup %in% c("main_fup4m", "sub_covid_hospitalised_fup4m","sub_covid_nonhospitalised_fup4m") & model=="mdl_max_adj") %>%
                            select(term,estimate,conf_low,conf_high,event,subgroup,cohort,model,median_follow_up,outcome_name)
 
 estimates$analysis[estimates$event == "t2dm_extended_follow_up"] <- "Type 2 diabetes - main analysis (Pre-vaccination cohort)"
 estimates$analysis[estimates$event == "t2dm_follow_extended_follow_up"] <- "Type 2 diabetes - still treated after 4 months (Pre-vaccination cohort)"
 
-estimates$subgroup[estimates$subgroup == "main"] <- "All COVID-19"
-estimates$subgroup[estimates$subgroup == "sub_covid_hospitalised"] <- "Hospitalised COVID-19"
-estimates$subgroup[estimates$subgroup == "sub_covid_nonhospitalised"] <- "Non-hospitalised COVID-19"
+estimates$subgroup[estimates$subgroup == "main_fup4m"] <- "All COVID-19"
+estimates$subgroup[estimates$subgroup == "sub_covid_hospitalised_fup4m"] <- "Hospitalised COVID-19"
+estimates$subgroup[estimates$subgroup == "sub_covid_nonhospitalised_fup4m"] <- "Non-hospitalised COVID-19"
 
 #------------------------------------------#
 # 4. Specify groups and their line colours #
@@ -100,8 +102,8 @@ main <- ggplot2::ggplot(data=df_main,
                  legend.position="bottom",
                  plot.background = ggplot2::element_rect(fill = "white", colour = "white"),
                  plot.margin = margin(1,1,1,1, "cm")) +   
-  theme(text = element_text(size = 12)) +
-  theme(legend.text = element_blank())
+  theme(text = element_text(size = 12)) # +
+ # theme(legend.text = element_blank())
 
 
 
@@ -141,8 +143,8 @@ hosp <- ggplot2::ggplot(data=df_hosp,
                  legend.position="bottom",
                  plot.background = ggplot2::element_rect(fill = "white", colour = "white"),
                  plot.margin = margin(1,1,1,1, "cm")) +   
-  theme(text = element_text(size = 12)) +
-  theme(legend.text = element_blank())
+  theme(text = element_text(size = 12)) # +
+#  theme(legend.text = element_blank())
 
 # ggplot2::ggsave(paste0(output_dir,"Figure2_covid_pheno_HOSP_all_cohorts_TEST.png"), height = 297, width = 230, unit = "mm", dpi = 600, scale = 1)
 
@@ -185,14 +187,14 @@ non_hosp <- ggplot2::ggplot(data=df_nonhosp,
                  legend.spacing.y = unit(0.01, 'cm'),
                  plot.background = ggplot2::element_rect(fill = "white", colour = "white"),
                  plot.margin = margin(1,1,1,1, "cm")) +   
-  theme(text = element_text(size = 12)) +
-  theme(legend.text = element_blank())
+  theme(text = element_text(size = 12))# +
+#  theme(legend.text = element_blank())
 
 # ggplot2::ggsave(paste0(output_dir,"Figure2_covid_pheno_NON_HOSP_all_cohorts_TEST.png"), height = 297, width = 230, unit = "mm", dpi = 600, scale = 1)
 
 # PLOT WITHOUT TABLE ------------------------------------------------------
 
-png(paste0(output_dir,"supp-table-6-persistent-t2dm.png"),
+png(paste0(output_dir,"supp-FIG-5-persistent-t2dm.png"),
     units = "mm", width=330, height=195, res = 1000)
 ggpubr::ggarrange(main, hosp, non_hosp, ncol=3, nrow=1, common.legend = TRUE, legend="bottom",
                   labels = c("A: All COVID-19", "B: Hospitalised-COVID-19", "C: Non-Hospitalised-COVID-19"),

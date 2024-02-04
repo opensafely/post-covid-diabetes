@@ -24,6 +24,9 @@ subgroup_table2 <- subset(combined_hr, event %in% c("t2dm","t2dm_extended_follow
 
 combined_hr <- rbind(subgroup_table1,subgroup_table2)
 combined_hr <- combined_hr[!duplicated(combined_hr),]
+# exclude minimally adjusted models
+combined_hr <- combined_hr[combined_hr$model!="mdl_age_sex",]
+
 
 if (cohort == "prevax"){
   combined_hr <- combined_hr %>% filter(cohort == "prevax"

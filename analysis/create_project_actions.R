@@ -26,11 +26,11 @@ cohort_to_run_all <- c("prevax", "vax", "unvax")
 
 # Specify active analyses requiring Stata
 
-#run_stata <- c("")
+run_stata <- c("cox_ipw-cohort_prevax-sub_covid_hospitalised_reduced-t2dm_follow_extended_follow_up")
 
-#stata <- active_analyses[active_analyses$name %in% run_stata]
-#stata$save_analysis_ready <-TRUE
-#stata$day0 <- grepl("1;",stata$cutpoints)
+stata <- active_analyses[active_analyses$name %in% run_stata]
+stata$save_analysis_ready <-TRUE
+stata$day0 <- grepl("1;",stata$cutpoints)
 
 # Create action function -------------------------------------------------------
 

@@ -22,23 +22,30 @@ library(stringr)
 active_analyses <- readr::read_rds("lib/active_analyses.RDS")
 
 # Get data from each cohort ----------------------------------------------------
-table2_pre_vax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_prevax_rounded.csv")
-table2_vax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_vax_rounded.csv")
-table2_unvax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_unvax_rounded.csv")
+table2_pre_vax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_prevax_midpoint6.csv")
+table2_vax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_vax_midpoint6.csv")
+table2_unvax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_unvax_midpoint6.csv")
 
 df <-rbind(table2_pre_vax, table2_unvax, table2_vax)
 # tidying prevax outcome names
 df$outcome <- stringr::str_remove(df$outcome, "_extended_follow_up")
+df$outcome[df$outcome == "out_date_t2dm" & (df$analysis == "main_fup4m"|
+                                            df$analysis == "sub_covid_hospitalised_fup4m"|
+                                            df$analysis == "sub_covid_nonhospitalised_fup4m")] <- "out_date_t2dm_fup4m"
+df <- subset(df, name!= "cohort_prevax-main-t2dm_follow_extended_follow_up")
+df <- subset(df, name!= "cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up")
+df <- subset(df, name!= "cohort_prevax-sub_covid_nonhospitalised-t2dm_follow_extended_follow_up")    
+df$analysis <- stringr::str_remove(df$analysis, "_fup4m")
+     
 
 # Keep totals ------------------------------------------------------------------
 print("Keep totals")
 
-totals <- subset(df, grepl("t2dm", df$outcome))
-totals <- unique(totals[totals$analysis=="main", c("cohort","sample_size")])
+totals <- unique(df[df$analysis=="main",c("cohort","sample_size_midpoint6")])
 
 totals <- tidyr::pivot_wider(totals,
                              names_from = "cohort",
-                             values_from = c("sample_size"))
+                             values_from = c("sample_size_midpoint6"))
 
 totals <-dplyr::rename(totals,
                        "event_personyears_prevax" = "prevax",
@@ -60,7 +67,7 @@ df <- df[,c("cohort","analysis","outcome","events","person_days")]
 # Add plot labels --------------------------------------------------------------
 print("Add plot labels")
 
-plot_labels <- readr::read_csv("C:/Users/rd16568/Documents/Github/post-covid-diabetes/lib/plot_labels.csv",
+plot_labels <- readr::read_csv("lib/plot_labels.csv",
                                show_col_types = FALSE)
 
 df$outcome <- gsub("out_date_","",df$outcome)
@@ -101,6 +108,7 @@ df$outcome_label <- factor(df$outcome_label,
                                       "Type 1 Diabetes",
                                       "Gestational Diabetes",
                                       "Other or non-specified Diabetes",
+                                      "Type 2 diabetes 4 month follow up",
                                       "Persistent type 2 diabetes"))
 
 # Tidy table -------------------------------------------------------------------
@@ -119,4 +127,7 @@ df <- dplyr::rename(df,
 # Save table -------------------------------------------------------------------
 print("Save table")
 
-write.csv(df, paste0("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-tables/formatted_table_2.csv"),row.names = F)
+df2 = data.frame(lapply(df, as.character), stringsAsFactors=FALSE)
+write.csv(df2, paste0("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-tables/formatted_table_2.csv"),row.names = F)
+
+

@@ -24,4 +24,5 @@
 "23","t2dm","Type 2 Diabetes"
 "24","gestationaldm","Gestational Diabetes"
 "25","otherdm","Other or non-specified Diabetes"
-"26","t2dm_follow","Persistent type 2 diabetes"
+"26","t2dm_fup4m","Type 2 diabetes 4 month follow up"
+"27","t2dm_follow","Persistent type 2 diabetes"

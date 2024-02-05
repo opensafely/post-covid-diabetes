@@ -4903,7 +4903,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
       --study_stop=2021-12-14 --cut_points=28;197;714 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_prevax-sub_covid_hospitalised_reduced-t2dm_follow_extended_follow_up.csv
+      --run_analysis=FALSE --df_output=ready-cohort_prevax-sub_covid_hospitalised_reduced-t2dm_follow_extended_follow_up.csv
     needs:
     - make_model_input-cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up
     outputs:

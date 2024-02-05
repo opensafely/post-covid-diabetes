@@ -227,16 +227,16 @@ apply_stata_model_function <- function(name, cohort, analysis, ipw, strata,
     name_notreduced <- gsub("_reduced","",{name})
     splice(
       action(
-        name = glue("ready-{name}"),
-        run = glue("cox-ipw:v0.0.30 --df_input=model_input-{name_notreduced}.rds --ipw={ipw} --exposure=exp_date --outcome=out_date --strata={strata} --covariate_sex={covariate_sex} --covariate_age={covariate_age} --covariate_other={covariate_other} --cox_start={cox_start} --cox_stop={cox_stop} --study_start={study_start} --study_stop={study_stop} --cut_points={cut_points} --controls_per_case={controls_per_case} --total_event_threshold={total_event_threshold} --episode_event_threshold={episode_event_threshold} --covariate_threshold={covariate_threshold} --age_spline={age_spline} --save_analysis_ready=TRUE --run_analysis=FALSE --df_output=ready-{name}.csv.gz"),
+        name = glue("ready-{name_notreduced}"),
+        run = glue("cox-ipw:v0.0.30 --df_input=model_input-{name_notreduced}.rds --ipw={ipw} --exposure=exp_date --outcome=out_date --strata={strata} --covariate_sex={covariate_sex} --covariate_age={covariate_age} --covariate_other={covariate_other} --cox_start={cox_start} --cox_stop={cox_stop} --study_start={study_start} --study_stop={study_stop} --cut_points={cut_points} --controls_per_case={controls_per_case} --total_event_threshold={total_event_threshold} --episode_event_threshold={episode_event_threshold} --covariate_threshold={covariate_threshold} --age_spline={age_spline} --save_analysis_ready=TRUE --run_analysis=FALSE --df_output=ready-{name_notreduced}.csv.gz"),
         needs = list(glue("make_model_input-{name_notreduced}")),
-        highly_sensitive = list(ready = glue("output/ready-{name}.csv.gz"))
+        highly_sensitive = list(ready = glue("output/ready-{name_notreduced}.csv.gz"))
       ),
       action(
         name = glue("stata_cox_ipw-{name}"),
         run = "stata-mp:latest analysis/cox_model.do",
         arguments = c(name, day0),
-        needs = c(as.list(glue("ready-{name}"))),
+        needs = c(as.list(glue("ready-{name_notreduced}"))),
         moderately_sensitive = list(
           stata_fup = glue("output/stata_fup-{name}.csv"),
           stata_model_output = glue("output/stata_model_output-{name}.txt")

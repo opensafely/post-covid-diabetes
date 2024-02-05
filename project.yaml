@@ -4472,7 +4472,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
       --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_vax-sub_covid_hospitalised-t2dm.csv
+      --run_analysis=FALSE --df_output=ready-cohort_vax-sub_covid_hospitalised-t2dm.csv.gz
     needs:
     - make_model_input-cohort_vax-sub_covid_hospitalised-t2dm
     outputs:
@@ -4496,7 +4496,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
       --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_unvax-sub_covid_hospitalised-t2dm.csv
+      --run_analysis=FALSE --df_output=ready-cohort_unvax-sub_covid_hospitalised-t2dm.csv.gz
     needs:
     - make_model_input-cohort_unvax-sub_covid_hospitalised-t2dm
     outputs:
@@ -4520,7 +4520,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
       --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_unvax-sub_covid_hospitalised-t2dm_pd_no.csv
+      --run_analysis=FALSE --df_output=ready-cohort_unvax-sub_covid_hospitalised-t2dm_pd_no.csv.gz
     needs:
     - make_model_input-cohort_unvax-sub_covid_hospitalised-t2dm_pd_no
     outputs:
@@ -4544,7 +4544,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
       --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_vax-sub_covid_hospitalised-t2dm_obes_no.csv
+      --run_analysis=FALSE --df_output=ready-cohort_vax-sub_covid_hospitalised-t2dm_obes_no.csv.gz
     needs:
     - make_model_input-cohort_vax-sub_covid_hospitalised-t2dm_obes_no
     outputs:
@@ -4568,7 +4568,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
       --study_stop=2021-12-14 --cut_points=28;197;365;714 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_prevax-main-t1dm_extended_follow_up.csv
+      --run_analysis=FALSE --df_output=ready-cohort_prevax-main-t1dm_extended_follow_up.csv.gz
     needs:
     - make_model_input-cohort_prevax-main-t1dm_extended_follow_up
     outputs:
@@ -4592,7 +4592,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
       --study_stop=2021-12-14 --cut_points=28;197;365;714 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_prevax-sub_covid_hospitalised-t2dm_extended_follow_up.csv
+      --run_analysis=FALSE --df_output=ready-cohort_prevax-sub_covid_hospitalised-t2dm_extended_follow_up.csv.gz
     needs:
     - make_model_input-cohort_prevax-sub_covid_hospitalised-t2dm_extended_follow_up
     outputs:
@@ -4616,7 +4616,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
       --study_stop=2021-12-14 --cut_points=28;197;365;714 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=FALSE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_prevax-sub_age_80_110-t2dm_extended_follow_up.csv
+      --run_analysis=FALSE --df_output=ready-cohort_prevax-sub_age_80_110-t2dm_extended_follow_up.csv.gz
     needs:
     - make_model_input-cohort_prevax-sub_age_80_110-t2dm_extended_follow_up
     outputs:
@@ -4640,7 +4640,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
       --study_stop=2021-12-14 --cut_points=28;197;365;714 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_prevax-main-gestationaldm_extended_follow_up.csv
+      --run_analysis=FALSE --df_output=ready-cohort_prevax-main-gestationaldm_extended_follow_up.csv.gz
     needs:
     - make_model_input-cohort_prevax-main-gestationaldm_extended_follow_up
     outputs:
@@ -4664,7 +4664,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
       --study_stop=2021-12-14 --cut_points=28;197;365;714 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up.csv
+      --run_analysis=FALSE --df_output=ready-cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up.csv.gz
     needs:
     - make_model_input-cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up
     outputs:
@@ -4688,7 +4688,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
       --study_stop=2021-12-14 --cut_points=28;197;365;714 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_prevax-sub_covid_hospitalised-t2dm_pd_no_extended_follow_up.csv
+      --run_analysis=FALSE --df_output=ready-cohort_prevax-sub_covid_hospitalised-t2dm_pd_no_extended_follow_up.csv.gz
     needs:
     - make_model_input-cohort_prevax-sub_covid_hospitalised-t2dm_pd_no_extended_follow_up
     outputs:
@@ -4712,7 +4712,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
       --study_stop=2021-12-14 --cut_points=28;197;365;714 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_prevax-sub_covid_hospitalised-t2dm_obes_no_extended_follow_up.csv
+      --run_analysis=FALSE --df_output=ready-cohort_prevax-sub_covid_hospitalised-t2dm_obes_no_extended_follow_up.csv.gz
     needs:
     - make_model_input-cohort_prevax-sub_covid_hospitalised-t2dm_obes_no_extended_follow_up
     outputs:
@@ -4736,7 +4736,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
       --study_stop=2021-12-14 --cut_points=28;197 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_unvax-sub_covid_hospitalised-t2dm_unvax_sens.csv
+      --run_analysis=FALSE --df_output=ready-cohort_unvax-sub_covid_hospitalised-t2dm_unvax_sens.csv.gz
     needs:
     - make_model_input-cohort_unvax-sub_covid_hospitalised-t2dm_unvax_sens
     outputs:
@@ -4760,7 +4760,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
       --study_stop=2021-12-14 --cut_points=1;28;197 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_unvax-day0_main-t2dm.csv
+      --run_analysis=FALSE --df_output=ready-cohort_unvax-day0_main-t2dm.csv.gz
     needs:
     - make_model_input-cohort_unvax-day0_main-t2dm
     outputs:
@@ -4783,7 +4783,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
       --study_stop=2021-12-14 --cut_points=1;28;197 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_vax-day0_sub_covid_hospitalised-t2dm.csv
+      --run_analysis=FALSE --df_output=ready-cohort_vax-day0_sub_covid_hospitalised-t2dm.csv.gz
     needs:
     - make_model_input-cohort_vax-day0_sub_covid_hospitalised-t2dm
     outputs:
@@ -4807,7 +4807,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
       --study_stop=2021-12-14 --cut_points=1;28;197 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_unvax-day0_sub_covid_hospitalised-t2dm.csv
+      --run_analysis=FALSE --df_output=ready-cohort_unvax-day0_sub_covid_hospitalised-t2dm.csv.gz
     needs:
     - make_model_input-cohort_unvax-day0_sub_covid_hospitalised-t2dm
     outputs:
@@ -4831,7 +4831,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
       --study_stop=2021-12-14 --cut_points=1;28;197;365;714 --controls_per_case=20
       --total_event_threshold=50 --episode_event_threshold=5 --covariate_threshold=5
-      --age_spline=TRUE --save_analysis_ready=TRUE --run_analysis=FALSE --df_output=model_output-cohort_prevax-day0_sub_covid_hospitalised-t2dm_extended_follow_up.csv
+      --age_spline=TRUE --save_analysis_ready=TRUE --run_analysis=FALSE --df_output=ready-cohort_prevax-day0_sub_covid_hospitalised-t2dm_extended_follow_up.csv.gz
     needs:
     - make_model_input-cohort_prevax-day0_sub_covid_hospitalised-t2dm_extended_follow_up
     outputs:
@@ -4855,7 +4855,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
       --study_stop=2021-12-14 --cut_points=1;28;197 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_unvax-day0_main-t2dm_unvax_sens.csv
+      --run_analysis=FALSE --df_output=ready-cohort_unvax-day0_main-t2dm_unvax_sens.csv.gz
     needs:
     - make_model_input-cohort_unvax-day0_main-t2dm_unvax_sens
     outputs:
@@ -4879,7 +4879,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2021-06-01
       --study_stop=2021-12-14 --cut_points=1;28;197 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=model_output-cohort_unvax-day0_sub_covid_hospitalised-t2dm_unvax_sens.csv
+      --run_analysis=FALSE --df_output=ready-cohort_unvax-day0_sub_covid_hospitalised-t2dm_unvax_sens.csv.gz
     needs:
     - make_model_input-cohort_unvax-day0_sub_covid_hospitalised-t2dm_unvax_sens
     outputs:
@@ -4903,7 +4903,7 @@ actions:
       --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
       --study_stop=2021-12-14 --cut_points=28;197;714 --controls_per_case=20 --total_event_threshold=50
       --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=ready-cohort_prevax-sub_covid_hospitalised_reduced-t2dm_follow_extended_follow_up.csv
+      --run_analysis=FALSE --df_output=ready-cohort_prevax-sub_covid_hospitalised_reduced-t2dm_follow_extended_follow_up.csv.gz
     needs:
     - make_model_input-cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up
     outputs:

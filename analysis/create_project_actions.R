@@ -666,8 +666,11 @@ actions_list <- splice(
                  #"make_model_input-cohort_unvax-main-t2dm",
                  "make_model_input-cohort_vax-main-t2dm"),
     moderately_sensitive = list(
-      death28days = glue("output/death28days.csv"),
-      death28days_rounded = glue("output/death28days_rounded.csv")
+      death28days = "output/death28days.csv",
+      death28days_rounded = "output/death28days_rounded.csv",
+      hist_studydef = "output/hist_studydef.png",
+      hist_studydef_restricted = "output/hist_studydef_restricted.png",
+      hist_input = "output/hist_input"
     )
   )
   

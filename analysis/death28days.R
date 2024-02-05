@@ -42,6 +42,16 @@ for (cohort in c("vax")) { # Limit cohorts for testing, usually c("prevax","vax"
   print("output/input_prelim.feather:")
   print(Hmisc::describe(studydef))
   
+  ggplot2::ggplot(studydef, ggplot2::aes(x=death_date)) + 
+    ggplot2::geom_histogram(binwidth = 7, ) +
+    ggplot2::theme_minimal()
+  ggplot2::ggsave("output/hist_studydef.png", unit="mm", width = 297, height = 210, bg = "white")
+  
+  ggplot2::ggplot(studydef[studydef$patient_id %in% input$patient_id,], ggplot2::aes(x=death_date)) + 
+    ggplot2::geom_histogram(binwidth = 7, ) +
+    ggplot2::theme_minimal() 
+  ggplot2::ggsave("output/hist_studydef_restricted.png", unit="mm", width = 297, height = 210, bg = "white")
+  
   print(paste0("Unique patient IDs in model_input: ", length(unique(input$patient_id))))
   print(paste0("Unique rows in model_input: ", nrow(input)))
   print(paste0("Unique patient IDs in studydef: ", length(unique(studydef$patient_id))))
@@ -51,6 +61,11 @@ for (cohort in c("vax")) { # Limit cohorts for testing, usually c("prevax","vax"
   input <- merge(input, studydef, by = "patient_id")
   print("Merged data:")
   print(Hmisc::describe(input))
+  
+  ggplot2::ggplot(input, ggplot2::aes(x=death_date)) + 
+    ggplot2::geom_histogram(binwidth = 7, ) +
+    ggplot2::theme_minimal()
+  ggplot2::ggsave("output/hist_input.png", unit="mm", width = 297, height = 210, bg = "white")
   
   print(paste0("Among ",nrow(input)," individuals in the cohort, ",sum(!is.na(input$death_date)), " individuals die during follow-up."))
 

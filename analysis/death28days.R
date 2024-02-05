@@ -43,12 +43,14 @@ for (cohort in c("vax")) { # Limit cohorts for testing, usually c("prevax","vax"
   print(Hmisc::describe(studydef))
   
   ggplot2::ggplot(studydef, ggplot2::aes(x=death_date)) + 
-    ggplot2::geom_histogram(binwidth = 7, ) +
+    ggplot2::geom_histogram(binwidth = 7) +
+    ggplot2::xlim(as.Date("2020-01-01"),as.Date("2023-01-01")) +
     ggplot2::theme_minimal()
   ggplot2::ggsave("output/hist_studydef.png", unit="mm", width = 297, height = 210, bg = "white")
   
   ggplot2::ggplot(studydef[studydef$patient_id %in% input$patient_id,], ggplot2::aes(x=death_date)) + 
-    ggplot2::geom_histogram(binwidth = 7, ) +
+    ggplot2::geom_histogram(binwidth = 7) +
+    ggplot2::xlim(as.Date("2020-01-01"),as.Date("2023-01-01")) +
     ggplot2::theme_minimal() 
   ggplot2::ggsave("output/hist_studydef_restricted.png", unit="mm", width = 297, height = 210, bg = "white")
   
@@ -63,8 +65,8 @@ for (cohort in c("vax")) { # Limit cohorts for testing, usually c("prevax","vax"
   print(Hmisc::describe(input))
   
   ggplot2::ggplot(input, ggplot2::aes(x=death_date)) + 
-    ggplot2::geom_histogram(binwidth = 7, ) +
-    ggplot2::theme_minimal()
+    ggplot2::geom_histogram(binwidth = 7) +
+    ggplot2::xlim(as.Date("2020-01-01"),as.Date("2023-01-01")) +
   ggplot2::ggsave("output/hist_input.png", unit="mm", width = 297, height = 210, bg = "white")
   
   print(paste0("Among ",nrow(input)," individuals in the cohort, ",sum(!is.na(input$death_date)), " individuals die during follow-up."))

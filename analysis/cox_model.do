@@ -1,14 +1,13 @@
 * Specify parameters
-/*
+
 local name "`1'"
 local day0 "`2'"
-local cut_points "`3'"
-*/
 
+/*
 // For local testing:
 local name "cohort_prevax_extf-day0_main-depression"
 local day0 "FALSE"
-
+*/
 
 * Set Ado file path
 

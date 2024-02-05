@@ -5168,5 +5168,5 @@ actions:
         death28days_rounded: output/death28days_rounded.csv
         hist_studydef: output/hist_studydef.png
         hist_studydef_restricted: output/hist_studydef_restricted.png
-        hist_input: output/hist_input
+        hist_input: output/hist_input.png
 

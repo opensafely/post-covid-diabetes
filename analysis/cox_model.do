@@ -1,13 +1,14 @@
 * Specify parameters
-
+/*
 local name "`1'"
 local day0 "`2'"
+local cut_points "`3'"
+*/
 
-/*
 // For local testing:
 local name "cohort_prevax_extf-day0_main-depression"
-local day0 "TRUE"
-*/
+local day0 "FALSE"
+
 
 * Set Ado file path
 
@@ -40,10 +41,13 @@ duplicates drop
 rename cov_num_age age
 rename cov_cat_region region
 
-* Generate pre vaccination cohort dummy variable
+* Generate indicator variables
 
 local prevax_cohort = regexm("`name'", "_pre")
 display "`prevax_cohort'"
+
+local reduced = regexm("`name'", "_reduced")
+display "`reduced'"
 
 local gestationaldm = regexm("`name'", "gestationaldm")
 display "`gestationaldm'"
@@ -103,6 +107,11 @@ if `prevax_cohort'==1 {
 		stset fup_stop [pweight=cox_weight], failure(outcome_status) id(patient_id) enter(fup_start) origin(time mdy(01,01,2020))
 		stsplit time, after(exposure) at(0 1 28 197 365 714)
 		replace time = 714 if time==-1
+	} 
+	else if `reduced'==1 {
+		stset fup_stop [pweight=cox_weight], failure(outcome_status) id(patient_id) enter(fup_start) origin(time mdy(01,01,2020))
+		stsplit time, after(exposure) at(0 28 197 714)
+		replace time = 714 if time==-1
 	}
 	else {
 		stset fup_stop [pweight=cox_weight], failure(outcome_status) id(patient_id) enter(fup_start) origin(time mdy(01,01,2020))
@@ -149,12 +158,19 @@ replace days28_197 = 1 if time==28
 tab days28_197
 
 if `prevax_cohort'==1 {
-	gen days197_365 = 0 
-	replace days197_365 = 1 if time==197
-	tab days197_365
-	gen days365_714 = 0 
-	replace days365_714 = 1 if time==365
-	tab days365_714
+	if `reduced'==1 {
+		gen days197_714 = 0 
+		replace days197_714 = 1 if time==197
+		tab days197_714	
+	} 
+	else {
+		gen days197_365 = 0 
+		replace days197_365 = 1 if time==197
+		tab days197_365
+		gen days365_714 = 0 
+		replace days365_714 = 1 if time==365
+		tab days365_714	
+	}
 }
 
 * Run models and save output [Note: cannot use efron method with weights]
@@ -194,6 +210,13 @@ if `prevax_cohort'==1 {
 		replace term = "days197_365" if days0_1==0 & days1_28==0 & days28_197==0 & days197_365==1 & days365_714==0
 		replace term = "days365_714" if days0_1==0 & days1_28==0 & days28_197==0 & days197_365==0 & days365_714==1
 	}
+	else if `reduced'==1 {
+		replace term = "days_pre" if days0_1==0 & days1_28==0 & days28_197==0 & days197_714==0
+		replace term = "days0_1" if days0_1==1 & days1_28==0 & days28_197==0 & days197_714==0
+		replace term = "days1_28" if days0_1==0 & days1_28==1 & days28_197==0 & days197_714==0
+		replace term = "days28_197" if days0_1==0 & days1_28==0 & days28_197==1 & days197_714==0
+		replace term = "days197_714" if days0_1==0 & days1_28==0 & days28_197==0 & days197_714==1
+	}
 	else {
 		replace term = "days_pre" if days0_28==0 & days28_197==0 & days197_365==0 & days365_714==0
 		replace term = "days0_28" if days0_28==1 & days28_197==0 & days197_365==0 & days365_714==0
@@ -221,6 +244,7 @@ replace tte = tte + 28 if term == "days28_197"
 replace tte = tte + 197 if term == "days197_365"
 replace tte = tte + 365 if term == "days365_714"
 replace tte = tte + 197 if term == "days197_535"
+replace tte = tte + 197 if term == "days197_714"
 bysort term: egen median_tte = median(tte)
 egen events = count(patient_id), by(term)
 

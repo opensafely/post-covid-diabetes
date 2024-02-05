@@ -4896,20 +4896,6 @@ actions:
         stata_fup: output/stata_fup-cohort_unvax-day0_sub_covid_hospitalised-t2dm_unvax_sens.csv
         stata_model_output: output/stata_model_output-cohort_unvax-day0_sub_covid_hospitalised-t2dm_unvax_sens.txt
 
-  ready-cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up:
-    run: cox-ipw:v0.0.30 --df_input=model_input-cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up.rds
-      --ipw=TRUE --exposure=exp_date --outcome=out_date --strata=cov_cat_region --covariate_sex=cov_cat_sex
-      --covariate_age=cov_num_age --covariate_other=cov_cat_ethnicity;cov_cat_deprivation;cov_num_consulation_rate;cov_cat_smoking_status;cov_bin_ami;cov_bin_all_stroke;cov_bin_other_arterial_embolism;cov_bin_vte;cov_bin_hf;cov_bin_angina;cov_bin_dementia;cov_bin_liver_disease;cov_bin_chronic_kidney_disease;cov_bin_cancer;cov_bin_hypertension;cov_bin_depression;cov_bin_chronic_obstructive_pulmonary_disease;cov_bin_healthcare_worker;cov_bin_carehome_status;cov_cat_bmi_groups;cov_bin_prediabetes;cov_bin_diabetes_gestational
-      --cox_start=index_date --cox_stop=end_date_outcome --study_start=2020-01-01
-      --study_stop=2021-12-14 --cut_points=28;197;714 --controls_per_case=20 --total_event_threshold=50
-      --episode_event_threshold=5 --covariate_threshold=5 --age_spline=TRUE --save_analysis_ready=TRUE
-      --run_analysis=FALSE --df_output=ready-cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up.csv.gz
-    needs:
-    - make_model_input-cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up
-    outputs:
-      highly_sensitive:
-        ready: output/ready-cohort_prevax-sub_covid_hospitalised-t2dm_follow_extended_follow_up.csv.gz
-
   stata_cox_ipw-cohort_prevax-sub_covid_hospitalised_reduced-t2dm_follow_extended_follow_up:
     run: stata-mp:latest analysis/cox_model.do cohort_prevax-sub_covid_hospitalised_reduced-t2dm_follow_extended_follow_up
       FALSE

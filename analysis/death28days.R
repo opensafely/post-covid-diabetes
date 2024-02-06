@@ -18,7 +18,7 @@ df <- data.frame(cohort = character(),
 # Repeat for each cohort -------------------------------------------------------
 print('Repeat for each cohort')
 
-for (cohort in c("vax")) { # Limit cohorts for testing, usually c("prevax","vax","unvax")
+for (cohort in c("prevax","vax","unvax")) {
   
   # Define data suffix ---------------------------------------------------------
   print('Define data suffix')
@@ -46,13 +46,13 @@ for (cohort in c("vax")) { # Limit cohorts for testing, usually c("prevax","vax"
     ggplot2::geom_histogram(binwidth = 7) +
     ggplot2::xlim(as.Date("2020-01-01"),as.Date("2023-01-01")) +
     ggplot2::theme_minimal()
-  ggplot2::ggsave("output/hist_studydef.png", unit="mm", width = 297, height = 210, bg = "white")
+  ggplot2::ggsave(paste0("output/hist_studydef_",cohort,".png"), unit="mm", width = 297, height = 210, bg = "white")
   
   ggplot2::ggplot(studydef[studydef$patient_id %in% input$patient_id,], ggplot2::aes(x=death_date)) + 
     ggplot2::geom_histogram(binwidth = 7) +
     ggplot2::xlim(as.Date("2020-01-01"),as.Date("2023-01-01")) +
     ggplot2::theme_minimal() 
-  ggplot2::ggsave("output/hist_studydef_restricted.png", unit="mm", width = 297, height = 210, bg = "white")
+  ggplot2::ggsave(paste0("output/hist_studydef_restricted_",cohort,".png"), unit="mm", width = 297, height = 210, bg = "white")
   
   print(paste0("Unique patient IDs in model_input: ", length(unique(input$patient_id))))
   print(paste0("Unique rows in model_input: ", nrow(input)))
@@ -68,7 +68,7 @@ for (cohort in c("vax")) { # Limit cohorts for testing, usually c("prevax","vax"
     ggplot2::geom_histogram(binwidth = 7) +
     ggplot2::xlim(as.Date("2020-01-01"),as.Date("2023-01-01")) +
     ggplot2::theme_minimal() 
-  ggplot2::ggsave("output/hist_input.png", unit="mm", width = 297, height = 210, bg = "white")
+  ggplot2::ggsave(paste0("output/hist_input_",cohort,".png"), unit="mm", width = 297, height = 210, bg = "white")
   
   print(paste0("Among ",nrow(input)," individuals in the cohort, ",sum(!is.na(input$death_date)), " individuals die during follow-up."))
 

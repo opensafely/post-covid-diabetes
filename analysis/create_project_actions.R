@@ -662,15 +662,21 @@ actions_list <- splice(
     name = "death28days",
     run = "r:latest analysis/death28days.R",
     needs = list("generate_study_population_prelim",
-                 #"make_model_input-cohort_prevax-main-t2dm_extended_follow_up",
-                 #"make_model_input-cohort_unvax-main-t2dm",
+                 "make_model_input-cohort_prevax-main-t2dm_extended_follow_up",
+                 "make_model_input-cohort_unvax-main-t2dm",
                  "make_model_input-cohort_vax-main-t2dm"),
     moderately_sensitive = list(
       death28days = "output/death28days.csv",
       death28days_rounded = "output/death28days_rounded.csv",
-      hist_studydef = "output/hist_studydef.png",
-      hist_studydef_restricted = "output/hist_studydef_restricted.png",
-      hist_input = "output/hist_input.png"
+      hist_studydef_prevax = "output/hist_studydef_prevax.png",
+      hist_studydef_restricted_prevax = "output/hist_studydef_restricted_prevax.png",
+      hist_input_prevax = "output/hist_input_prevax.png",
+      hist_studydef_vax = "output/hist_studydef_vax.png",
+      hist_studydef_restricted_vax = "output/hist_studydef_restricted_vax.png",
+      hist_input_vax = "output/hist_input_vax.png",
+      hist_studydef_unvax = "output/hist_studydef_vax.png",
+      hist_studydef_restricted_unvax = "output/hist_studydef_restricted_unvax.png",
+      hist_input_unvax = "output/hist_input_unvax.png"
     )
   )
   

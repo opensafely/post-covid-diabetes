@@ -211,10 +211,10 @@ if `prevax_cohort'==1 {
 		replace term = "days365_714" if days0_1==0 & days1_28==0 & days28_197==0 & days197_365==0 & days365_714==1
 	}
 	else if `reduced'==1 {
-		replace term = "days_pre" if days0_28==0 & days1_28==0 & days28_197==0 & days197_714==0
-		replace term = "days0_28" if days0_28==0 & days1_28==1 & days28_197==0 & days197_714==0
-		replace term = "days28_197" if days0_28==0 & days1_28==0 & days28_197==1 & days197_714==0
-		replace term = "days197_714" if days0_28==0 & days1_28==0 & days28_197==0 & days197_714==1
+		replace term = "days_pre" if days0_28==0 & days28_197==0 & days197_714==0
+		replace term = "days0_28" if days0_28==1 & days28_197==0 & days197_714==0
+		replace term = "days28_197" if days0_28==0 & days28_197==1 & days197_714==0
+		replace term = "days197_714" if days0_28==0 & days28_197==0 & days197_714==1
 	}
 	else {
 		replace term = "days_pre" if days0_28==0 & days28_197==0 & days197_365==0 & days365_714==0

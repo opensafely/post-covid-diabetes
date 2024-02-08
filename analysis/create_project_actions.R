@@ -676,7 +676,10 @@ actions_list <- splice(
       hist_input_vax = "output/hist_input_vax.png",
       hist_studydef_unvax = "output/hist_studydef_unvax.png",
       hist_studydef_restricted_unvax = "output/hist_studydef_restricted_unvax.png",
-      hist_input_unvax = "output/hist_input_unvax.png"
+      hist_input_unvax = "output/hist_input_unvax.png",
+      characteristics_prevax = "output/characteristics_prevax.csv",
+      characteristics_vax = "output/characteristics_vax.csv",
+      characteristics_unvax = "output/characteristics_unvax.csv",
     )
   )
   

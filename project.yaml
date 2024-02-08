@@ -5150,6 +5150,9 @@ actions:
     - make_model_input-cohort_prevax-main-t2dm_extended_follow_up
     - make_model_input-cohort_unvax-main-t2dm
     - make_model_input-cohort_vax-main-t2dm
+    - generate_study_population_prevax
+    - generate_study_population_vax
+    - generate_study_population_unvax
     outputs:
       moderately_sensitive:
         death28days: output/death28days.csv
@@ -5163,4 +5166,7 @@ actions:
         hist_studydef_unvax: output/hist_studydef_unvax.png
         hist_studydef_restricted_unvax: output/hist_studydef_restricted_unvax.png
         hist_input_unvax: output/hist_input_unvax.png
+        characteristics_prevax: output/characteristics_prevax.csv
+        characteristics_vax: output/characteristics_vax.csv
+        characteristics_unvax: output/characteristics_unvax.csv
 

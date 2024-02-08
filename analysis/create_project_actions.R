@@ -664,7 +664,10 @@ actions_list <- splice(
     needs = list("generate_study_population_prelim",
                  "make_model_input-cohort_prevax-main-t2dm_extended_follow_up",
                  "make_model_input-cohort_unvax-main-t2dm",
-                 "make_model_input-cohort_vax-main-t2dm"),
+                 "make_model_input-cohort_vax-main-t2dm",
+                 "generate_study_population_prevax",
+                 "generate_study_population_vax",
+                 "generate_study_population_unvax"),
     moderately_sensitive = list(
       death28days = "output/death28days.csv",
       death28days_rounded = "output/death28days_rounded.csv",

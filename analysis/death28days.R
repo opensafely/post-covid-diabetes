@@ -21,11 +21,13 @@ print('Repeat for each cohort')
 
 for (cohort in c("prevax","vax","unvax")) {
   
-  # Define data suffix ---------------------------------------------------------
-  print('Define data suffix')
+  # Define parameters ----------------------------------------------------------
+  print('Define parameters')
 
   suffix <- ifelse(cohort=="prevax","_extended_follow_up","")  
-
+  study_start <- ifelse(cohort=="prevax", "2020-01-01", "2021-06-01")
+  study_stop <- "2021-12-18"
+  
   # Load data ------------------------------------------------------------------
   print("Load data")
   
@@ -43,19 +45,19 @@ for (cohort in c("prevax","vax","unvax")) {
   print("output/input_prelim.feather:")
   print(Hmisc::describe(input_prelim))
   
-  tmp <- input_prelim[input_prelim$death_date>="2020-01-01" & input_prelim$death_date>="2021-12-18",]$patient_id
+  tmp <- input_prelim[!is.na(input_prelim$death_date) & input_prelim$death_date>=as.Date(study_start) & input_prelim$death_date>=as.Date(study_stop),]$patient_id
   characteristics <- explore_characteristics(death_dates = input_prelim, cohort = "prevax",  patients = tmp)
   data.table::fwrite(characteristics, paste0("output/characteristics_",cohort,".csv"), row.names = FALSE)
   
   ggplot2::ggplot(input_prelim, ggplot2::aes(x=death_date)) + 
     ggplot2::geom_histogram(binwidth = 7) +
-    ggplot2::xlim(as.Date("2020-01-01"),as.Date("2023-01-01")) +
+    ggplot2::xlim(as.Date(study_start),as.Date(study_stop)) +
     ggplot2::theme_minimal()
   ggplot2::ggsave(paste0("output/hist_input_prelim_",cohort,".png"), unit="mm", width = 297, height = 210, bg = "white")
   
   ggplot2::ggplot(input_prelim[input_prelim$patient_id %in% model_input$patient_id,], ggplot2::aes(x=death_date)) + 
     ggplot2::geom_histogram(binwidth = 7) +
-    ggplot2::xlim(as.Date("2020-01-01"),as.Date("2023-01-01")) +
+    ggplot2::xlim(as.Date(study_start),as.Date(study_stop)) +
     ggplot2::theme_minimal() 
   ggplot2::ggsave(paste0("output/hist_input_prelim_restricted_",cohort,".png"), unit="mm", width = 297, height = 210, bg = "white")
   
@@ -71,7 +73,7 @@ for (cohort in c("prevax","vax","unvax")) {
   
   ggplot2::ggplot(model_input, ggplot2::aes(x=death_date)) + 
     ggplot2::geom_histogram(binwidth = 7) +
-    ggplot2::xlim(as.Date("2020-01-01"),as.Date("2023-01-01")) +
+    ggplot2::xlim(as.Date(study_start),as.Date(study_stop)) +
     ggplot2::theme_minimal() 
   ggplot2::ggsave(paste0("output/hist_model_input_",cohort,".png"), unit="mm", width = 297, height = 210, bg = "white")
   

@@ -53,45 +53,45 @@ for (cohort in c("prevax","vax","unvax")) {
     ggplot2::theme_minimal()
   ggplot2::ggsave(paste0("output/hist_input_prelim_",cohort,".png"), unit="mm", width = 297, height = 210, bg = "white")
   
-  ggplot2::ggplot(input_prelim[input_prelim$patient_id %in% input$patient_id,], ggplot2::aes(x=death_date)) + 
+  ggplot2::ggplot(input_prelim[input_prelim$patient_id %in% model_input$patient_id,], ggplot2::aes(x=death_date)) + 
     ggplot2::geom_histogram(binwidth = 7) +
     ggplot2::xlim(as.Date("2020-01-01"),as.Date("2023-01-01")) +
     ggplot2::theme_minimal() 
   ggplot2::ggsave(paste0("output/hist_input_prelim_restricted_",cohort,".png"), unit="mm", width = 297, height = 210, bg = "white")
   
-  print(paste0("Unique patient IDs in model_input: ", length(unique(input$patient_id))))
-  print(paste0("Unique rows in model_input: ", nrow(input)))
+  print(paste0("Unique patient IDs in model_input: ", length(unique(model_input$patient_id))))
+  print(paste0("Unique rows in model_input: ", nrow(model_input)))
   print(paste0("Unique patient IDs in input_prelim: ", length(unique(input_prelim$patient_id))))
   print(paste0("Unique rows in input_prelim: ", nrow(input_prelim)))
-  print(paste0("Intersect of patient IDs in model_input and input_prelim: ", length(intersect(input_prelim$patient_id,input$patient_id))))
+  print(paste0("Intersect of patient IDs in model_input and input_prelim: ", length(intersect(input_prelim$patient_id,model_input$patient_id))))
 
-  input <- merge(input, input_prelim, by = "patient_id")
+  model_input <- merge(model_input, input_prelim, by = "patient_id")
   print("Merged data:")
-  print(Hmisc::describe(input))
+  print(Hmisc::describe(model_input))
   
-  ggplot2::ggplot(input, ggplot2::aes(x=death_date)) + 
+  ggplot2::ggplot(model_input, ggplot2::aes(x=death_date)) + 
     ggplot2::geom_histogram(binwidth = 7) +
     ggplot2::xlim(as.Date("2020-01-01"),as.Date("2023-01-01")) +
     ggplot2::theme_minimal() 
   ggplot2::ggsave(paste0("output/hist_input_",cohort,".png"), unit="mm", width = 297, height = 210, bg = "white")
   
-  print(paste0("Among ",nrow(input)," individuals in the cohort, ",sum(!is.na(input$death_date)), " individuals die during follow-up."))
+  print(paste0("Among ",nrow(model_input)," individuals in the cohort, ",sum(!is.na(model_input$death_date)), " individuals die during follow-up."))
 
   ## Restrict to exposed individuals -------------------------------------------
   print('Restrict to exposed individuals')
   
-  input <- input[!is.na(input$exp_date),]
+  model_input <- model_input[!is.na(model_input$exp_date),]
   
   ## Create variable for died within 28 days -----------------------------------
   print('Create variable for died within 28 days')
   
-  input$death28days <- !is.na(input$death_date) & (input$death_date-input$exp_date)<28
+  model_input$death28days <- !is.na(model_input$death_date) & (model_input$death_date-model_input$exp_date)<28
   
   ## Record number died within 28 days -----------------------------------------
   print('Record number died within 28 days')
   
-  print(paste0("Among ",nrow(input)," exposed individuals, ",sum(input$death28days), " die within 28 days of COVID-19 and ",sum(!is.na(input$death_date)), " die at any time after exposure."))
-  df[nrow(df)+1,] <- c(cohort, sum(input$death28days), nrow(input))
+  print(paste0("Among ",nrow(model_input)," exposed individuals, ",sum(model_input$death28days), " die within 28 days of COVID-19 and ",sum(!is.na(model_input$death_date)), " die at any time after exposure."))
+  df[nrow(df)+1,] <- c(cohort, sum(model_input$death28days), nrow(model_input))
   
 }
 

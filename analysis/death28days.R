@@ -73,7 +73,7 @@ for (cohort in c("prevax","vax","unvax")) {
     ggplot2::geom_histogram(binwidth = 7) +
     ggplot2::xlim(as.Date("2020-01-01"),as.Date("2023-01-01")) +
     ggplot2::theme_minimal() 
-  ggplot2::ggsave(paste0("output/hist_input_",cohort,".png"), unit="mm", width = 297, height = 210, bg = "white")
+  ggplot2::ggsave(paste0("output/hist_model_input_",cohort,".png"), unit="mm", width = 297, height = 210, bg = "white")
   
   print(paste0("Among ",nrow(model_input)," individuals in the cohort, ",sum(!is.na(model_input$death_date)), " individuals die during follow-up."))
 

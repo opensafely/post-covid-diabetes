@@ -42,7 +42,7 @@ end_date_delta = as.Date(study_dates$omicron_date, format="%Y-%m-%d")
 
 stage1 <- function(cohort_name, group){
   
-  input <- read_rds(file.path("output", paste0("explore_input_",cohort_name,".rds")))
+  input <- read_rds(file.path("output", paste0("input_",cohort_name,".rds")))
   
   print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
   

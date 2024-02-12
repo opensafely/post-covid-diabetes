@@ -466,7 +466,7 @@ actions_list <- splice(
   
   #comment("Explore Stage 1 - Data cleaning - UNVAX cohort"),
   action(
-    name = "stage1_data_cleaning_unvax",
+    name = "explore_stage1_data_cleaning_unvax",
     run = "r:latest analysis/preprocess/explore_Stage1_data_cleaning.R unvax",
     needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
     moderately_sensitive = list(

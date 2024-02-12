@@ -198,7 +198,7 @@ actions:
         cohort: output/explore_input_vax_*.rds
         cohort_csv: output/explore_input_vax_*.csv.gz
 
-  stage1_data_cleaning_unvax:
+  explore_stage1_data_cleaning_unvax:
     run: r:latest analysis/preprocess/explore_Stage1_data_cleaning.R unvax
     needs:
     - preprocess_data_prevax

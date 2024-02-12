@@ -44,7 +44,7 @@ stage1 <- function(cohort_name, group){
   
   input <- read_rds(file.path("output", paste0("input_",cohort_name,".rds")))
   
-  print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+  print(paste0("Input: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
   
   print(paste0(cohort_name, " ", group, " ", nrow(input), " rows in the input file"))
   
@@ -122,37 +122,37 @@ stage1 <- function(cohort_name, group){
   #Rule 1: Year of birth is after year of death or patient only has year of death
   input$rule1=NA
   input$rule1=((input$qa_num_birth_year > (format(input$death_date, format="%Y")) & is.na(input$qa_num_birth_year)== FALSE & is.na(input$death_date) == FALSE)|(is.na(input$qa_num_birth_year)== TRUE & is.na(input$death_date) == FALSE))
-  print(paste0("Dataset contains ",nrow(input[input$rule1==FALSE,])," individuals, ",nrow(input[input$rule1==FALSE & !is.na(input$death_date),])," of whom die."))
+  print(paste0("QA rule 1: Dataset contains ",nrow(input[input$rule1==FALSE,])," individuals, ",nrow(input[input$rule1==FALSE & !is.na(input$death_date),])," of whom die."))
   
   #Rule 2: Year of birth predates NHS established year or year of birth exceeds current date
   input$rule2=NA
   input$rule2=((input$qa_num_birth_year <1793 |(input$qa_num_birth_year >format(Sys.Date(),"%Y"))) & is.na(input$qa_num_birth_year) == FALSE)
-  print(paste0("Dataset contains ",nrow(input[input$rule1==FALSE & input$rule2==FALSE,])," individuals, ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & !is.na(input$death_date),])," of whom die."))
+  print(paste0("QA rule 2: Dataset contains ",nrow(input[input$rule1==FALSE & input$rule2==FALSE,])," individuals, ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & !is.na(input$death_date),])," of whom die."))
   
   #Rule 3: Date of death is NULL or invalid (on or before 1/1/1900 or after current date)
   input$rule3=NA
   input$rule3=((input$death_date <=as.Date(study_dates$earliest_expec)|input$death_date > format(Sys.Date(),"%Y-%m-%d")) & is.na(input$death_date) == FALSE)
-  print(paste0("Dataset contains ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE,])," individuals, ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE & !is.na(input$death_date),])," of whom die."))
+  print(paste0("QA rule 3: Dataset contains ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE,])," individuals, ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE & !is.na(input$death_date),])," of whom die."))
   
   #Rule 4: Pregnancy/birth codes for men
   input$rule4=NA
   input$rule4=(input$qa_bin_pregnancy == TRUE & input$cov_cat_sex=="Male")
-  print(paste0("Dataset contains ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE & input$rule4==FALSE,])," individuals, ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE & input$rule4==FALSE & !is.na(input$death_date),])," of whom die."))
+  print(paste0("QA rule 4: Dataset contains ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE & input$rule4==FALSE,])," individuals, ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE & input$rule4==FALSE & !is.na(input$death_date),])," of whom die."))
   
   #Rule 5: HRT or COCP meds for men
   input$rule5=NA
   input$rule5=((input$cov_cat_sex=="Male" & input$cov_bin_hormone_replacement_therapy==TRUE)|(input$cov_cat_sex=="Male" & input$cov_bin_combined_oral_contraceptive_pill==TRUE))
-  print(paste0("Dataset contains ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE & input$rule4==FALSE & input$rule5==FALSE,])," individuals, ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE & input$rule4==FALSE & input$rule5==FALSE & !is.na(input$death_date),])," of whom die."))
+  print(paste0("QA rule 5: Dataset contains ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE & input$rule4==FALSE & input$rule5==FALSE,])," individuals, ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE & input$rule4==FALSE & input$rule5==FALSE & !is.na(input$death_date),])," of whom die."))
   
   #Rule 6: Prostate cancer codes for women
   input$rule6=NA
   input$rule6=(input$qa_bin_prostate_cancer == TRUE & input$cov_cat_sex=="Female")
-  print(paste0("Dataset contains ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE & input$rule4==FALSE & input$rule5==FALSE & input$rule6==FALSE,])," individuals, ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE & input$rule4==FALSE & input$rule5==FALSE & input$rule6==FALSE & !is.na(input$death_date),])," of whom die."))
+  print(paste0("QA rule 6: Dataset contains ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE & input$rule4==FALSE & input$rule5==FALSE & input$rule6==FALSE,])," individuals, ",nrow(input[input$rule1==FALSE & input$rule2==FALSE & input$rule3==FALSE & input$rule4==FALSE & input$rule5==FALSE & input$rule6==FALSE & !is.na(input$death_date),])," of whom die."))
   
   #Remove rows that are TRUE for at least one rule
   input_QA=input%>%filter(rule1==FALSE & rule2==FALSE & rule3==FALSE & rule4==FALSE & rule5==FALSE & rule6==FALSE)
   input_QA=input_QA %>% select(-c(rule1,rule2,rule3,rule4,rule5,rule6))
-  print(paste0("Dataset contains ",nrow(input_QA)," individuals, ",nrow(input_QA[!is.na(input_QA$death_date),])," of whom die."))
+  print(paste0("QA final: Dataset contains ",nrow(input_QA)," individuals, ",nrow(input_QA[!is.na(input_QA$death_date),])," of whom die."))
   
   # View(input_QA)
   
@@ -189,7 +189,7 @@ stage1 <- function(cohort_name, group){
   
   # Remove QA variables from dataset
   input <- input_QA[ , !names(input_QA) %in% c("qa_num_birth_year", "qa_bin_pregnancy", "qa_bin_prostate_cancer")]
-  print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+  print(paste0("QA move: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
   
   print(paste0(cohort_name, " ", group, " ", nrow(input), " rows in the input file after QA"))
   
@@ -214,44 +214,46 @@ stage1 <- function(cohort_name, group){
   #Inclusion criteria 1: Alive on the first day of follow up
   input <- input %>% filter(index_date < death_date | is.na(death_date))
   cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 1 (Inclusion): Alive on the first day of follow up") # Feed into the cohort flow
-  print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+  print(paste0("Inclusion criteria 1: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
   
   #Inclusion criteria 2: Known age between 18 and 110 on 01/06/2021 
   input <- subset(input, input$cov_num_age >= 18) # Subset input if age between 18 and 110 on 01/06/2021.
   cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 2a (Inclusion): Aged 18 and over on index date") # Feed into the cohort flow
-  print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+  print(paste0("Inclusion criteria 2 (age18): Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
   
   input <- subset(input, input$cov_num_age <= 110) # Subset input if age between 18 and 110 on 01/06/2021.
   cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 2b (Inclusion): Aged 110 and under on index date") # Feed into the cohort flow
-  print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+  print(paste0("Inclusion criteria 2 (age110):Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
   
   #Inclusion criteria 3: Known sex
   input <- input[!is.na(input$cov_cat_sex),] # removes NAs, if any
   cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 3 (Inclusion): Known sex")
-  print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+  print(paste0("Inclusion criteria 3: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
   
   #Inclusion criteria 4: Known deprivation 
   input <- input[!is.na(input$cov_cat_deprivation),] # removes NAs, if any
   cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 4 (Inclusion): Known deprivation")
-  print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+  print(paste0("Inclusion criteria 4: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
   
   #Inclusion criteria 5: Registered in an English GP with TPP software for at least 6 months prior to the study start date
   input <- subset(input, input$has_follow_up_previous_6months == TRUE)
   cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 5 (Inclusion): Registered in an English GP with TPP software for at least 6 months prior to the study start date")
-  print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+  print(paste0("Inclusion criteria 5: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
   
   #Inclusion criteria 6: Not deregistered 
   input <- input %>%
     filter(is.na(dereg_date))
   #cohort_flow <- rbind(cohort_flow,c(nrow(input),as.numeric(cohort_flow[(nrow(input)-1),1]) - nrow(input)))
   cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 6 (Exclusion): Not deregistered from all support practices between index and end of study date")
-  print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+  print(paste0("Inclusion criteria 6: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
   
   #Inclusion criteria 7: Known region
   input <- input %>% mutate(cov_cat_region = as.character(cov_cat_region)) %>%
     filter(cov_cat_region != "Missing")%>%
     mutate(cov_cat_region = as.factor(cov_cat_region))
-  print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+  stats::addmargins(table(input$cov_cat_region, !is.na(input$death_date)))
+  print(paste0("Inclusion criteria 7: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+  stats::addmargins(table(input$cov_cat_region, !is.na(input$death_date)))
   
   input$cov_cat_region <- relevel(input$cov_cat_region, ref = "East")
   cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 7 (Inclusion): Known region")
@@ -272,22 +274,22 @@ stage1 <- function(cohort_name, group){
     input$vax_gap <- input$vax_date_covid_2 - input$vax_date_covid_1 #Determine the vaccination gap in days : gap is NA if any vaccine date is missing
     input <- input[!is.na(input$vax_gap),] # Subset the fully vaccinated group
     cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 8 (Exclusion): No record of two vaccination doses prior to the study end date") # Feed into the cohort flow
-    print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+    print(paste0("Exclusion criteria 8: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
     
     #Exclusion criteria 9: Received a vaccination prior to 08-12-2020 (i.e., the start of the vaccination program)
     input <- subset(input, input$vax_date_covid_1 >= vax_start_date&input$vax_date_covid_2 >= vax_start_date)
     cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 9 (Exclusion): Recorded vaccination prior to the start date of vaccination program")
-    print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+    print(paste0("Exclusion criteria 9: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
     
     #Exclusion criteria 10: Received a second dose vaccination before their first dose vaccination
     input <- subset(input, input$vax_gap >= 0) # Keep those with positive vaccination gap
     cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 10 (Exclusion): Second dose vaccination recorded before the first dose vaccination")
-    print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+    print(paste0("Exclusion criteria 10: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
     
     #Exclusion criteria 11: Received a second dose vaccination less than three weeks after their first dose
     input <- subset(input, input$vax_gap >= 21) # Keep those with at least 3 weeks vaccination gap
     cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 11 (Exclusion): Second dose vaccination recorded less than three weeks after the first dose")
-    print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+    print(paste0("Exclusion criteria 11: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
     
     #Exclusion criteria 12: Mixed vaccine products received before 07-05-2021
     # Trick to run the mixed vaccine code on dummy data with limited levels -> To ensure that the levels are the same in vax_cat_product variables
@@ -308,12 +310,12 @@ stage1 <- function(cohort_name, group){
     
     
     cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 12 (Exclusion): Received mixed vaccine products before 07-05-2021")
-    print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+    print(paste0("Exclusion criteria 12: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
     
     #Inclusions criteria 13: Index date is before cohort end date - will remove anyone who is not fully vaccinated by the cohort end date
     input <- input %>% filter (!is.na(index_date) & index_date <= end_date & index_date >= start_date_delta)
     cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 13 (Inclusion): Patient index date is within the study start and end dates i.e patient is fully vaccinated before the study end date")
-    print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+    print(paste0("Inclusions criteria 13: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
     
     
   } else if (cohort_name == "unvax"){
@@ -327,19 +329,19 @@ stage1 <- function(cohort_name, group){
     
     input <- subset(input, input$prior_vax1 == 0) #Exclude people with prior vaccination
     cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[9,1]) - nrow(input), "Criteria 8 (Exclusion): Have a record of a first vaccination prior index date")
-    print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+    print(paste0("Exclusion criteria 8: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
     
     #Exclusion criteria 9: Missing JCVI group
     input <- subset(input, vax_cat_jcvi_group == "01" | vax_cat_jcvi_group == "02" | vax_cat_jcvi_group == "03" | vax_cat_jcvi_group == "04" |
                       vax_cat_jcvi_group == "05" | vax_cat_jcvi_group == "06" | vax_cat_jcvi_group == "07" | vax_cat_jcvi_group == "08" |
                       vax_cat_jcvi_group == "09" | vax_cat_jcvi_group == "10" | vax_cat_jcvi_group == "11" | vax_cat_jcvi_group == "12")
     cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 9 (Exclusion): Missing or unknown JCVI group")
-    print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+    print(paste0("Exclusion criteria 9: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
     
     #Inclusions criteria 10: Index date is before cohort end date - will remove anyone whose eligibility date + 84 days is after study end date (only those with unknown JCVI group)
     input <- input %>% filter (!is.na(index_date) & index_date <= end_date & index_date >= start_date_delta)
     cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 10 (Inclusion): Patient index date is within the study start and end dates i.e patients eligibility date + 84 days is before the study end date")
-    print(paste0("Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
+    print(paste0("Inclusions criteria 10: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
     
   }
   

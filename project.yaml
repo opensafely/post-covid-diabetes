@@ -164,6 +164,57 @@ actions:
         cohort: output/input_unvax_*.rds
         cohort_csv: output/input_unvax_*.csv.gz
 
+  explore_stage1_data_cleaning_prevax:
+    run: r:latest analysis/preprocess/explore_Stage1_data_cleaning.R prevax
+    needs:
+    - preprocess_data_prevax
+    - preprocess_data_vax
+    - preprocess_data_unvax
+    - vax_eligibility_inputs
+    outputs:
+      moderately_sensitive:
+        refactoring: output/not-for-review/explore_meta_data_factors_prevax.csv
+        QA_rules: output/review/descriptives/explore_QA_summary_prevax_*.csv
+        IE_criteria: output/review/descriptives/explore_Cohort_flow_prevax_*.csv
+        histograms: output/not-for-review/explore_numeric_histograms_prevax_*.svg
+      highly_sensitive:
+        cohort: output/explore_input_prevax_*.rds
+        cohort_csv: output/explore_input_prevax_*.csv.gz
+
+  explore_stage1_data_cleaning_vax:
+    run: r:latest analysis/preprocess/explore_Stage1_data_cleaning.R vax
+    needs:
+    - preprocess_data_prevax
+    - preprocess_data_vax
+    - preprocess_data_unvax
+    - vax_eligibility_inputs
+    outputs:
+      moderately_sensitive:
+        refactoring: output/not-for-review/explore_meta_data_factors_vax.csv
+        QA_rules: output/review/descriptives/explore_QA_summary_vax_*.csv
+        IE_criteria: output/review/descriptives/explore_Cohort_flow_vax_*.csv
+        histograms: output/not-for-review/explore_numeric_histograms_vax_*.svg
+      highly_sensitive:
+        cohort: output/explore_input_vax_*.rds
+        cohort_csv: output/explore_input_vax_*.csv.gz
+
+  stage1_data_cleaning_unvax:
+    run: r:latest analysis/preprocess/explore_Stage1_data_cleaning.R unvax
+    needs:
+    - preprocess_data_prevax
+    - preprocess_data_vax
+    - preprocess_data_unvax
+    - vax_eligibility_inputs
+    outputs:
+      moderately_sensitive:
+        refactoring: output/not-for-review/explore_meta_data_factors_unvax.csv
+        QA_rules: output/review/descriptives/explore_QA_summary_unvax_*.csv
+        IE_criteria: output/review/descriptives/explore_Cohort_flow_unvax_*.csv
+        histograms: output/not-for-review/explore_numeric_histograms_unvax_*.svg
+      highly_sensitive:
+        cohort: output/explore_input_unvax_*.rds
+        cohort_csv: output/explore_input_unvax_*.csv.gz
+
   stage1_end_date_table_prevax:
     run: r:latest analysis/preprocess/create_follow_up_end_date.R prevax
     needs:

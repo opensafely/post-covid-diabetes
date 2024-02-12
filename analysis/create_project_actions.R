@@ -430,6 +430,57 @@ actions_list <- splice(
     )
   ),
   
+  #comment("Explore Stage 1 - Data cleaning - PREVAX cohort"),
+  action(
+    name = "explore_stage1_data_cleaning_prevax",
+    run = "r:latest analysis/preprocess/explore_Stage1_data_cleaning.R prevax",
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
+    moderately_sensitive = list(
+      refactoring = glue("output/not-for-review/explore_meta_data_factors_prevax.csv"),
+      QA_rules = glue("output/review/descriptives/explore_QA_summary_prevax_*.csv"),
+      IE_criteria = glue("output/review/descriptives/explore_Cohort_flow_prevax_*.csv"),
+      histograms = glue("output/not-for-review/explore_numeric_histograms_prevax_*.svg")
+    ),
+    highly_sensitive = list(
+      cohort = glue("output/explore_input_prevax_*.rds"),
+      cohort_csv = glue("output/explore_input_prevax_*.csv.gz")
+    )
+  ),
+  
+  #comment("Explore Stage 1 - Data cleaning - VAX cohort"),
+  action(
+    name = "explore_stage1_data_cleaning_vax",
+    run = "r:latest analysis/preprocess/explore_Stage1_data_cleaning.R vax",
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
+    moderately_sensitive = list(
+      refactoring = glue("output/not-for-review/explore_meta_data_factors_vax.csv"),
+      QA_rules = glue("output/review/descriptives/explore_QA_summary_vax_*.csv"),
+      IE_criteria = glue("output/review/descriptives/explore_Cohort_flow_vax_*.csv"),
+      histograms = glue("output/not-for-review/explore_numeric_histograms_vax_*.svg")
+    ),
+    highly_sensitive = list(
+      cohort = glue("output/explore_input_vax_*.rds"),
+      cohort_csv = glue("output/explore_input_vax_*.csv.gz")
+    )
+  ),
+  
+  #comment("Explore Stage 1 - Data cleaning - UNVAX cohort"),
+  action(
+    name = "stage1_data_cleaning_unvax",
+    run = "r:latest analysis/preprocess/explore_Stage1_data_cleaning.R unvax",
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
+    moderately_sensitive = list(
+      refactoring = glue("output/not-for-review/explore_meta_data_factors_unvax.csv"),
+      QA_rules = glue("output/review/descriptives/explore_QA_summary_unvax_*.csv"),
+      IE_criteria = glue("output/review/descriptives/explore_Cohort_flow_unvax_*.csv"),
+      histograms = glue("output/not-for-review/explore_numeric_histograms_unvax_*.svg")
+    ),
+    highly_sensitive = list(
+      cohort = glue("output/explore_input_unvax_*.rds"),
+      cohort_csv = glue("output/explore_input_unvax_*.csv.gz")
+    )
+  ),
+  
   #comment("Stage 1 - End date table - prevax"),
   action(
     name = "stage1_end_date_table_prevax",

@@ -16,7 +16,7 @@ df <- readr::read_rds("lib/active_analyses.rds")
 
 # Remove unncessary covariates -------------------------------------------------
 
-df[,c("active","outcome","model","venn","data_only","outcome_group","prior_history_var",
+df[,c("active","outcome","model","venn","data_only","prior_history_var",
       colnames(df)[grepl("aer_",colnames(df))])] <- NULL
 
 df$covid_history <- as.character(df$covid_history)
@@ -24,14 +24,14 @@ df$covid_history <- as.character(df$covid_history)
 # Pivot to long format ---------------------------------------------------------
 
 df <- tidyr::pivot_longer(data = df,
-                          cols = setdiff(colnames(df),c("outcome_variable","covariates","cohort")),
+                          cols = setdiff(colnames(df),c("outcome_variable","outcome_group","covariates","cohort")),
                           names_to = "analysis",
                           values_to = "keep")
 
 # Filter to relevant analyses --------------------------------------------------
 
 df <- df[df$keep=="TRUE",
-         c("outcome_variable","covariates","cohort","analysis")]
+         c("outcome_variable","outcome_group","covariates","cohort","analysis")]
 
 # Explicity specify cohorts ----------------------------------------------------
 
@@ -155,6 +155,7 @@ df$age_spline <- ifelse(substr(df$analysis,1,8)=="sub_age_",
 df <- df[,c("cohort",
             "exposure",
             "outcome",
+            "outcome_group",
             "ipw",
             "strata",
             "covariate_sex",

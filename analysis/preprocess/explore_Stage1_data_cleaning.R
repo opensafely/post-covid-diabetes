@@ -241,8 +241,14 @@ stage1 <- function(cohort_name, group){
   print(paste0("Inclusion criteria 5: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
   
   #Inclusion criteria 6: Not deregistered 
+  print(table(input$dereg_date))
+  print("Rows are non-missing dereg date, columns are non-missing death date:")
+  print(stats::addmargins(table(!is.na(input$dereg_date),!is.na(input$death_date))))
   input <- input %>%
     filter(is.na(dereg_date))
+  print(table(input$dereg_date))
+  print("Rows are non-missing dereg date, columns are non-missing death date:")
+  print(stats::addmargins(table(!is.na(input$dereg_date),!is.na(input$death_date))))
   #cohort_flow <- rbind(cohort_flow,c(nrow(input),as.numeric(cohort_flow[(nrow(input)-1),1]) - nrow(input)))
   cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 6 (Exclusion): Not deregistered from all support practices between index and end of study date")
   print(paste0("Inclusion criteria 6: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
@@ -251,10 +257,8 @@ stage1 <- function(cohort_name, group){
   input <- input %>% mutate(cov_cat_region = as.character(cov_cat_region)) %>%
     filter(cov_cat_region != "Missing")%>%
     mutate(cov_cat_region = as.factor(cov_cat_region))
-  stats::addmargins(table(input$cov_cat_region, !is.na(input$death_date)))
   print(paste0("Inclusion criteria 7: Dataset contains ",nrow(input)," individuals, ",nrow(input[!is.na(input$death_date),])," of whom die."))
-  stats::addmargins(table(input$cov_cat_region, !is.na(input$death_date)))
-  
+
   input$cov_cat_region <- relevel(input$cov_cat_region, ref = "East")
   cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 7 (Inclusion): Known region")
   

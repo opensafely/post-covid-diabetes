@@ -45,19 +45,23 @@ follow_up_end_dates <- function(cohort_name, group){
   
   active_analyses <- read_rds("lib/active_analyses.rds")
   active_analyses <- active_analyses %>% 
-    filter(active == "TRUE" & outcome_group == group) %>% 
-    select(outcome_variable, outcome_group) %>%
-    filter(outcome_variable != "out_date_t2dm_follow" & outcome_variable != "out_date_t2dm_follow_extended_follow_up")
+    filter(outcome_group == group) %>% 
+    select(outcome, outcome_group) %>%
+    filter(outcome != "out_date_t2dm_follow" & outcome != "out_date_t2dm_follow_extended_follow_up") %>%
+    unique()
   
-  input <- input[,c("patient_id","death_date","index_date","sub_cat_covid19_hospital",active_analyses$outcome_variable,
+  input <- input[,c("patient_id","death_date","index_date","sub_cat_covid19_hospital",active_analyses$outcome,
                     colnames(input)[grepl("exp_",colnames(input))], 
                     colnames(input)[grepl("vax_date_",colnames(input))])] 
   
-  input$cohort_end_date<- cohort_end_date
+  input_dereg <- readr::read_csv("output/input_dereg.csv.gz")
+  input <- dplyr::left_join(input, input_dereg, by = "patient_id")
+  
+  input$cohort_end_date <- cohort_end_date
   if (cohort_name == "prevax") {
   input$cohort_end_date_extended<- cohort_end_date_extended
   }
-  for(event in active_analyses$outcome_variable){
+  for(event in active_analyses$outcome){
     print(paste0("Working on ",event))
     
     input <- input %>%rename(event_date = event)
@@ -70,8 +74,8 @@ follow_up_end_dates <- function(cohort_name, group){
     # the general follow up end date for each patient
     if(cohort_name=="prevax" & group != "diabetes_recovery"){
       
-      input$follow_up_end_unexposed <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "expo_date", "death_date", "cohort_end_date")],1, min,na.rm=TRUE)
-      input$follow_up_end <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "death_date", "cohort_end_date")],1, min,na.rm=TRUE)
+      input$follow_up_end_unexposed <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "expo_date", "death_date", "cohort_end_date","deregistered_date")],1, min,na.rm=TRUE)
+      input$follow_up_end <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "death_date", "cohort_end_date","deregistered_date")],1, min,na.rm=TRUE)
       
       input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
       input$follow_up_end <- as.Date(input$follow_up_end)
@@ -80,29 +84,29 @@ follow_up_end_dates <- function(cohort_name, group){
       
       cohort_end_date <- as.Date(as.Date("2020-06-15"))
       
-      input$follow_up_end_unexposed <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "expo_date", "death_date", "cohort_end_date")],1, min,na.rm=TRUE)
-      input$follow_up_end <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "death_date", "cohort_end_date")],1, min,na.rm=TRUE)
+      input$follow_up_end_unexposed <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "expo_date", "death_date", "cohort_end_date","deregistered_date")],1, min,na.rm=TRUE)
+      input$follow_up_end <- apply(input[,c("vax_date_covid_1", "vax_date_eligible", "event_date", "death_date", "cohort_end_date","deregistered_date")],1, min,na.rm=TRUE)
       
       input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
       input$follow_up_end <- as.Date(input$follow_up_end)
       
     }else if(cohort_name=="vax"){
-      input$follow_up_end_unexposed <- apply(input[,c("event_date", "expo_date", "death_date", "cohort_end_date")],1, min,na.rm=TRUE)
-      input$follow_up_end <- apply(input[,c("event_date", "death_date", "cohort_end_date")],1, min, na.rm=TRUE)
+      input$follow_up_end_unexposed <- apply(input[,c("event_date", "expo_date", "death_date", "cohort_end_date","deregistered_date")],1, min,na.rm=TRUE)
+      input$follow_up_end <- apply(input[,c("event_date", "death_date", "cohort_end_date","deregistered_date")],1, min, na.rm=TRUE)
       
       input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
       input$follow_up_end <- as.Date(input$follow_up_end)
       
     }else if(cohort_name=="unvax" & !grepl("unvax_sens",event)){
-      input$follow_up_end_unexposed <- apply(input[,c("vax_date_covid_1","event_date", "expo_date", "death_date","cohort_end_date")],1, min,na.rm=TRUE)
-      input$follow_up_end <- apply(input[,c("vax_date_covid_1","event_date", "death_date","cohort_end_date")],1, min, na.rm=TRUE)
+      input$follow_up_end_unexposed <- apply(input[,c("vax_date_covid_1","event_date", "expo_date", "death_date","cohort_end_date","deregistered_date")],1, min,na.rm=TRUE)
+      input$follow_up_end <- apply(input[,c("vax_date_covid_1","event_date", "death_date","cohort_end_date","deregistered_date")],1, min, na.rm=TRUE)
       
       input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
       input$follow_up_end <- as.Date(input$follow_up_end)
       
     } else if(cohort_name=="unvax" & grepl("unvax_sens",event)){
-      input$follow_up_end_unexposed <- apply(input[,c("event_date", "expo_date", "death_date","cohort_end_date")],1, min,na.rm=TRUE)
-      input$follow_up_end <- apply(input[,c("event_date", "death_date","cohort_end_date")],1, min, na.rm=TRUE)
+      input$follow_up_end_unexposed <- apply(input[,c("event_date", "expo_date", "death_date","cohort_end_date","deregistered_date")],1, min,na.rm=TRUE)
+      input$follow_up_end <- apply(input[,c("event_date", "death_date","cohort_end_date","deregistered_date")],1, min, na.rm=TRUE)
       
       input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
       input$follow_up_end <- as.Date(input$follow_up_end)
@@ -110,8 +114,8 @@ follow_up_end_dates <- function(cohort_name, group){
     }
     
     if(cohort_name=="prevax" & grepl("extended_follow_up",event)){
-      input$follow_up_end_unexposed <- apply(input[,c("event_date", "expo_date", "death_date","cohort_end_date_extended")],1, min,na.rm=TRUE)
-      input$follow_up_end <- apply(input[,c("event_date", "death_date","cohort_end_date_extended")],1, min, na.rm=TRUE)
+      input$follow_up_end_unexposed <- apply(input[,c("event_date", "expo_date", "death_date","cohort_end_date_extended","deregistered_date")],1, min,na.rm=TRUE)
+      input$follow_up_end <- apply(input[,c("event_date", "death_date","cohort_end_date_extended","deregistered_date")],1, min, na.rm=TRUE)
       
       input$follow_up_end_unexposed <- as.Date(input$follow_up_end_unexposed)
       input$follow_up_end <- as.Date(input$follow_up_end)
@@ -195,7 +199,6 @@ follow_up_end_dates <- function(cohort_name, group){
 # Run function using specified commandArgs and active analyses for group
 
 active_analyses <- read_rds("lib/active_analyses.rds")
-active_analyses <- active_analyses %>% filter(active==TRUE)
 group <- unique(active_analyses$outcome_group)
 
 for(i in group){

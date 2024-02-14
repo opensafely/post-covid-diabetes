@@ -176,60 +176,6 @@ actions:
         cohort: output/input_unvax_*.rds
         cohort_csv: output/input_unvax_*.csv.gz
 
-  explore_stage1_data_cleaning_prevax:
-    run: r:latest analysis/preprocess/explore_Stage1_data_cleaning.R prevax
-    needs:
-    - preprocess_data_prevax
-    - preprocess_data_vax
-    - preprocess_data_unvax
-    - vax_eligibility_inputs
-    - generate_deregistered_date
-    outputs:
-      moderately_sensitive:
-        refactoring: output/not-for-review/explore_meta_data_factors_prevax.csv
-        QA_rules: output/review/descriptives/explore_QA_summary_prevax_*.csv
-        IE_criteria: output/review/descriptives/explore_Cohort_flow_prevax_*.csv
-        histograms: output/not-for-review/explore_numeric_histograms_prevax_*.svg
-      highly_sensitive:
-        cohort: output/explore_input_prevax_*.rds
-        cohort_csv: output/explore_input_prevax_*.csv.gz
-
-  explore_stage1_data_cleaning_vax:
-    run: r:latest analysis/preprocess/explore_Stage1_data_cleaning.R vax
-    needs:
-    - preprocess_data_prevax
-    - preprocess_data_vax
-    - preprocess_data_unvax
-    - vax_eligibility_inputs
-    - generate_deregistered_date
-    outputs:
-      moderately_sensitive:
-        refactoring: output/not-for-review/explore_meta_data_factors_vax.csv
-        QA_rules: output/review/descriptives/explore_QA_summary_vax_*.csv
-        IE_criteria: output/review/descriptives/explore_Cohort_flow_vax_*.csv
-        histograms: output/not-for-review/explore_numeric_histograms_vax_*.svg
-      highly_sensitive:
-        cohort: output/explore_input_vax_*.rds
-        cohort_csv: output/explore_input_vax_*.csv.gz
-
-  explore_stage1_data_cleaning_unvax:
-    run: r:latest analysis/preprocess/explore_Stage1_data_cleaning.R unvax
-    needs:
-    - preprocess_data_prevax
-    - preprocess_data_vax
-    - preprocess_data_unvax
-    - vax_eligibility_inputs
-    - generate_deregistered_date
-    outputs:
-      moderately_sensitive:
-        refactoring: output/not-for-review/explore_meta_data_factors_unvax.csv
-        QA_rules: output/review/descriptives/explore_QA_summary_unvax_*.csv
-        IE_criteria: output/review/descriptives/explore_Cohort_flow_unvax_*.csv
-        histograms: output/not-for-review/explore_numeric_histograms_unvax_*.svg
-      highly_sensitive:
-        cohort: output/explore_input_unvax_*.rds
-        cohort_csv: output/explore_input_unvax_*.csv.gz
-
   stage1_end_date_table_prevax:
     run: r:latest analysis/preprocess/create_follow_up_end_date.R prevax
     needs:
@@ -379,16 +325,6 @@ actions:
         table2: output/table2_vax.csv
         table2_rounded: output/table2_vax_rounded.csv
 
-  ## Table 2 - vax 
-
-  table2_midpoint6_vax:
-    run: r:latest analysis/table2_midpoint6.R vax
-    needs:
-    - table2_vax
-    outputs:
-      moderately_sensitive:
-        table2_midpoint6: output/table2_vax_midpoint6.csv
-
   ## Table 2 - unvax 
 
   table2_unvax:
@@ -410,16 +346,6 @@ actions:
       moderately_sensitive:
         table2: output/table2_unvax.csv
         table2_rounded: output/table2_unvax_rounded.csv
-
-  ## Table 2 - unvax 
-
-  table2_midpoint6_unvax:
-    run: r:latest analysis/table2_midpoint6.R unvax
-    needs:
-    - table2_unvax
-    outputs:
-      moderately_sensitive:
-        table2_midpoint6: output/table2_unvax_midpoint6.csv
 
   ## Table 2 - prevax 
 
@@ -451,16 +377,6 @@ actions:
       moderately_sensitive:
         table2: output/table2_prevax.csv
         table2_rounded: output/table2_prevax_rounded.csv
-
-  ## Table 2 - prevax 
-
-  table2_midpoint6_prevax:
-    run: r:latest analysis/table2_midpoint6.R prevax
-    needs:
-    - table2_prevax
-    outputs:
-      moderately_sensitive:
-        table2_midpoint6: output/table2_prevax_midpoint6.csv
 
   ## Stage 5 - Apply models 
 

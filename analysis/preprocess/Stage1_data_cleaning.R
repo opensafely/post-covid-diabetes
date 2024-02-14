@@ -223,11 +223,14 @@ stage1 <- function(cohort_name, group){
   input <- subset(input, input$has_follow_up_previous_6months == TRUE)
   cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 5 (Inclusion): Registered in an English GP with TPP software for at least 6 months prior to the study start date")
   
-  #Inclusion criteria 6: Not deregistered 
+  #Inclusion criteria 6: Active registration
+  
+  input_dereg <- readr::read_csv("output/input_dereg.csv.gz")
+  input <- dplyr::left_join(input, input_dereg, by = "patient_id")
+  
   input <- input %>%
-    filter(is.na(dereg_date))
-  #cohort_flow <- rbind(cohort_flow,c(nrow(input),as.numeric(cohort_flow[(nrow(input)-1),1]) - nrow(input)))
-  cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 6 (Exclusion): Not deregistered from all support practices between index and end of study date")
+    filter(is.na(deregistered_date) | (!is.na(deregistered_date) & deregistered_date>=index_date))
+  cohort_flow[nrow(cohort_flow)+1,] <- c(nrow(input),as.numeric(cohort_flow[nrow(cohort_flow),"N"]) - nrow(input), "Criteria 6 (Exclusion): Active registration at index")
   
   #Inclusion criteria 7: Known region
   input <- input %>% mutate(cov_cat_region = as.character(cov_cat_region)) %>%
@@ -453,56 +456,56 @@ stage1 <- function(cohort_name, group){
   if (group == "diabetes"){
     
   active_analyses <- read_rds("lib/active_analyses.rds")
-  active_analyses <- active_analyses %>% filter(!outcome_variable %in% outcome_variable[grepl("extended_follow_up", outcome_variable)]) %>%
-    filter(outcome_variable == "out_date_t1dm" | outcome_variable == "out_date_t2dm" | outcome_variable == "out_date_otherdm")
+  active_analyses <- active_analyses %>% filter(!outcome %in% outcome[grepl("extended_follow_up", outcome)]) %>%
+    filter(outcome == "out_date_t1dm" | outcome == "out_date_t2dm" | outcome == "out_date_otherdm")
   
   for(i in 1:nrow(active_analyses)){
-    outcome <- active_analyses$outcome_variable[i]
+    outcome <- active_analyses$outcome[i]
     input[,paste0(outcome,"_extended_follow_up")] <- input[,outcome]
   }
   } else if (group == "diabetes_gestational"){
     active_analyses <- read_rds("lib/active_analyses.rds")
-    active_analyses <- active_analyses %>% filter(!outcome_variable %in% outcome_variable[grepl("extended_follow_up", outcome_variable)]) %>%
-      filter(outcome_variable == "out_date_gestationaldm")
+    active_analyses <- active_analyses %>% filter(!outcome %in% outcome[grepl("extended_follow_up", outcome)]) %>%
+      filter(outcome == "out_date_gestationaldm")
     
     for(i in 1:nrow(active_analyses)){
-      outcome <- active_analyses$outcome_variable[i]
+      outcome <- active_analyses$outcome[i]
       input[,paste0(outcome,"_extended_follow_up")] <- input[,outcome]
     }
   } else if (group == "diabetes_prediabetes"){
     active_analyses <- read_rds("lib/active_analyses.rds")
-    active_analyses <- active_analyses %>% filter(!outcome_variable %in% outcome_variable[grepl("extended_follow_up", outcome_variable)]) %>%
-      filter(outcome_variable == "out_date_t2dm_pd")
+    active_analyses <- active_analyses %>% filter(!outcome %in% outcome[grepl("extended_follow_up", outcome)]) %>%
+      filter(outcome == "out_date_t2dm_pd")
     
     for(i in 1:nrow(active_analyses)){
-      outcome <- active_analyses$outcome_variable[i]
+      outcome <- active_analyses$outcome[i]
       input[,paste0(outcome,"_extended_follow_up")] <- input[,outcome]
     }
   } else if (group == "diabetes_no_prediabetes"){
     active_analyses <- read_rds("lib/active_analyses.rds")
-    active_analyses <- active_analyses %>% filter(!outcome_variable %in% outcome_variable[grepl("extended_follow_up", outcome_variable)]) %>%
-      filter(outcome_variable == "out_date_t2dm_pd_no")
+    active_analyses <- active_analyses %>% filter(!outcome %in% outcome[grepl("extended_follow_up", outcome)]) %>%
+      filter(outcome == "out_date_t2dm_pd_no")
     
     for(i in 1:nrow(active_analyses)){
-      outcome <- active_analyses$outcome_variable[i]
+      outcome <- active_analyses$outcome[i]
       input[,paste0(outcome,"_extended_follow_up")] <- input[,outcome]
     }
   } else if (group == "diabetes_obesity"){
     active_analyses <- read_rds("lib/active_analyses.rds")
-    active_analyses <- active_analyses %>% filter(!outcome_variable %in% outcome_variable[grepl("extended_follow_up", outcome_variable)]) %>%
-      filter(outcome_variable == "out_date_t2dm_obes")
+    active_analyses <- active_analyses %>% filter(!outcome %in% outcome[grepl("extended_follow_up", outcome)]) %>%
+      filter(outcome == "out_date_t2dm_obes")
     
     for(i in 1:nrow(active_analyses)){
-      outcome <- active_analyses$outcome_variable[i]
+      outcome <- active_analyses$outcome[i]
       input[,paste0(outcome,"_extended_follow_up")] <- input[,outcome]
     }
   } else if (group == "diabetes_no_obesity"){
     active_analyses <- read_rds("lib/active_analyses.rds")
-    active_analyses <- active_analyses %>% filter(!outcome_variable %in% outcome_variable[grepl("extended_follow_up", outcome_variable)]) %>%
-      filter(outcome_variable == "out_date_t2dm_obes_no")
+    active_analyses <- active_analyses %>% filter(!outcome %in% outcome[grepl("extended_follow_up", outcome)]) %>%
+      filter(outcome == "out_date_t2dm_obes_no")
     
     for(i in 1:nrow(active_analyses)){
-      outcome <- active_analyses$outcome_variable[i]
+      outcome <- active_analyses$outcome[i]
       input[,paste0(outcome,"_extended_follow_up")] <- input[,outcome]
     }
   }
@@ -512,56 +515,56 @@ stage1 <- function(cohort_name, group){
   if (group == "diabetes"){
     
     active_analyses <- read_rds("lib/active_analyses.rds")
-    active_analyses <- active_analyses %>% filter(!outcome_variable %in% outcome_variable[grepl("unvax_sens", outcome_variable)]) %>%
-      filter(outcome_variable == "out_date_t1dm" | outcome_variable == "out_date_t2dm" | outcome_variable == "out_date_otherdm")
+    active_analyses <- active_analyses %>% filter(!outcome %in% outcome[grepl("unvax_sens", outcome)]) %>%
+      filter(outcome == "out_date_t1dm" | outcome == "out_date_t2dm" | outcome == "out_date_otherdm")
     
     for(i in 1:nrow(active_analyses)){
-      outcome <- active_analyses$outcome_variable[i]
+      outcome <- active_analyses$outcome[i]
       input[,paste0(outcome,"_unvax_sens")] <- input[,outcome]
     }
   } else if (group == "diabetes_gestational"){
     active_analyses <- read_rds("lib/active_analyses.rds")
-    active_analyses <- active_analyses %>% filter(!outcome_variable %in% outcome_variable[grepl("unvax_sens", outcome_variable)]) %>%
-      filter(outcome_variable == "out_date_gestationaldm")
+    active_analyses <- active_analyses %>% filter(!outcome %in% outcome[grepl("unvax_sens", outcome)]) %>%
+      filter(outcome == "out_date_gestationaldm")
     
     for(i in 1:nrow(active_analyses)){
-      outcome <- active_analyses$outcome_variable[i]
+      outcome <- active_analyses$outcome[i]
       input[,paste0(outcome,"_unvax_sens")] <- input[,outcome]
     }
   } else if (group == "diabetes_prediabetes"){
     active_analyses <- read_rds("lib/active_analyses.rds")
-    active_analyses <- active_analyses %>% filter(!outcome_variable %in% outcome_variable[grepl("unvax_sens", outcome_variable)]) %>%
-      filter(outcome_variable == "out_date_t2dm_pd")
+    active_analyses <- active_analyses %>% filter(!outcome %in% outcome[grepl("unvax_sens", outcome)]) %>%
+      filter(outcome == "out_date_t2dm_pd")
     
     for(i in 1:nrow(active_analyses)){
-      outcome <- active_analyses$outcome_variable[i]
+      outcome <- active_analyses$outcome[i]
       input[,paste0(outcome,"_unvax_sens")] <- input[,outcome]
     }
   } else if (group == "diabetes_no_prediabetes"){
     active_analyses <- read_rds("lib/active_analyses.rds")
-    active_analyses <- active_analyses %>% filter(!outcome_variable %in% outcome_variable[grepl("unvax_sens", outcome_variable)]) %>%
-      filter(outcome_variable == "out_date_t2dm_pd_no")
+    active_analyses <- active_analyses %>% filter(!outcome %in% outcome[grepl("unvax_sens", outcome)]) %>%
+      filter(outcome == "out_date_t2dm_pd_no")
     
     for(i in 1:nrow(active_analyses)){
-      outcome <- active_analyses$outcome_variable[i]
+      outcome <- active_analyses$outcome[i]
       input[,paste0(outcome,"_unvax_sens")] <- input[,outcome]
     }
   } else if (group == "diabetes_obesity"){
     active_analyses <- read_rds("lib/active_analyses.rds")
-    active_analyses <- active_analyses %>% filter(!outcome_variable %in% outcome_variable[grepl("unvax_sens", outcome_variable)]) %>%
-      filter(outcome_variable == "out_date_t2dm_obes")
+    active_analyses <- active_analyses %>% filter(!outcome %in% outcome[grepl("unvax_sens", outcome)]) %>%
+      filter(outcome == "out_date_t2dm_obes")
     
     for(i in 1:nrow(active_analyses)){
-      outcome <- active_analyses$outcome_variable[i]
+      outcome <- active_analyses$outcome[i]
       input[,paste0(outcome,"_unvax_sens")] <- input[,outcome]
     }
   } else if (group == "diabetes_no_obesity"){
     active_analyses <- read_rds("lib/active_analyses.rds")
-    active_analyses <- active_analyses %>% filter(!outcome_variable %in% outcome_variable[grepl("unvax_sens", outcome_variable)]) %>%
-      filter(outcome_variable == "out_date_t2dm_obes_no")
+    active_analyses <- active_analyses %>% filter(!outcome %in% outcome[grepl("unvax_sens", outcome)]) %>%
+      filter(outcome == "out_date_t2dm_obes_no")
     
     for(i in 1:nrow(active_analyses)){
-      outcome <- active_analyses$outcome_variable[i]
+      outcome <- active_analyses$outcome[i]
       input[,paste0(outcome,"_unvax_sens")] <- input[,outcome]
     }
   }
@@ -582,7 +585,6 @@ stage1 <- function(cohort_name, group){
 
 # Run function using outcome group
 active_analyses <- read_rds("lib/active_analyses.rds")
-active_analyses <- active_analyses %>% filter(active==TRUE)
 group <- unique(active_analyses$outcome_group)
 
 for(i in group){

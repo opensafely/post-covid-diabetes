@@ -307,7 +307,7 @@ actions_list <- splice(
     )
   ),
   
-  #comment("Generate dummy data for study_definition - prevax"),
+  #comment("Study definition - prevax"),
   action(
     name = "generate_study_population_prevax",
     run = "cohortextractor:latest generate_cohort --study-definition study_definition_prevax --output-format feather",
@@ -317,7 +317,7 @@ actions_list <- splice(
     )
   ),
   
-  #comment("Generate dummy data for study_definition - vax"),
+  #comment("Study definition - vax"),
   action(
     name = "generate_study_population_vax",
     run = "cohortextractor:latest generate_cohort --study-definition study_definition_vax --output-format feather",
@@ -327,13 +327,24 @@ actions_list <- splice(
     )
   ),
   
-  #comment("Generate dummy data for study_definition - unvax"),
+  #comment("Study definition - unvax"),
   action(
     name = "generate_study_population_unvax",
     run = "cohortextractor:latest generate_cohort --study-definition study_definition_unvax --output-format feather",
     needs = list("vax_eligibility_inputs","generate_index_dates"),
     highly_sensitive = list(
       cohort = glue("output/input_unvax.feather")
+    )
+  ),
+  
+  ## Generate deregistered_date variable -------------------------------------
+  comment("Generate deregistered_date variable"),
+  
+  action(
+    name = glue("generate_deregistered_date"),
+    run = glue("cohortextractor:latest generate_cohort --study-definition study_definition_dereg --output-format csv.gz"),
+    highly_sensitive = list(
+      cohort = glue("output/input_dereg.csv.gz")
     )
   ),
   
@@ -383,7 +394,7 @@ actions_list <- splice(
   action(
     name = "stage1_data_cleaning_prevax",
     run = "r:latest analysis/preprocess/Stage1_data_cleaning.R prevax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs","generate_deregistered_date"),
     moderately_sensitive = list(
       refactoring = glue("output/not-for-review/meta_data_factors_prevax.csv"),
       QA_rules = glue("output/review/descriptives/QA_summary_prevax_*.csv"),
@@ -400,7 +411,7 @@ actions_list <- splice(
   action(
     name = "stage1_data_cleaning_vax",
     run = "r:latest analysis/preprocess/Stage1_data_cleaning.R vax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs","generate_deregistered_date"),
     moderately_sensitive = list(
       refactoring = glue("output/not-for-review/meta_data_factors_vax.csv"),
       QA_rules = glue("output/review/descriptives/QA_summary_vax_*.csv"),
@@ -417,7 +428,7 @@ actions_list <- splice(
   action(
     name = "stage1_data_cleaning_unvax",
     run = "r:latest analysis/preprocess/Stage1_data_cleaning.R unvax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs","generate_deregistered_date"),
     moderately_sensitive = list(
       refactoring = glue("output/not-for-review/meta_data_factors_unvax.csv"),
       QA_rules = glue("output/review/descriptives/QA_summary_unvax_*.csv"),
@@ -434,7 +445,7 @@ actions_list <- splice(
   action(
     name = "explore_stage1_data_cleaning_prevax",
     run = "r:latest analysis/preprocess/explore_Stage1_data_cleaning.R prevax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs","generate_deregistered_date"),
     moderately_sensitive = list(
       refactoring = glue("output/not-for-review/explore_meta_data_factors_prevax.csv"),
       QA_rules = glue("output/review/descriptives/explore_QA_summary_prevax_*.csv"),
@@ -451,7 +462,7 @@ actions_list <- splice(
   action(
     name = "explore_stage1_data_cleaning_vax",
     run = "r:latest analysis/preprocess/explore_Stage1_data_cleaning.R vax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs","generate_deregistered_date"),
     moderately_sensitive = list(
       refactoring = glue("output/not-for-review/explore_meta_data_factors_vax.csv"),
       QA_rules = glue("output/review/descriptives/explore_QA_summary_vax_*.csv"),
@@ -468,7 +479,7 @@ actions_list <- splice(
   action(
     name = "explore_stage1_data_cleaning_unvax",
     run = "r:latest analysis/preprocess/explore_Stage1_data_cleaning.R unvax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs","generate_deregistered_date"),
     moderately_sensitive = list(
       refactoring = glue("output/not-for-review/explore_meta_data_factors_unvax.csv"),
       QA_rules = glue("output/review/descriptives/explore_QA_summary_unvax_*.csv"),
@@ -485,7 +496,7 @@ actions_list <- splice(
   action(
     name = "stage1_end_date_table_prevax",
     run = "r:latest analysis/preprocess/create_follow_up_end_date.R prevax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_prevax","vax_eligibility_inputs"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_prevax","vax_eligibility_inputs","generate_deregistered_date"),
     highly_sensitive = list(
       end_date_table = glue("output/follow_up_end_dates_prevax_*.rds"),
       end_date_table_csv = glue("output/follow_up_end_dates_prevax_*.csv.gz")
@@ -496,7 +507,7 @@ actions_list <- splice(
   action(
     name = "stage1_end_date_table_vax",
     run = "r:latest analysis/preprocess/create_follow_up_end_date.R vax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_vax","vax_eligibility_inputs"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_vax","vax_eligibility_inputs","generate_deregistered_date"),
     highly_sensitive = list(
       end_date_table = glue("output/follow_up_end_dates_vax_*.rds"),
       end_date_table_csv = glue("output/follow_up_end_dates_vax_*.csv.gz")
@@ -507,7 +518,7 @@ actions_list <- splice(
   action(
     name = "stage1_end_date_table_unvax",
     run = "r:latest analysis/preprocess/create_follow_up_end_date.R unvax",
-    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_unvax","vax_eligibility_inputs"),
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax", "stage1_data_cleaning_unvax","vax_eligibility_inputs","generate_deregistered_date"),
     highly_sensitive = list(
       end_date_table = glue("output/follow_up_end_dates_unvax_*.rds"),
       end_date_table_csv = glue("output/follow_up_end_dates_unvax_*.csv.gz")

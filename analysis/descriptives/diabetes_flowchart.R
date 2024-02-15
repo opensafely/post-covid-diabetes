@@ -134,7 +134,6 @@ diabetes_flow_function <- function(cohort_name, group) {
 # Run function using specified commandArgs and active analyses for group
 
 active_analyses <- read_rds("lib/active_analyses.rds")
-active_analyses <- active_analyses %>% filter(active==TRUE)
 group <- unique(active_analyses$outcome_group)
 
 

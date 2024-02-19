@@ -17,12 +17,11 @@ adopath + "analysis/extra_ados"
 
 dir ./output/
 local ready_name = regexr("`name'","_reduced","")
-display "`ready_name'"
-shell gunzip "./output/ready-`ready_name'.csv.gz"
+* shell gunzip "./output/ready-`ready_name'.csv.gz"
 
 * Import and describe data
 
-import delim using "./output/ready-`ready_name'.csv", clear
+import delim using "./output/ready-`ready_name'.csv.gz", clear
 describe
 
 * Add cox_weight if missing

@@ -17,7 +17,7 @@ adopath + "analysis/extra_ados"
 
 dir ./output/
 local ready_name = regexr("`name'","_reduced","")
-* shell gunzip "./output/ready-`ready_name'.csv.gz"
+shell gunzip "./output/ready-`ready_name'.csv.gz"
 
 * Import and describe data
 

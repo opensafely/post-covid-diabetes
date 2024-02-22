@@ -685,6 +685,28 @@ actions_list <- splice(
       characteristics_vax = "output/characteristics_vax.csv",
       characteristics_unvax = "output/characteristics_unvax.csv"
     )
+  ),
+  
+  comment("Describe model_input-cohort_vax-sub_covid_hospitalised-t2dm"),
+  
+  action(
+    name = "describe-model_input-cohort_vax-sub_covid_hospitalised-t2dm",
+    run = "r:latest analysis/describe_file.R model_input-cohort_vax-sub_covid_hospitalised-t2dm rds",
+    needs = list("make_model_input-cohort_vax-sub_covid_hospitalised-t2dm"),
+    moderately_sensitive = list(
+      model_output = glue("output/describe-model_input-cohort_vax-sub_covid_hospitalised-t2dm.txt")
+    )
+  ),
+  
+  comment("Describe ready-cohort_vax-sub_covid_hospitalised-t2dm"),
+  
+  action(
+    name = "describe-ready-cohort_vax-sub_covid_hospitalised-t2dm",
+    run = "r:latest analysis/describe_file.R ready-cohort_vax-sub_covid_hospitalised-t2dm csv.gz",
+    needs = list("ready-cohort_vax-sub_covid_hospitalised-t2dm"),
+    moderately_sensitive = list(
+      model_output = glue("output/describe-ready-cohort_vax-sub_covid_hospitalised-t2dm.txt")
+    )
   )
   
 )

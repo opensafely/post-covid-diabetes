@@ -5,7 +5,7 @@ local day0 "`2'"
 
 /*
 // For local testing:
-local name "cohort_prevax_extf-day0_main-depression"
+local name "cohort_prevax-main-t2dm_extended_follow_up"
 local day0 "FALSE"
 */
 
@@ -13,16 +13,16 @@ local day0 "FALSE"
 
 adopath + "analysis/extra_ados"
 
-* Unzip the input data 
+* Import and describe data
 
 dir ./output/
 local ready_name = regexr("`name'","_reduced","")
-shell gunzip "./output/ready-`ready_name'.csv.gz"
-
-* Import and describe data
-
-import delim using "./output/ready-`ready_name'.csv.gz", clear
+use "./output/ready-`ready_name'.dta", clear
 describe
+
+* Convert dates to date format
+
+format %td exposure outcome fup_start fup_stop
 
 * Add cox_weight if missing
 
@@ -52,36 +52,6 @@ display "`reduced'"
 
 local gestationaldm = regexm("`name'", "gestationaldm")
 display "`gestationaldm'"
-
-* Replace NA with missing value that Stata recognises
-
-ds , has(type string)
-foreach var of varlist `r(varlist)' {
-	replace `var' = "" if `var' == "NA"
-}
-
-* Reformat variables
-
-foreach var of varlist exposure outcome fup_start fup_stop {
-	split `var', gen(tmp_date) parse(-)
-	gen year = real(tmp_date1)
-	gen month = real(tmp_date2)
-	gen day = real(tmp_date3)
-	gen `var'_tmp = mdy(month, day, year)
-	format %td `var'_tmp
-	drop `var' tmp_date* year month day
-	rename `var'_tmp `var'
-}
-
-* Encode non-numeric variables
-
-foreach var of varlist region cov_bin* cov_cat* {
-	di "Encoding `var'"
-	local var_short = substr("`var'", 1, length("`var'") - 1) 
-	encode `var', generate(`var_short'1)
-	drop `var'
-	rename `var_short'1 `var'
-}
 
 * Summarize missingness
 
@@ -192,7 +162,7 @@ else {
 
 stcox days* age_spline1 age_spline2 i.cov_cat_* cov_num_* cov_bin_*, strata(region) vce(r)
 est store max, title(Maximal)
-	
+
 estout * using "output/stata_model_output-`name'.txt", cells("b se t ci_l ci_u p") stats(risk N_fail N_sub N N_clust) replace 
 
 * Calculate median follow-up among individuals with the outcome

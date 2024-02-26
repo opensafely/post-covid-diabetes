@@ -48,7 +48,6 @@ fs::dir_create(here::here("output", "review", "descriptives"))
 
 # Determine which outcome groups are active
 active_analyses <- read_rds("lib/active_analyses.rds")
-active_analyses <- active_analyses %>% filter(active == TRUE)
 outcome_groups <- unique(active_analyses$outcome_group)
 
 cohort_start_date_prevax <- as.Date("2020-01-01")

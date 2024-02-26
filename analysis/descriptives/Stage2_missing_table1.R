@@ -178,10 +178,15 @@ stage2 <- function(cohort_name, covid_history, group) {
   }
 
   # Populate table 1 
-  covar_names <- active_analyses %>% filter(outcome_group==group)
-  covar_names<-str_split(active_analyses$covariates, ";")[[1]]
+  
+  covar_names <- active_analyses %>% 
+    filter(outcome_group==group & 
+             analysis=="main" & 
+             cohort==cohort_name &
+             outcome %in% c("out_date_t2dm","out_date_t2dm_extended_follow_up"))
+  
+  covar_names<-c(str_split(covar_names$covariate_other, ";")[[1]], covar_names$covariate_age, covar_names$covariate_sex, "cov_num_bmi")
   # ADD NUM BMI BECAUSE IT ISNT LISTED IN ACVTIVE ANALYSES AS A COVARIATE
-  covar_names <- append(covar_names, "cov_num_bmi")
   
   #categorical_cov <- colnames(input)[grep("cov_cat", colnames(input))]
   categorical_cov <- covar_names[grep("cov_cat", covar_names)]

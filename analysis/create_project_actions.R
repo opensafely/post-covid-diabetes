@@ -687,25 +687,17 @@ actions_list <- splice(
     )
   ),
   
-  comment("Describe model_input-cohort_vax-sub_covid_hospitalised-t2dm"),
+  comment("Make consort output"),
   
   action(
-    name = "describe-model_input-cohort_vax-sub_covid_hospitalised-t2dm",
-    run = "r:latest analysis/describe_file.R model_input-cohort_vax-sub_covid_hospitalised-t2dm rds",
-    needs = list("make_model_input-cohort_vax-sub_covid_hospitalised-t2dm"),
+    name = "consort",
+    run = "r:latest analysis/make_consort.R",
+    needs = list("stage1_data_cleaning_prevax",
+                 "stage1_data_cleaning_vax",
+                 "stage1_data_cleaning_unvax"),
     moderately_sensitive = list(
-      model_output = glue("output/describe-model_input-cohort_vax-sub_covid_hospitalised-t2dm.txt")
-    )
-  ),
-  
-  comment("Describe ready-cohort_vax-sub_covid_hospitalised-t2dm"),
-  
-  action(
-    name = "describe-ready-cohort_vax-sub_covid_hospitalised-t2dm",
-    run = "r:latest analysis/describe_file.R ready-cohort_vax-sub_covid_hospitalised-t2dm csv.gz",
-    needs = list("ready-cohort_vax-sub_covid_hospitalised-t2dm"),
-    moderately_sensitive = list(
-      model_output = glue("output/describe-ready-cohort_vax-sub_covid_hospitalised-t2dm.txt")
+      consort = "output/consort.csv",
+      consort_redacted = "output/consort_midpoint6.csv"
     )
   )
   

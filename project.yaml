@@ -5155,25 +5155,16 @@ actions:
         characteristics_vax: output/characteristics_vax.csv
         characteristics_unvax: output/characteristics_unvax.csv
 
-  ## Describe model_input-cohort_vax-sub_covid_hospitalised-t2dm 
+  ## Make consort output 
 
-  describe-model_input-cohort_vax-sub_covid_hospitalised-t2dm:
-    run: r:latest analysis/describe_file.R model_input-cohort_vax-sub_covid_hospitalised-t2dm
-      rds
+  consort:
+    run: r:latest analysis/make_consort.R
     needs:
-    - make_model_input-cohort_vax-sub_covid_hospitalised-t2dm
+    - stage1_data_cleaning_prevax
+    - stage1_data_cleaning_vax
+    - stage1_data_cleaning_unvax
     outputs:
       moderately_sensitive:
-        model_output: output/describe-model_input-cohort_vax-sub_covid_hospitalised-t2dm.txt
-
-  ## Describe ready-cohort_vax-sub_covid_hospitalised-t2dm 
-
-  describe-ready-cohort_vax-sub_covid_hospitalised-t2dm:
-    run: r:latest analysis/describe_file.R ready-cohort_vax-sub_covid_hospitalised-t2dm
-      csv.gz
-    needs:
-    - ready-cohort_vax-sub_covid_hospitalised-t2dm
-    outputs:
-      moderately_sensitive:
-        model_output: output/describe-ready-cohort_vax-sub_covid_hospitalised-t2dm.txt
+        consort: output/consort.csv
+        consort_redacted: output/consort_midpoint6.csv
 

@@ -225,11 +225,11 @@ stage1 <- function(cohort_name, group){
   
   #Inclusion criteria 6: Active registration
   
-  print("Input dataset contains ",nrow(input)," observations for ",length(unique(input$patient_id)),"patients.")
+  print(paste0("Input dataset contains ",nrow(input)," observations for ",length(unique(input$patient_id))," patients."))
   input_dereg <- readr::read_csv("output/input_dereg.csv.gz")
-  print("Dereg data contains ",nrow(input_dereg)," observations for ",length(unique(input_dereg$patient_id)),"patients.")
+  print(paste0("Dereg data contains ",nrow(input_dereg)," observations for ",length(unique(input_dereg$patient_id))," patients."))
   input <- dplyr::left_join(input, input_dereg, by = "patient_id")
-  print("Merged dataset contains ",nrow(input)," observations for ",length(unique(input$patient_id)),"patients.")
+  print(paste0("Merged dataset contains ",nrow(input)," observations for ",length(unique(input$patient_id))," patients."))
   
   input <- input %>%
     filter(is.na(deregistered_date) | (!is.na(deregistered_date) & deregistered_date>=index_date))

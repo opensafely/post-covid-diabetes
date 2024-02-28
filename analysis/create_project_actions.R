@@ -414,6 +414,23 @@ actions_list <- splice(
     )
   ),
   
+  #comment("Stage 1 - Data cleaning - VAX cohort TEST"),
+  action(
+    name = "stage1_data_cleaning_vax_v2",
+    run = "r:latest analysis/preprocess/Stage1_data_cleaning_v2.R vax",
+    needs = list("preprocess_data_prevax","preprocess_data_vax", "preprocess_data_unvax","vax_eligibility_inputs","generate_deregistered_date"),
+    moderately_sensitive = list(
+      refactoring = glue("output/not-for-review/meta_data_factors_vax_v2.csv"),
+      QA_rules = glue("output/review/descriptives/QA_summary_vax_*_v2.csv"),
+      IE_criteria = glue("output/review/descriptives/Cohort_flow_vax_*_v2.csv"),
+      histograms = glue("output/not-for-review/numeric_histograms_vax_*_v2.svg")
+    ),
+    highly_sensitive = list(
+      cohort = glue("output/input_vax_*_v2.rds"),
+      cohort_csv = glue("output/input_vax_*_v2.csv.gz")
+    )
+  ),
+  
   #comment("Stage 1 - Data cleaning - UNVAX cohort"),
   action(
     name = "stage1_data_cleaning_unvax",

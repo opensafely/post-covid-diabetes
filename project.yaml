@@ -5191,6 +5191,7 @@ actions:
   explore_dates:
     run: r:latest analysis/explore_dates.R
     needs:
+    - vax_eligibility_inputs
     - make_model_input-cohort_prevax-main-t2dm_extended_follow_up
     outputs:
       moderately_sensitive:

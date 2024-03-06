@@ -2,7 +2,7 @@
 print("Load data")
 
 df <- readr::read_rds("output/model_input-cohort_prevax-main-t2dm_extended_follow_up.rds")
-study_dates <- fromJSON("output/study_dates.json")
+study_dates <- jsonlite::fromJSON("output/study_dates.json")
 
 # Create directory -------------------------------------------------------------
 print("Create directory")

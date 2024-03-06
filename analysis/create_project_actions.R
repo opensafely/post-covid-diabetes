@@ -723,7 +723,7 @@ actions_list <- splice(
   action(
     name = "explore_dates",
     run = "r:latest analysis/explore_dates.R",
-    needs = list("make-model_input-cohort_prevax-main-t2dm_extended_follow_up"),
+    needs = list("make_model_input-cohort_prevax-main-t2dm_extended_follow_up"),
     moderately_sensitive = list(
       hist_all_exp_date = "output/explore/hist-all-exp_date.png",
       hist_all_out_date = "output/explore/hist-all-out_date.png",

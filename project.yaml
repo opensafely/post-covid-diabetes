@@ -5191,7 +5191,7 @@ actions:
   explore_dates:
     run: r:latest analysis/explore_dates.R
     needs:
-    - make-model_input-cohort_prevax-main-t2dm_extended_follow_up
+    - make_model_input-cohort_prevax-main-t2dm_extended_follow_up
     outputs:
       moderately_sensitive:
         hist_all_exp_date: output/explore/hist-all-exp_date.png

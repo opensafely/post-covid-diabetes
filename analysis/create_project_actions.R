@@ -716,6 +716,19 @@ actions_list <- splice(
       consort = "output/consort.csv",
       consort_redacted = "output/consort_midpoint6.csv"
     )
+  ),
+  
+  comment("Explore dates"),
+  
+  action(
+    name = "explore_dates",
+    run = "r:latest analysis/explore_dates.R",
+    needs = list("make-model_input-cohort_prevax-main-t2dm_extended_follow_up"),
+    moderately_sensitive = list(
+      hist_all_exp_date = "output/explore/hist-all-exp_date.png",
+      hist_all_out_date = "output/explore/hist-all-out_date.png",
+      hist_exposed_out_date = "output/explore/hist-exposed-out_date.png"
+    )
   )
   
 )

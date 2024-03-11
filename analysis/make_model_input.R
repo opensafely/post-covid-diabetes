@@ -17,7 +17,7 @@ args <- commandArgs(trailingOnly=TRUE)
 if(length(args)==0){
   name <- "all" #cohort_prevax-main-t2dm_extended_follow_up"
   # name <- "all" # prepare datasets for all active analyses 
-  # name <- "cohort_vax-sub_history_none-depression" # prepare datasets for all active analyses whose name contains X
+  name <- "cohort_prevax-main-t2dm" # prepare datasets for all active analyses whose name contains X
   # name <- "vax-depression-main;vax-depression-sub_covid_hospitalised;vax-depression-sub_covid_nonhospitalised" # prepare datasets for specific active analyses
 } else {
   name <- args[[1]]
@@ -61,47 +61,22 @@ for (i in 1:nrow(active_analyses)) {
   
   input <- dplyr::as_tibble(readr::read_rds(paste0("output/input_",active_analyses$cohort[i],"_stage1_diabetes",suffix,".rds")))
   
-  end_dates <- readr::read_rds(paste0("output/follow_up_end_dates_",active_analyses$cohort[i],"_diabetes",suffix,".rds"))
-  
   # Add end dates --------------------------------------------------------------
   print("Add end dates")
   
-  event_name <- gsub("out_date_","",active_analyses$outcome[i])
-  event_name <- gsub("_follow_extended_follow_up","_extended_follow_up",event_name) # 'follow' is persistant diabetes, should use same as main analysis
+  end_dates <- readr::read_csv("output/index_dates_v2.csv.gz")
   
-  end_dates <- end_dates[,c("patient_id",
-                            paste0(event_name,"_follow_up_end"),
-                            paste0(event_name,"_hospitalised_follow_up_end"),
-                            paste0(event_name,"_non_hospitalised_follow_up_end"),
-                            paste0(event_name,"_hospitalised_date_expo_censor"),
-                            paste0(event_name,"_non_hospitalised_date_expo_censor"))]
+  end_dates <- end_dates[,c("patient_id",colnames(end_dates)[grepl(paste0("_",active_analyses$cohort[i]),colnames(end_dates))])]
+  colnames(end_dates) <- gsub(paste0("_",active_analyses$cohort[i]),"",colnames(end_dates))
   
-  colnames(end_dates) <- gsub(paste0(event_name,"_"),"",colnames(end_dates))
-  
+  input[,c("index_date","end_date")] <- NULL
   input <- input %>% dplyr::left_join(end_dates, by = "patient_id")
-  
-  # Define end dates -----------------------------------------------------------
-  print('Define data suffix')
-  
-  input$end_date_exposure <- as.Date(ifelse(active_analyses$cohort[i]=="prevax",
-                                    "2021-06-18", active_analyses$study_stop[i]))
-  
-  input$end_date_outcome <- input$follow_up_end
-  
-  input$end_date_outcome <- ifelse(active_analyses$analysis[i]=="sub_covid_hospitalised",
-                                   input$hospitalised_follow_up_end,
-                                   input$end_date_outcome)
-  
-  input$end_date_outcome <- ifelse(active_analyses$analysis[i]=="sub_covid_nonhospitalised",
-                                   input$non_hospitalised_follow_up_end,
-                                   input$end_date_outcome)
   
   # Restrict to required variables ---------------------------------------------
   print('Restrict to required variables')
   
   input <- input[,unique(c("patient_id",
                            "index_date",
-                           "end_date",
                            "end_date_exposure",
                            "end_date_outcome",
                            active_analyses$exposure[i], 
@@ -125,21 +100,20 @@ for (i in 1:nrow(active_analyses)) {
   print('Remove exposures outside of follow-up time')
 
   input <- input %>%
-    dplyr::mutate(exp_date = replace(exp_date, which(exp_date>end_date_exposure | exp_date<index_date | exp_date>end_date | exp_date>out_date), NA),
+    dplyr::mutate(exp_date = replace(exp_date, which(exp_date>end_date_exposure | exp_date<index_date | exp_date>end_date_outcome | exp_date>out_date), NA),
                   sub_cat_covid19_hospital = replace(sub_cat_covid19_hospital, which(is.na(exp_date)),"no_infection"))
 
   # Remove outcomes outside of follow-up time ----------------------------------
   print('Remove outcomes outside of follow-up time')
 
   input <- input %>%
-    dplyr::mutate(out_date = replace(out_date, which(out_date>end_date_outcome | out_date<index_date | out_date>end_date), NA))
+    dplyr::mutate(out_date = replace(out_date, which(out_date>end_date_outcome | out_date<index_date), NA))
   
   # Add indicator for 4 months (4*28=112) follow-up post-exposure --------------
   print('Add indicator for 4 months (4*28=112) follow-up post-exposure')
   
-  input$sub_bin_fup4m <- ((input$end_date - input$exp_date) > 112) | is.na(input$exp_date)
-  input$end_date <- NULL
-  
+  input$sub_bin_fup4m <- ((input$end_date_outcome - input$exp_date) > 112) | is.na(input$exp_date)
+
   # Update end date to be outcome date where applicable ------------------------
   print('Update end date to be outcome date where applicable')
   

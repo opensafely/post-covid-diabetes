@@ -77,6 +77,16 @@ actions:
       highly_sensitive:
         cohort: output/input_dereg.csv.gz
 
+  generate_index_dates_v2:
+    run: r:latest analysis/prelim_v2.R
+    needs:
+    - vax_eligibility_inputs
+    - generate_study_population_prelim
+    - generate_deregistered_date
+    outputs:
+      highly_sensitive:
+        index_dates: output/index_dates_v2.csv.gz
+
   preprocess_data_prevax:
     run: r:latest analysis/preprocess/preprocess_data.R prevax
     needs:
@@ -403,6 +413,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-main-t1dm.rds
@@ -426,6 +437,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-main-t1dm.rds
@@ -449,6 +461,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_hospitalised-t1dm.rds
@@ -472,6 +485,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-t1dm.rds
@@ -495,6 +509,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_nonhospitalised-t1dm.rds
@@ -518,6 +533,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-t1dm.rds
@@ -541,6 +557,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-main-t2dm.rds
@@ -564,6 +581,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-main-t2dm.rds
@@ -587,6 +605,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_hospitalised-t2dm.rds
@@ -610,6 +629,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-t2dm.rds
@@ -633,6 +653,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_nonhospitalised-t2dm.rds
@@ -656,6 +677,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm.rds
@@ -679,6 +701,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_age_18_39-t2dm.rds
@@ -702,6 +725,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_age_18_39-t2dm.rds
@@ -725,6 +749,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_age_40_59-t2dm.rds
@@ -748,6 +773,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_age_40_59-t2dm.rds
@@ -771,6 +797,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_age_60_79-t2dm.rds
@@ -794,6 +821,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_age_60_79-t2dm.rds
@@ -817,6 +845,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_age_80_110-t2dm.rds
@@ -840,6 +869,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_age_80_110-t2dm.rds
@@ -863,6 +893,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_sex_male-t2dm.rds
@@ -886,6 +917,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_sex_male-t2dm.rds
@@ -909,6 +941,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_sex_female-t2dm.rds
@@ -932,6 +965,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_sex_female-t2dm.rds
@@ -955,6 +989,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_ethnicity_white-t2dm.rds
@@ -978,6 +1013,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_ethnicity_white-t2dm.rds
@@ -1001,6 +1037,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_ethnicity_mixed-t2dm.rds
@@ -1024,6 +1061,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_ethnicity_mixed-t2dm.rds
@@ -1047,6 +1085,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_ethnicity_asian-t2dm.rds
@@ -1070,6 +1109,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_ethnicity_asian-t2dm.rds
@@ -1093,6 +1133,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_ethnicity_black-t2dm.rds
@@ -1116,6 +1157,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_ethnicity_black-t2dm.rds
@@ -1139,6 +1181,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_ethnicity_other-t2dm.rds
@@ -1162,6 +1205,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_ethnicity_other-t2dm.rds
@@ -1185,6 +1229,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_ethnicity_missing-t2dm.rds
@@ -1208,6 +1253,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_ethnicity_missing-t2dm.rds
@@ -1231,6 +1277,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-main-t2dm_pd.rds
@@ -1254,6 +1301,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-main-t2dm_pd.rds
@@ -1277,6 +1325,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_hospitalised-t2dm_pd.rds
@@ -1300,6 +1349,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-t2dm_pd.rds
@@ -1323,6 +1373,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_nonhospitalised-t2dm_pd.rds
@@ -1346,6 +1397,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd.rds
@@ -1369,6 +1421,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-main-t2dm_pd_no.rds
@@ -1392,6 +1445,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-main-t2dm_pd_no.rds
@@ -1415,6 +1469,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_hospitalised-t2dm_pd_no.rds
@@ -1438,6 +1493,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-t2dm_pd_no.rds
@@ -1461,6 +1517,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_nonhospitalised-t2dm_pd_no.rds
@@ -1484,6 +1541,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_pd_no.rds
@@ -1507,6 +1565,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-main-t2dm_obes.rds
@@ -1530,6 +1589,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-main-t2dm_obes.rds
@@ -1553,6 +1613,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_hospitalised-t2dm_obes.rds
@@ -1576,6 +1637,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-t2dm_obes.rds
@@ -1599,6 +1661,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_nonhospitalised-t2dm_obes.rds
@@ -1622,6 +1685,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes.rds
@@ -1645,6 +1709,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-main-t2dm_obes_no.rds
@@ -1668,6 +1733,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-main-t2dm_obes_no.rds
@@ -1691,6 +1757,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_hospitalised-t2dm_obes_no.rds
@@ -1714,6 +1781,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-t2dm_obes_no.rds
@@ -1737,6 +1805,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_nonhospitalised-t2dm_obes_no.rds
@@ -1760,6 +1829,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_obes_no.rds
@@ -1783,6 +1853,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-main-otherdm.rds
@@ -1806,6 +1877,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-main-otherdm.rds
@@ -1829,6 +1901,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_hospitalised-otherdm.rds
@@ -1852,6 +1925,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-otherdm.rds
@@ -1875,6 +1949,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_nonhospitalised-otherdm.rds
@@ -1898,6 +1973,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-otherdm.rds
@@ -1921,6 +1997,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-main-gestationaldm.rds
@@ -1944,6 +2021,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-main-gestationaldm.rds
@@ -1967,6 +2045,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_hospitalised-gestationaldm.rds
@@ -1990,6 +2069,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-gestationaldm.rds
@@ -2013,6 +2093,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-sub_covid_nonhospitalised-gestationaldm.rds
@@ -2036,6 +2117,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-gestationaldm.rds
@@ -2059,6 +2141,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2083,6 +2166,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2107,6 +2191,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2131,6 +2216,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2155,6 +2241,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2179,6 +2266,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2203,6 +2291,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2227,6 +2316,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2251,6 +2341,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2275,6 +2366,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2299,6 +2391,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2323,6 +2416,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2347,6 +2441,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2371,6 +2466,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2395,6 +2491,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2419,6 +2516,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2443,6 +2541,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2467,6 +2566,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2491,6 +2591,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2515,6 +2616,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2539,6 +2641,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2563,6 +2666,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2587,6 +2691,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2611,6 +2716,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2635,6 +2741,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2659,6 +2766,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2683,6 +2791,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2707,6 +2816,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2731,6 +2841,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2755,6 +2866,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2779,6 +2891,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2803,6 +2916,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2827,6 +2941,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2851,6 +2966,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2875,6 +2991,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2899,6 +3016,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2923,6 +3041,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2947,6 +3066,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2971,6 +3091,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -2995,6 +3116,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-main-t2dm_unvax_sens.rds
@@ -3018,6 +3140,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-t2dm_unvax_sens.rds
@@ -3041,6 +3164,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-t2dm_unvax_sens.rds
@@ -3064,6 +3188,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-main-t1dm_unvax_sens.rds
@@ -3087,6 +3212,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-t1dm_unvax_sens.rds
@@ -3110,6 +3236,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-t1dm_unvax_sens.rds
@@ -3133,6 +3260,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-main-otherdm_unvax_sens.rds
@@ -3156,6 +3284,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-otherdm_unvax_sens.rds
@@ -3179,6 +3308,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-otherdm_unvax_sens.rds
@@ -3202,6 +3332,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-main-gestationaldm_unvax_sens.rds
@@ -3225,6 +3356,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_hospitalised-gestationaldm_unvax_sens.rds
@@ -3248,6 +3380,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-sub_covid_nonhospitalised-gestationaldm_unvax_sens.rds
@@ -3271,6 +3404,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-day0_main-t2dm.rds
@@ -3294,6 +3428,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-day0_main-t2dm.rds
@@ -3317,6 +3452,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-day0_sub_covid_hospitalised-t2dm.rds
@@ -3340,6 +3476,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-day0_sub_covid_hospitalised-t2dm.rds
@@ -3363,6 +3500,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-day0_sub_covid_nonhospitalised-t2dm.rds
@@ -3386,6 +3524,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-day0_sub_covid_nonhospitalised-t2dm.rds
@@ -3409,6 +3548,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -3433,6 +3573,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -3457,6 +3598,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -3481,6 +3623,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-day0_main-t2dm_unvax_sens.rds
@@ -3504,6 +3647,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-day0_sub_covid_hospitalised-t2dm_unvax_sens.rds
@@ -3527,6 +3671,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-day0_sub_covid_nonhospitalised-t2dm_unvax_sens.rds
@@ -3550,6 +3695,7 @@ actions:
     needs:
     - stage1_data_cleaning_vax
     - stage1_end_date_table_vax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_vax-detailed_main-t2dm.rds
@@ -3573,6 +3719,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-detailed_main-t2dm.rds
@@ -3596,6 +3743,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -3620,6 +3768,7 @@ actions:
     needs:
     - stage1_data_cleaning_unvax
     - stage1_end_date_table_unvax
+    - generate_index_dates_v2
     outputs:
       highly_sensitive:
         model_input: output/model_input-cohort_unvax-detailed_main-t2dm_unvax_sens.rds
@@ -3643,6 +3792,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -3667,6 +3817,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -3691,6 +3842,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -3715,6 +3867,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -3739,6 +3892,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:
@@ -3763,6 +3917,7 @@ actions:
     needs:
     - stage1_data_cleaning_prevax
     - stage1_end_date_table_prevax
+    - generate_index_dates_v2
     - add_persistent_diabetes_outcomes
     outputs:
       highly_sensitive:

@@ -128,6 +128,7 @@ apply_model_function <- function(name, cohort, analysis, ipw, strata,
           run = glue("r:latest analysis/make_model_input.R {name}"),
           needs = list(glue("stage1_data_cleaning_{cohort}"),
                        glue("stage1_end_date_table_{cohort}"),
+                       "generate_index_dates_v2",
                        "add_persistent_diabetes_outcomes"),
           highly_sensitive = list(
             model_input = glue("output/model_input-{name}.rds")
@@ -147,7 +148,8 @@ apply_model_function <- function(name, cohort, analysis, ipw, strata,
         name = glue("make_model_input-{name}"),
         run = glue("r:latest analysis/make_model_input.R {name}"),
         needs = list(glue("stage1_data_cleaning_{cohort}"),
-                     glue("stage1_end_date_table_{cohort}")),
+                     glue("stage1_end_date_table_{cohort}"),
+                     "generate_index_dates_v2"),
         highly_sensitive = list(
           model_input = glue("output/model_input-{name}.rds")
         )
@@ -338,6 +340,15 @@ actions_list <- splice(
     )
   ),
   
+  #comment("Generate dates for all study cohorts"),
+  action(
+    name = "generate_index_dates_v2",
+    run = "r:latest analysis/prelim_v2.R",
+    needs = list("vax_eligibility_inputs","generate_study_population_prelim","generate_deregistered_date"),
+    highly_sensitive = list(
+      index_dates = glue("output/index_dates_v2.csv.gz")
+    )
+  ),
   #comment("Preprocess data - prevax"),
   action(
     name = "preprocess_data_prevax",

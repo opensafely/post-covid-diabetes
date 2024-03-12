@@ -127,7 +127,6 @@ apply_model_function <- function(name, cohort, analysis, ipw, strata,
           name = glue("make_model_input-{name}"),
           run = glue("r:latest analysis/make_model_input.R {name}"),
           needs = list(glue("stage1_data_cleaning_{cohort}"),
-                       glue("stage1_end_date_table_{cohort}"),
                        "generate_index_dates_v2",
                        "add_persistent_diabetes_outcomes"),
           highly_sensitive = list(
@@ -148,7 +147,6 @@ apply_model_function <- function(name, cohort, analysis, ipw, strata,
         name = glue("make_model_input-{name}"),
         run = glue("r:latest analysis/make_model_input.R {name}"),
         needs = list(glue("stage1_data_cleaning_{cohort}"),
-                     glue("stage1_end_date_table_{cohort}"),
                      "generate_index_dates_v2"),
         highly_sensitive = list(
           model_input = glue("output/model_input-{name}.rds")

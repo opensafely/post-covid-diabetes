@@ -39,7 +39,7 @@ prelim_data <- prelim_data %>%
   rowwise() %>%             
   mutate(index_date_vax = max(c(vax_date_covid_2_offset, delta_date), na.rm=T),
          index_date_unvax =  max(c(vax_date_eligible_offset, delta_date), na.rm=T),
-         end_date_exposure_vax = min(c(death_date, deregistered_date, delta_end_date, vax_date_covid_1), na.rm=T),
+         end_date_exposure_vax = min(c(death_date, deregistered_date, delta_end_date), na.rm=T),
          end_date_outcome_vax = end_date_exposure_vax,
          end_date_exposure_unvax = min(c(death_date, deregistered_date, delta_end_date), na.rm=T),
          end_date_outcome_unvax = end_date_exposure_unvax,

@@ -4870,6 +4870,16 @@ actions:
         stata_fup: output/stata_fup-cohort_prevax-sub_covid_hospitalised_reduced-t2dm_follow_extended_follow_up.csv
         stata_model_output: output/stata_model_output-cohort_prevax-sub_covid_hospitalised_reduced-t2dm_follow_extended_follow_up.txt
 
+  stata_cox_ipw-cohort_prevax-day0_sub_covid_hospitalised_reduced-t2dm_extended_follow_up:
+    run: stata-mp:latest analysis/cox_model.do cohort_prevax-day0_sub_covid_hospitalised_reduced-t2dm_extended_follow_up
+      TRUE
+    needs:
+    - ready-cohort_prevax-day0_sub_covid_hospitalised-t2dm_extended_follow_up
+    outputs:
+      moderately_sensitive:
+        stata_fup: output/stata_fup-cohort_prevax-day0_sub_covid_hospitalised_reduced-t2dm_extended_follow_up.csv
+        stata_model_output: output/stata_model_output-cohort_prevax-day0_sub_covid_hospitalised_reduced-t2dm_extended_follow_up.txt
+
   make_model_output:
     run: r:latest analysis/make_model_output.R
     needs:
@@ -5041,7 +5051,6 @@ actions:
     - cox_ipw-cohort_prevax-sub_covid_hospitalised_reduced-t2dm_obes_no_extended_follow_up
     - cox_ipw-cohort_prevax-sub_covid_nonhospitalised_reduced-t2dm_obes_no_extended_follow_up
     - cox_ipw-cohort_prevax-day0_main_reduced-t2dm_extended_follow_up
-    - cox_ipw-cohort_prevax-day0_sub_covid_hospitalised_reduced-t2dm_extended_follow_up
     - cox_ipw-cohort_prevax-day0_sub_covid_nonhospitalised_reduced-t2dm_extended_follow_up
     - cox_ipw-cohort_prevax-detailed_main_reduced-t2dm_extended_follow_up
     - cox_ipw-cohort_prevax-main_fup4m_reduced-t2dm_extended_follow_up
@@ -5075,6 +5084,7 @@ actions:
     - stata_cox_ipw-cohort_unvax-day0_main-t2dm_unvax_sens
     - stata_cox_ipw-cohort_unvax-day0_sub_covid_hospitalised-t2dm_unvax_sens
     - stata_cox_ipw-cohort_prevax-sub_covid_hospitalised_reduced-t2dm_follow_extended_follow_up
+    - stata_cox_ipw-cohort_prevax-day0_sub_covid_hospitalised_reduced-t2dm_extended_follow_up
     outputs:
       moderately_sensitive:
         stata_model_output: output/stata_model_output.csv

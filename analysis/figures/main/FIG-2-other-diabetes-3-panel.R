@@ -80,14 +80,14 @@ t1dm <- ggplot2::ggplot(data=df_t1dm,
   #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
   ggplot2::geom_point(aes(),size = 2, position = pd) +
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
-  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
+  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.50,0.50,conf_low), 
                                                             ymax = ifelse(conf_high>64,64,conf_high),  
                                                             width = 0))+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   #ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.25,64), breaks = c(0.25,0.5,1,2,4,8,16,32,64), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.5,64), breaks = c(0.5,1,2,4,8,16,32,64), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
@@ -122,14 +122,14 @@ gest <- ggplot2::ggplot(data=df_gest,
   #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
   ggplot2::geom_point(aes(),size = 2, position = pd) +
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
-  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
+  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.50,0.50,conf_low), 
                                                             ymax = ifelse(conf_high>64,64,conf_high),  
                                                             width = 0))+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   #ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.25,64), breaks = c(0.25,0.5,1,2,4,8,16,32,64), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.5,64), breaks = c(0.5,1,2,4,8,16,32,64), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +
@@ -164,14 +164,14 @@ other <- ggplot2::ggplot(data=df_other,
   #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
   ggplot2::geom_point(aes(), size = 2, position = pd) +
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
-  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
+  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.50,0.50,conf_low), 
                                                             ymax = ifelse(conf_high>64,64,conf_high),  
                                                             width = 0))+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
   #ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.25,64), breaks = c(0.25,0.5,1,2,4,8,16,32,64), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.5,64), breaks = c(0.5,1,2,4,8,16,32,64), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$cohort))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$cohort)) +

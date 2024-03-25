@@ -12,17 +12,23 @@ subgroup_fig <- function(cohort){
 #--------Load fully adjusted main and COVID phenotype results-------------------
 
 combined_hr <- read.csv(paste0(results_dir,"/master_hr_file.csv"))
+combined_hr <- combined_hr %>%
+    filter(combined_hr$term != "days_pre" | grepl("hospital", combined_hr$subgroup))
 
 # Get estimates for subgroup analyses for t2dm
 # Select subgroup analyses run as main analysis (obesity, pre-diabetes)
 subgroup_table1 <- combined_hr %>%
   filter(grepl("obes|pd", combined_hr$event) & combined_hr$subgroup=="main")
 subgroup_table1$subgroup <- gsub("t2dm_","",subgroup_table1$event)
-subgroup_table1$event <- "t2dm"
+subgroup_table1$event[subgroup_table1$cohort == "vax"|subgroup_table1$cohort == "unvax"] <- "t2dm" 
 
 subgroup_table2 <- subset(combined_hr, event %in% c("t2dm","t2dm_extended_follow_up"))
+subgroup_table2 <- subgroup_table2 %>% 
+  filter(grepl("^sub_", subgroup_table2$subgroup))
 
 combined_hr <- rbind(subgroup_table1,subgroup_table2)
+#combined_hr$event <- "t2dm"
+
 combined_hr <- combined_hr[!duplicated(combined_hr),]
 # exclude minimally adjusted models
 combined_hr <- combined_hr[combined_hr$model!="mdl_age_sex",]
@@ -202,8 +208,9 @@ if(nrow(df)>0){
                                                               ymax = ifelse(conf_high>max_plot,max_plot,conf_high),  
                                                               width = 0), 
                            position = ggplot2::position_dodge(width = 0))+
-    ggplot2::geom_line(position = ggplot2::position_dodge(width = 0)) +
-    ggplot2::scale_y_continuous(lim = c(0.25,16), breaks = c(0.25,0.5,1,2,4,8,16), trans = "log") +
+   # ggplot2::geom_line(position = ggplot2::position_dodge(width = 0)) +
+    ggplot2::geom_line() +
+    ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
     # ggplot2::scale_x_continuous(lim = c(0,round_any(max(df$median_follow_up, na.rm = T),4, f= ceiling)), breaks = seq(0,round_any(max(df$median_follow_up, na.rm = T),4, f= ceiling),4)) +
     ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
     ggplot2::scale_fill_manual(values = colour_levels, labels = sub_group_levels)+ 

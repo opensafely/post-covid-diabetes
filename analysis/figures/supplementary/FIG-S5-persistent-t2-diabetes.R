@@ -13,7 +13,7 @@ library(grid)
 
 
 results_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/model/"
-output_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-figures/supplementary/"
+output_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-figures/"
 
 #-------------------------#
 # 1. Restrict outcomes and models to plot #
@@ -33,17 +33,22 @@ estimates <- estimates %>% filter(!(term == "days_pre"))
 # Restrict to outcomes needed for Table 3
 estimates <- estimates %>% filter(estimates$event %in% c(outcomes_to_plot))
 
-# restrict models
-estimates <- estimates %>% filter(cohort=="prevax") %>%
-                           filter(subgroup %in% c("main_fup4m", "sub_covid_hospitalised_fup4m","sub_covid_nonhospitalised_fup4m") & model=="mdl_max_adj") %>%
-                           select(term,estimate,conf_low,conf_high,event,subgroup,cohort,model,median_follow_up,outcome_name)
+# Remove days_pre
+estimates <- estimates %>% filter(!(term == "days_pre"))
 
+# restrict models
+estimates <- estimates %>% filter(subgroup %in% c("main", "sub_covid_hospitalised","sub_covid_nonhospitalised") & model=="mdl_max_adj") %>%
+  select(term,estimate,conf_low,conf_high,event,subgroup,cohort,model,median_follow_up,outcome_name)
+
+
+#Renaming/creating label variables
 estimates$analysis[estimates$event == "t2dm_extended_follow_up"] <- "Type 2 diabetes - main analysis (Pre-vaccination cohort)"
 estimates$analysis[estimates$event == "t2dm_follow_extended_follow_up"] <- "Type 2 diabetes - still treated after 4 months (Pre-vaccination cohort)"
 
 estimates$subgroup[estimates$subgroup == "main_fup4m"] <- "All COVID-19"
 estimates$subgroup[estimates$subgroup == "sub_covid_hospitalised_fup4m"] <- "Hospitalised COVID-19"
 estimates$subgroup[estimates$subgroup == "sub_covid_nonhospitalised_fup4m"] <- "Non-hospitalised COVID-19"
+
 
 #------------------------------------------#
 # 4. Specify groups and their line colours #

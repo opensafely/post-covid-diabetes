@@ -22,9 +22,9 @@ library(stringr)
 active_analyses <- readr::read_rds("lib/active_analyses.RDS")
 
 # Get data from each cohort ----------------------------------------------------
-table2_pre_vax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_prevax_midpoint6.csv")
-table2_vax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_vax_midpoint6.csv")
-table2_unvax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_unvax_midpoint6.csv")
+table2_pre_vax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_prevax_rounded.csv")
+table2_vax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_vax_rounded.csv")
+table2_unvax <- read.csv("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive/table2_unvax_rounded.csv")
 
 df <-rbind(table2_pre_vax, table2_unvax, table2_vax)
 # tidying prevax outcome names

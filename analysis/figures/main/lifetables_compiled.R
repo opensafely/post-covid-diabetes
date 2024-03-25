@@ -25,8 +25,8 @@ model_output <- model_output[stringr::str_detect(model_output$term, "^days") &
                                model_output$analysis==analysis &
                                model_output$model=="mdl_max_adj" & 
                                model_output$hr!="[Redacted]" & 
-                               ((model_output$outcome=="t2dm_extended_follow_up" & model_ouput$cohort=="prevax") |
-                                (model_output$outcome=="t2dm" & model_ouput$cohort!="prevax")) &
+                               ((model_output$outcome=="t2dm_extended_follow_up" & model_output$cohort=="prevax") |
+                                (model_output$outcome=="t2dm" & model_output$cohort!="prevax")) &
                                   !is.na(model_output$hr),]
 
 # Add start and end for time periods to model output ---------------------------

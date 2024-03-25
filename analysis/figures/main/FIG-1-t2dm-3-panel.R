@@ -81,8 +81,8 @@ main <- ggplot2::ggplot(data=df_main,
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
   ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.50,0.50,conf_low), 
                                                             ymax = ifelse(conf_high>64,64,conf_high),  
-                                                            width = 0), 
-                         position = pd)+   
+                                                            width = 0))+#, 
+  #                       position = pd)+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +

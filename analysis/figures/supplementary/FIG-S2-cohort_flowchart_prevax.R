@@ -6,15 +6,17 @@ library(magrittr)
 
 # DIRECTORIES -------------------------------------------------------------
 
-results_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/descriptive/")
-output_dir <- paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/")
+results_dir <- paste0("/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/descriptive")
+output_dir <- paste0("/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-figures/")
 
 # READ DATA ---------------------------------------------------------------
 
-values <- read.csv(paste0(results_dir,"/","Cohort_flow_prevax_diabetes.csv"))
+values <- read.csv(paste0(results_dir,"/","consort_midpoint6.csv"))
 # calculate N removed with diabetes
-values[11,2] <- values[10,1] - values[11,1]
+#values[11,2] <- values[10,1] - values[11,1]
 values$N_removed <- as.numeric(values$N_removed)
+values$studyN <- as.numeric(values$N_midpoint6)
+
 
 # DEFINE MAIN BOXES -------------------------------------------------------
 
@@ -23,143 +25,132 @@ values$N_removed <- as.numeric(values$N_removed)
 
 study_sample_pre_qa <- boxGrob(glue("Study defined sample size before QA checks",
                                     "N = {pop}",
-                                    pop = txtInt(values[1,1]),
+                                    pop = txtInt(values$studyN[1]),
                                     .sep = "\n"))
 
 # BOX 2
 
 study_sample_post_qa <- boxGrob(glue("Study defined sample size after QA checks",
                                      "N = {pop}",
-                                     pop = txtInt(values[2,1]),
+                                     pop = txtInt(values$studyN[2]),
                                      .sep = "\n"))
 
 # BOX 3
 
 criteria_1 <- boxGrob(glue("Criteria 1 (Inclusion): Alive on the first day of follow up",
                            "N = {pop}",
-                           pop = txtInt(values[3,1]),
+                           pop = txtInt(values$studyN[3]),
                            .sep = "\n"))
 
 # BOX 4
 
 criteria_2a <- boxGrob(glue("Criteria 2a (Inclusion): Aged 18 and over on index date",
                             "N = {pop}",
-                            pop = txtInt(values[4,1]),
+                            pop = txtInt(values$studyN[4]),
                             .sep = "\n"))
 
 # BOX 5
 
 criteria_2b <- boxGrob(glue("Criteria 2b (Inclusion): Aged 110 and under on index date",
                             "N = {pop}",
-                            pop = txtInt(values[5,1]),
+                            pop = txtInt(values$studyN[5]),
                             .sep = "\n"))
 
 # BOX 6
 
 criteria_3 <- boxGrob(glue("Criteria 3 (Inclusion): Known sex",
                            "N = {pop}",
-                           pop = txtInt(values[6,1]),
+                           pop = txtInt(values$studyN[6]),
                            .sep = "\n"))
 
 # BOX 7
 
 criteria_4 <- boxGrob(glue("Criteria 4 (Inclusion): Known deprivation",
                            "N = {pop}",
-                           pop = txtInt(values[7,1]),
+                           pop = txtInt(values$studyN[7]),
                            .sep = "\n"))
 
 # BOX 8
 
 criteria_5 <- boxGrob(glue("Criteria 5 (Inclusion): Registered in an English GP with TPP software for at least 6 months prior to the study start date",
                            "N = {pop}",
-                           pop = txtInt(values[8,1]),
+                           pop = txtInt(values$studyN[8]),
                            .sep = "\n"))
 
 # BOX 9
 
-criteria_6 <- boxGrob(glue("Criteria 6 (Exclusion): Not deregistered from all support practices between index and end of study date",
+criteria_6 <- boxGrob(glue("Criteria 6 (Exclusion): Active registration at index date",
                            "N = {pop}",
-                           pop = txtInt(values[9,1]),
+                           pop = txtInt(values$studyN[9]),
                            .sep = "\n"))
 
 # BOX 10
 
 criteria_7 <- boxGrob(glue("Criteria 7 (Inclusion): Known region",
                            "N = {pop}",
-                           pop = txtInt(values[10,1]),
+                           pop = txtInt(values$studyN[10]),
                            .sep = "\n"))
 
 # BOX 11
 
 criteria_diabetes <- boxGrob(glue("Diabetes specific criteria: Remove those with diabetes prior to study start date",
                                   "N = {pop}",
-                                  pop = txtInt(values[11,1]),
-                                  .sep = "\n"))
-
-# BOX 12
-
-criteria_cov_history <- boxGrob(glue("Remove those with a COVID-19 diagnosis prior to the study start date",
-                                  "N = {pop}",
-                                  pop = txtInt(values[12,1]),
+                                  pop = txtInt(values$studyN[11]),
                                   .sep = "\n"))
 
 
 # DEFINE EXCLUSION BOXES --------------------------------------------------
 
 exclude1 <- boxGrob(glue("Excluded (n = {tot})",
-                         tot = txtInt(values[2,2]),
+                         tot = txtInt(values$N_removed[2]),
                          .sep = "\n"),
                     just = "left")
 
 exclude2 <- boxGrob(glue("Excluded (n = {tot})",
-                         tot = txtInt(values[3,2]),
+                         tot = txtInt(values$N_removed[3]),
                          .sep = "\n"),
                     just = "left")
 
 exclude3 <- boxGrob(glue("Excluded (n = {tot})",
-                         tot = txtInt(values[4,2]),
+                         tot = txtInt(values$N_removed[4]),
                          .sep = "\n"),
                     just = "left")
 
 exclude4 <- boxGrob(glue("Excluded (n = {tot})",
-                         tot = txtInt(values[5,2]),
+                         tot = txtInt(values$N_removed[5]),
                          .sep = "\n"),
                     just = "left")
 
 exclude5 <- boxGrob(glue("Excluded (n = {tot})",
-                         tot = txtInt(values[6,2]),
+                         tot = txtInt(values$N_removed[6]),
                          .sep = "\n"),
                     just = "left")
 
 exclude6 <- boxGrob(glue("Excluded (n = {tot})",
-                         tot = txtInt(values[7,2]),
+                         tot = txtInt(values$N_removed[7]),
                          .sep = "\n"),
                     just = "left")
 
 exclude7 <- boxGrob(glue("Excluded (n = {tot})",
-                         tot = txtInt(values[8,2]),
+                         tot = txtInt(values$N_removed[8]),
                          .sep = "\n"),
                     just = "left")
 
 exclude8 <- boxGrob(glue("Excluded (n = {tot})",
-                         tot = txtInt(values[9,2]),
+                         tot = txtInt(values$N_removed[9]),
                          .sep = "\n"),
                     just = "left")
 
 exclude9 <- boxGrob(glue("Excluded (n = {tot})",
-                         tot = txtInt(values[10,2]),
+                         tot = txtInt(values$N_removed[10]),
                          .sep = "\n"),
                     just = "left")
 
 exclude10 <- boxGrob(glue("Excluded (n = {tot})",
-                         tot = txtInt(values[11,2]),
+                         tot = txtInt(values$N_removed[11]),
                          .sep = "\n"),
                     just = "left")
 
-exclude11 <- boxGrob(glue("Excluded (n = {tot})",
-                          tot = txtInt(values[12,2]),
-                          .sep = "\n"),
-                     just = "left")
 
 # DRAW FLOW ---------------------------------------------------------------
 

@@ -12,8 +12,8 @@ library(grid)
 #---------------------------------------------#
 
 
-results_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/model/"
-output_dir <- "C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-figures/"
+results_dir <- "/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/model/"
+output_dir <- "/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-figures/supplementary/"
 
 #-------------------------#
 # 1. Restrict outcomes and models to plot #
@@ -45,9 +45,9 @@ estimates <- estimates %>% filter(subgroup %in% c("main", "sub_covid_hospitalise
 estimates$analysis[estimates$event == "t2dm_extended_follow_up"] <- "Type 2 diabetes - main analysis (Pre-vaccination cohort)"
 estimates$analysis[estimates$event == "t2dm_follow_extended_follow_up"] <- "Type 2 diabetes - still treated after 4 months (Pre-vaccination cohort)"
 
-estimates$subgroup[estimates$subgroup == "main_fup4m"] <- "All COVID-19"
-estimates$subgroup[estimates$subgroup == "sub_covid_hospitalised_fup4m"] <- "Hospitalised COVID-19"
-estimates$subgroup[estimates$subgroup == "sub_covid_nonhospitalised_fup4m"] <- "Non-hospitalised COVID-19"
+estimates$subgroup[estimates$subgroup == "main"] <- "All COVID-19"
+estimates$subgroup[estimates$subgroup == "sub_covid_hospitalised"] <- "Hospitalised COVID-19"
+estimates$subgroup[estimates$subgroup == "sub_covid_nonhospitalised"] <- "Non-hospitalised COVID-19"
 
 
 #------------------------------------------#
@@ -81,15 +81,15 @@ main <- ggplot2::ggplot(data=df_main,
   #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
   ggplot2::geom_point(aes(),size = 2, position = pd) +
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
-  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
-                                                            ymax = ifelse(conf_high>64,64,conf_high),  
+  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.5,0.5,conf_low), 
+                                                            ymax = ifelse(conf_high>32,32,conf_high),  
                                                             width = 0), 
                          position = pd)+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
-  #ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.25,64), breaks = c(0.25,0.5,1,2,4,8,16,32,64), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.5,32), breaks = c(0.5,1,2,4,8,16,32), trans = "log") +
+  #ggplot2::scale_y_continuous(lim = c(0.25,64), breaks = c(0.25,0.5,1,2,4,8,16,32,64), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$analysis))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$analysis)) +
@@ -123,14 +123,15 @@ hosp <- ggplot2::ggplot(data=df_hosp,
   #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
   ggplot2::geom_point(aes(),size = 2, position = pd) +
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
-  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
-                                                            ymax = ifelse(conf_high>64,64,conf_high),  
-                                                            width = 0))+   
+  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.5,0.5,conf_low), 
+                                                            ymax = ifelse(conf_high>32,32,conf_high),  
+                                                            width = 0), 
+                         position = pd)+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
-  #ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.25,64), breaks = c(0.25,0.5,1,2,4,8,16,32,64), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.5,32), breaks = c(0.5,1,2,4,8,16,32), trans = "log") +
+  #ggplot2::scale_y_continuous(lim = c(0.25,64), breaks = c(0.25,0.5,1,2,4,8,16,32,64), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$analysis))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$analysis)) +
@@ -151,7 +152,7 @@ hosp <- ggplot2::ggplot(data=df_hosp,
   theme(text = element_text(size = 12)) # +
 #  theme(legend.text = element_blank())
 
-# ggplot2::ggsave(paste0(output_dir,"Figure2_covid_pheno_HOSP_all_cohorts_TEST.png"), height = 297, width = 230, unit = "mm", dpi = 600, scale = 1)
+#ggplot2::ggsave(paste0(output_dir,"Supp_Fig6_covid_pheno_HOSP_all_cohorts_TEST.png"), height = 297, width = 230, unit = "mm", dpi = 600, scale = 1)
 
 
 # NON HOSPITALISED --------------------------------------------------------
@@ -166,14 +167,15 @@ non_hosp <- ggplot2::ggplot(data=df_nonhosp,
   #ggplot2::geom_point(position = ggplot2::position_dodge(width = 1)) +
   ggplot2::geom_point(aes(), size = 2, position = pd) +
   ggplot2::geom_hline(mapping = ggplot2::aes(yintercept = 1), colour = "#A9A9A9") +
-  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.25,0.25,conf_low), 
-                                                            ymax = ifelse(conf_high>64,64,conf_high),  
-                                                            width = 0))+   
+  ggplot2::geom_errorbar(size = 1.2, mapping = ggplot2::aes(ymin = ifelse(conf_low<0.5,0.5,conf_low), 
+                                                            ymax = ifelse(conf_high>32,32,conf_high),  
+                                                            width = 0), 
+                         position = pd)+   
   #ggplot2::geom_line(position = ggplot2::position_dodge(width = 1)) + 
   ggplot2::geom_line(position = pd) +
   #ggplot2::scale_y_continuous(lim = c(0.25,8), breaks = c(0.5,1,2,4,8), trans = "log") +
-  #ggplot2::scale_y_continuous(lim = c(0.25,32), breaks = c(0.25,0.5,1,2,4,8,16,32), trans = "log") +
-  ggplot2::scale_y_continuous(lim = c(0.25,64), breaks = c(0.25,0.5,1,2,4,8,16,32,64), trans = "log") +
+  ggplot2::scale_y_continuous(lim = c(0.5,32), breaks = c(0.5,1,2,4,8,16,32), trans = "log") +
+  #ggplot2::scale_y_continuous(lim = c(0.25,64), breaks = c(0.25,0.5,1,2,4,8,16,32,64), trans = "log") +
   ggplot2::scale_x_continuous(lim = c(0,67), breaks = seq(0,64,8)) +
   ggplot2::scale_fill_manual(values = levels(df$colour), labels = levels(df$analysis))+ 
   ggplot2::scale_color_manual(values = levels(df$colour), labels = levels(df$analysis)) +

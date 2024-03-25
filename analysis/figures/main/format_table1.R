@@ -12,6 +12,11 @@ library(tidyverse)
 
 fs::dir_create(here::here("output", "review", "descriptives"))
 
+release <- "/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results"  
+path_table1_prevax <- paste0(release,"descriptive/aer_input-main-rounded.csv")
+
+
+
 ###############################################
 # 1. CLEAN TABLE 1 FUNCTION
 ###############################################

@@ -158,17 +158,6 @@ stage2 <- function(cohort_name, covid_history, group) {
   input$cov_cat_age_group <- ifelse(input$cov_num_age>=80 & input$cov_num_age<=89, "80-89", input$cov_cat_age_group)
   input$cov_cat_age_group <- ifelse(input$cov_num_age>=90, "90+", input$cov_cat_age_group)
   
-  # Define region
-  input$cov_cat_region <- ifelse(active_analyses$strata=="East Midlands", "East Midlands", input$cov_cat_region)
-  input$cov_cat_region <- ifelse(active_analyses$strata=="West Midlands", "West Midlands", input$cov_cat_region)
-  input$cov_cat_region <- ifelse(active_analyses$strata=="South East", "South East", input$cov_cat_region)
-  input$cov_cat_region <- ifelse(active_analyses$strata=="North East", "North East", input$cov_cat_region)
-  input$cov_cat_region <- ifelse(active_analyses$strata=="East", "East", input$cov_cat_region)
-  input$cov_cat_region <- ifelse(active_analyses$strata=="London", "London", input$cov_cat_region)
-  input$cov_cat_region <- ifelse(active_analyses$strata=="North West", "North West", input$cov_cat_region)
-  input$cov_cat_region <- ifelse(active_analyses$strata=="Yorkshire and The Humber", "Yorkshire and The Humber", input$cov_cat_region)
-  input$cov_cat_region <- ifelse(active_analyses$strata=="South West", "South West", input$cov_cat_region)
-
   # Define consultation rate groups
   
   input$cov_cat_consulation_rate_group <- ""

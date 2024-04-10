@@ -158,6 +158,17 @@ stage2 <- function(cohort_name, covid_history, group) {
   input$cov_cat_age_group <- ifelse(input$cov_num_age>=80 & input$cov_num_age<=89, "80-89", input$cov_cat_age_group)
   input$cov_cat_age_group <- ifelse(input$cov_num_age>=90, "90+", input$cov_cat_age_group)
   
+  # Define region
+  input$cov_cat_region <- ifelse(active_analyses$strata=="East Midlands", "East Midlands", input$cov_cat_region)
+  input$cov_cat_region <- ifelse(active_analyses$strata=="West Midlands", "West Midlands", input$cov_cat_region)
+  input$cov_cat_region <- ifelse(active_analyses$strata=="South East", "South East", input$cov_cat_region)
+  input$cov_cat_region <- ifelse(active_analyses$strata=="North East", "North East", input$cov_cat_region)
+  input$cov_cat_region <- ifelse(active_analyses$strata=="East", "East", input$cov_cat_region)
+  input$cov_cat_region <- ifelse(active_analyses$strata=="London", "London", input$cov_cat_region)
+  input$cov_cat_region <- ifelse(active_analyses$strata=="North West", "North West", input$cov_cat_region)
+  input$cov_cat_region <- ifelse(active_analyses$strata=="Yorkshire and The Humber", "Yorkshire and The Humber", input$cov_cat_region)
+  input$cov_cat_region <- ifelse(active_analyses$strata=="South West", "South West", input$cov_cat_region)
+
   # Define consultation rate groups
   
   input$cov_cat_consulation_rate_group <- ""
@@ -185,12 +196,12 @@ stage2 <- function(cohort_name, covid_history, group) {
              cohort==cohort_name &
              outcome %in% c("out_date_t2dm","out_date_t2dm_extended_follow_up"))
   
-  covar_names<-c(str_split(covar_names$covariate_other, ";")[[1]], covar_names$covariate_age, covar_names$covariate_sex, "cov_num_bmi")
-  # ADD NUM BMI BECAUSE IT ISNT LISTED IN ACVTIVE ANALYSES AS A COVARIATE
+  covar_names<-c(str_split(covar_names$covariate_other, ";")[[1]], covar_names$covariate_age, covar_names$covariate_sex, "cov_num_bmi", "cov_cat_region")
+  # ADD NUM BMI AND region BECAUSE IT ISNT LISTED IN ACVTIVE ANALYSES AS A COVARIATE
   
   #categorical_cov <- colnames(input)[grep("cov_cat", colnames(input))]
   categorical_cov <- covar_names[grep("cov_cat", covar_names)]
-  categorical_cov <- append(categorical_cov, c("cov_cat_age_group","cov_cat_consulation_rate_group"))
+  categorical_cov <- append(categorical_cov, c("cov_cat_age_group","cov_cat_consulation_rate_group","cov_cat_region"))
                             
   #numerical_cov <- colnames(input)[grep("cov_num", colnames(input))]
   numerical_cov <- covar_names[grep("cov_num", covar_names)]

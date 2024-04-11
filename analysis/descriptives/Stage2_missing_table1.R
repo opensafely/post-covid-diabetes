@@ -185,12 +185,12 @@ stage2 <- function(cohort_name, covid_history, group) {
              cohort==cohort_name &
              outcome %in% c("out_date_t2dm","out_date_t2dm_extended_follow_up"))
   
-  covar_names<-c(str_split(covar_names$covariate_other, ";")[[1]], covar_names$covariate_age, covar_names$covariate_sex, "cov_num_bmi")
-  # ADD NUM BMI BECAUSE IT ISNT LISTED IN ACVTIVE ANALYSES AS A COVARIATE
+  covar_names<-c(str_split(covar_names$covariate_other, ";")[[1]], covar_names$covariate_age, covar_names$covariate_sex, "cov_num_bmi", "cov_cat_region")
+  # ADD NUM BMI AND region BECAUSE IT ISNT LISTED IN ACVTIVE ANALYSES AS A COVARIATE
   
   #categorical_cov <- colnames(input)[grep("cov_cat", colnames(input))]
   categorical_cov <- covar_names[grep("cov_cat", covar_names)]
-  categorical_cov <- append(categorical_cov, c("cov_cat_age_group","cov_cat_consulation_rate_group"))
+  categorical_cov <- append(categorical_cov, c("cov_cat_age_group","cov_cat_consulation_rate_group","cov_cat_region"))
                             
   #numerical_cov <- colnames(input)[grep("cov_num", colnames(input))]
   numerical_cov <- covar_names[grep("cov_num", covar_names)]

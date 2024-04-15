@@ -10,85 +10,56 @@ library(dplyr)
 library(data.table)
 library(tidyverse)
 
-fs::dir_create(here::here("output", "review", "descriptives"))
+release <- "/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/"  
 
-release <- "/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results"  
-path_table1_prevax <- paste0(release,"descriptive/aer_input-main-rounded.csv")
+# Data
 
+table1_prevax <- read.csv(paste0(release,"descriptive/Table1_prevax_without_covid_history_diabetes.csv"))
+table1_vax <- read.csv(paste0(release,"descriptive/Table1_vax_without_covid_history_diabetes.csv"))
+table1_unvax <- read.csv(paste0(release,"descriptive/Table1_unvax_without_covid_history_diabetes.csv"))
 
+# Additional variables
+cohort_prevax <- "prevax"
+table1_prevax$cohort <- cohort_prevax
+total_prevax <- filter(table1_prevax, Covariate=="All")$Whole_population
+table1_prevax$total <- total_prevax
 
+cohort_vax <- "vax"
+table1_vax$cohort <- cohort_vax
+total_vax <- filter(table1_vax, Covariate=="All")$Whole_population
+table1_vax$total <- total_vax
+
+cohort_unvax <- "unvax"
+table1_unvax$cohort <- cohort_unvax
+total_unvax <- filter(table1_unvax, Covariate=="All")$Whole_population
+table1_unvax$total <- total_unvax
+
+df <- rbind(table1_prevax, table1_vax, table1_unvax)
 ###############################################
-# 1. CLEAN TABLE 1 FUNCTION
-###############################################
+# Calculate column percentages -------------------------------------------------
 
-clean_table_1 <- function(df) {
-  total_n <- df[df$Covariate_level == "All", "Whole_population"]
-  df <- df %>% 
-    mutate_at(c("Whole_population","COVID_exposed","COVID_hospitalised", "COVID_non_hospitalised"), as.numeric) %>%
-    mutate(COVID_risk_per_100k = (COVID_exposed/Whole_population)*100000) %>%
-    # add percentages
-    mutate(perc = (Whole_population / total_n) * 100) %>%
-    mutate(perc = round(perc, digits = 1)) %>%
-    mutate_at(c("Whole_population", "COVID_exposed", "COVID_hospitalised", "COVID_non_hospitalised", "COVID_risk_per_100k"), round, 0) %>%
-    mutate(Whole_population = paste0(format(Whole_population, big.mark = ",", scientific = FALSE), " (", perc, ")")) %>%
-    mutate(COVID_exposed = str_trim(format(COVID_exposed, big.mark = ",", scientific = FALSE)),
-           COVID_risk_per_100k = str_trim(format(COVID_risk_per_100k, big.mark = ",", scientific = FALSE))) %>%
-    mutate("Number diagnosed with COVID-19 (risk per 100,000)" = paste0(COVID_exposed, " (", COVID_risk_per_100k, ")"),
-           "Covariate Level" = Covariate_level,
-           "Whole Population" = Whole_population) %>%
-    dplyr::select("Covariate", "Covariate Level", "Whole Population", "Number diagnosed with COVID-19 (risk per 100,000)") %>%
-    mutate(across(where(is.character), str_trim)) %>%
-    # Tidy mumeric vars
-    mutate(`Number diagnosed with COVID-19 (risk per 100,000)` = ifelse(`Covariate Level` == "Mean",
-                                                                        gsub(r"{\s*\([^\)]+\)}","",as.character(`Number diagnosed with COVID-19 (risk per 100,000)`)),
-                                                                        as.character(`Number diagnosed with COVID-19 (risk per 100,000)`)),
-           `Whole Population` = ifelse(`Covariate Level` == "Mean",
-                                       gsub(r"{\s*\([^\)]+\)}","",as.character(`Whole Population`)),
-                                       as.character(`Whole Population`)))
-}
+df$Npercent <- paste0(df$Whole_population,ifelse(df$Covariate_level=="All","",
+                                      paste0(" (",round(100*(df$Whole_population / df$total),1),"%)")))
 
-# GET OUTCOME GROUPS
+df <- df[,c("Covariate","Covariate_level","Npercent","COVID_exposed", "cohort")]
+colnames(df) <- c("Characteristic","Subcharacteristic","N (%)","COVID-19 diagnoses", "cohort")
 
-active_analyses <- read_rds("lib/active_analyses.rds")
-active_analyses <- active_analyses %>% filter(active == TRUE)
-outcome_groups <- unique(active_analyses$outcome_group)
+# Pivot table ------------------------------------------------------------------
+print("Pivot table")
 
-# only run table 1 for diabetes outcome group - comment this line out if table 1 is needed for all subgroups.
-outcome_groups <- "diabetes"
-# READ IN AND FORMAT THE TABLE 1 FOR EACH OUTCOME GROUP
+df <- tidyr::pivot_wider(df, 
+                         names_from = "cohort",
+                         values_from = c("N (%)","COVID-19 diagnoses"))
 
-for(group in outcome_groups){
-  table1_prevax <- read.csv(paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/descriptive/Table1_prevax_without_covid_history_",group,".csv"))
-  table1_vax <- read.csv(paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/descriptive/Table1_vax_without_covid_history_",group,".csv"))
-  table1_vax <- table1_vax[ order(match(table1_vax$Covariate_level, table1_prevax$Covariate_level)), ]
-  table1_unvax <- read.csv(paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/descriptive/Table1_unvax_without_covid_history_",group,".csv"))
-  
-  table1_prevax_format <- clean_table_1(table1_prevax)
-  table1_vax_format <- clean_table_1(table1_vax)
-  table1_unvax_format <- clean_table_1(table1_unvax)
-  
-  # CONSTRUCT MAIN TABLE 1
-  
-  colnames(table1_prevax_format)[3:4] <- paste(colnames(table1_prevax_format)[3:4], "prevax", sep = "_")
-  colnames(table1_vax_format)[3:4] <- paste(colnames(table1_vax_format)[3:4], "vax", sep = "_")
-  colnames(table1_unvax_format)[3:4] <- paste(colnames(table1_unvax_format)[3:4], "unvax", sep = "_")
-  
-  table1_merged <- full_join(table1_prevax_format, table1_vax_format)
-  table1_merged <- full_join(table1_merged, table1_unvax_format)
-  
-  # RENAME COLUMN NAMES 
-  
-  table1_merged <- table1_merged %>%
-    dplyr::rename("Prevaccination Cohort (1 Jan 2020 to 18 June 2021)" = "Whole Population_prevax",
-                  "Prevaccination N Diagnosed with COVID-19 (risk per 100,000)" = "Number diagnosed with COVID-19 (risk per 100,000)_prevax",
-                  "Vaccinated Cohort (1 June to 14 Dec 2021)" = "Whole Population_vax",
-                  "Vaccinated N Diagnosed with COVID-19 (risk per 100,000)" = "Number diagnosed with COVID-19 (risk per 100,000)_vax",
-                  "Unvaccinated Cohort (1 June to 14 Dec 2021)" = "Whole Population_unvax",
-                  "Unvaccinated N Diagnosed with COVID-19 (risk per 100,000)" = "Number diagnosed with COVID-19 (risk per 100,000)_unvax")
-  
-  
-  
-  # SAVE TABLE 1
-  
-  write.csv(table1_merged, paste0("/Users/kt17109/OneDrive - University of Bristol/Documents - grp-EHR/Projects/post-covid-diabetes/three-cohort-results-v2/generated-figures/Table1_Formatted_Diabetes.csv"), row.names = FALSE)
-}
+# Tidy table -------------------------------------------------------------------
+print("Tidy table")
+
+df <- df[,c("Characteristic","Subcharacteristic",
+            paste0(c("N (%)","COVID-19 diagnoses"),"_prevax"),
+            paste0(c("N (%)","COVID-19 diagnoses"),"_vax"),
+            paste0(c("N (%)","COVID-19 diagnoses"),"_unvax"))]
+
+# Save file=------------------------------------------------------------
+
+write.csv(df, paste0(release, "generated-tables/Table1.csv"), row.names = FALSE)
+

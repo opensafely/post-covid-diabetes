@@ -117,6 +117,8 @@ for (i in 1:nrow(active_analyses)) {
                                  outcome = active_analyses$outcome[i],
                                  unexposed_person_days = sum(unexposed$person_days),
                                  unexposed_events = nrow(unexposed[!is.na(unexposed$out_date),]),
+                                 exposed_person_days = sum(exposed$person_days),
+                                 exposed_events = nrow(exposed[!is.na(exposed$out_date),]),
                                  total_exposed = nrow(exposed),
                                  sample_size = nrow(df))
       

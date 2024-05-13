@@ -27,7 +27,16 @@ analysis <- "main"
 
 active_analyses <- active_analyses[active_analyses$name %in% c("cohort_vax-main-t2dm",
                                                                "cohort_unvax-main-t2dm",
-                                                               "cohort_prevax-main-t2dm_extended_follow_up"),
+                                                               "cohort_prevax-main-t2dm_extended_follow_up"
+                                                               "cohort_vax-main-t1dm",
+                                                               "cohort_unvax-main-t1dm",
+                                                               "cohort_prevax-main-t1dm_extended_follow_up"
+                                                               "cohort_vax-main-gestationaldm",
+                                                               "cohort_unvax-main-gestationaldm",
+                                                               "cohort_prevax-main-gestationaldm_extended_follow_up"
+                                                               "cohort_vax-otherdm-t2dm",
+                                                               "cohort_unvax-otherdm-t2dm",
+                                                               "cohort_prevax-otherdm-t2dm_extended_follow_up"),
                                    c("cohort","outcome","name")]
 
 active_analyses$outcome <- gsub("out_date_","",active_analyses$outcome)
@@ -44,6 +53,8 @@ input <- data.frame(aer_sex = character(),
                     outcome = character(),
                     unexposed_person_days = numeric(),
                     unexposed_events = numeric(),
+                    exposed_person_days = numeric(),
+                    exposed_events = numeric(),
                     total_exposed = numeric(),
                     sample_size = numeric())
 

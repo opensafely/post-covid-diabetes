@@ -660,7 +660,16 @@ actions_list <- splice(
     needs = as.list(paste0("make_model_input-",
                            c("cohort_vax-main-t2dm",
                              "cohort_unvax-main-t2dm",
-                             "cohort_prevax-main-t2dm_extended_follow_up"))),
+                             "cohort_prevax-main-t2dm_extended_follow_up",
+                             "cohort_vax-main-t1dm",
+                             "cohort_unvax-main-t1dm",
+                             "cohort_prevax-main-t1dm_extended_follow_up",
+                             "cohort_vax-main-gestationaldm",
+                             "cohort_unvax-main-gestationaldm",
+                             "cohort_prevax-main-gestationaldm_extended_follow_up",
+                             "cohort_vax-main-otherdm",
+                             "cohort_unvax-main-otherdm",
+                             "cohort_prevax-main-otherdm_extended_follow_up"))),
     moderately_sensitive = list(
       aer_input = glue("output/aer_input-main.csv"),
       aer_input_rounded = glue("output/aer_input-main-rounded.csv")

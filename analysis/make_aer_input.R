@@ -34,9 +34,9 @@ active_analyses <- active_analyses[active_analyses$name %in% c("cohort_vax-main-
                                                                "cohort_vax-main-gestationaldm",
                                                                "cohort_unvax-main-gestationaldm",
                                                                "cohort_prevax-main-gestationaldm_extended_follow_up",
-                                                               "cohort_vax-otherdm-t2dm",
-                                                               "cohort_unvax-otherdm-t2dm",
-                                                               "cohort_prevax-otherdm-t2dm_extended_follow_up"),
+                                                               "cohort_vax-otherdm",
+                                                               "cohort_unvax-otherdm",
+                                                               "cohort_prevax-otherdm_extended_follow_up"),
                                    c("cohort","outcome","name")]
 
 active_analyses$outcome <- gsub("out_date_","",active_analyses$outcome)

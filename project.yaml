@@ -4343,6 +4343,15 @@ actions:
     - make_model_input-cohort_vax-main-t2dm
     - make_model_input-cohort_unvax-main-t2dm
     - make_model_input-cohort_prevax-main-t2dm_extended_follow_up
+    - make_model_input-cohort_vax-main-t1dm
+    - make_model_input-cohort_unvax-main-t1dm
+    - make_model_input-cohort_prevax-main-t1dm_extended_follow_up
+    - make_model_input-cohort_vax-main-gestationaldm
+    - make_model_input-cohort_unvax-main-gestationaldm
+    - make_model_input-cohort_prevax-main-gestationaldm_extended_follow_up
+    - make_model_input-cohort_vax-main-otherdm
+    - make_model_input-cohort_unvax-main-otherdm
+    - make_model_input-cohort_prevax-main-otherdm_extended_follow_up
     outputs:
       moderately_sensitive:
         aer_input: output/aer_input-main.csv

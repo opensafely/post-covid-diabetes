@@ -84,7 +84,7 @@ for (i in 1:nrow(active_analyses)) {
       
       df <- model_input[model_input$cov_cat_sex==sex &
                           model_input$cov_num_age>=as.numeric(min_age) &
-                          model_input$cov_num_age<ifelse(max_age==110,max_age+1,max_age),]
+                          model_input$cov_num_age<=as.numeric(max_age),]
       
       ## Remove exposures and outcomes outside follow-up -----------------------
       print("Remove exposures and outcomes outside follow-up")

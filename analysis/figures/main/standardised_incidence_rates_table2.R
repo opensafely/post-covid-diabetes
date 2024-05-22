@@ -82,3 +82,9 @@ sir <- subset(sir, select = c (outcome, exposure, vax_asir, unvax_asir, prevax_a
 
 table2 <- sir %>% group_by(outcome, exposure) %>%
             summarize (across(vax_asir:prevax_asir, list(sum = sum)))
+
+# Save table -------------------------------------------------------------------
+print("Save table")
+
+table2 = data.frame(lapply(table2, as.character), stringsAsFactors=FALSE)
+write.csv(table2, paste0("C:/Users/rd16568/OneDrive - University of Bristol/grp-EHR/Projects/post-covid-diabetes/results/generated-tables/formatted_Sup_Tab_ASIR.csv"),row.names = F)

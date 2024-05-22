@@ -38,6 +38,8 @@ model_output$time_period_end <- as.numeric(gsub(".*_", "",model_output$term))
 # Load AER input ---------------------------------------------------------------
 print('Load AER input')
 aer_input <- read.csv(paste0(results_dir,"/AER/aer_input-main-rounded.csv"))
+aer_input <- subset(aer_input, select = c(aer_sex, aer_age, analysis, cohort, outcome, unexposed_person_days, unexposed_events, total_exposed, sample_size))
+aer_input <- aer_input[stringr::str_detect(aer_input$outcome, "t2dm"),] # only keeping t2dm
 aer_input$analysis <- paste0("day0_",aer_input$analysis) # To save rerunning aer_input as day0 models use same sample but different analysis names 
 
 # Run AER function -------------------------------------------------------------

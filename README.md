@@ -5,7 +5,7 @@ Abstract:
 You can run this project via [Gitpod](https://gitpod.io) in a web browser by clicking on this badge: [![Gitpod ready-to-code](https://img.shields.io/badge/Gitpod-ready--to--code-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/opensafely/post-covid-vaccinated)
 
 -   The preprint can be found
--   The project protocol which contains in depth details of the analysis plan can be found [`here`](https://uob.sharepoint.com/:w:/r/teams/grp-ehr/_layouts/15/Doc.aspx?sourcedoc=%7BEF4D8C0D-B811-4A56-9A03-030E6A32DCC5%7D&file=post-covid-vaccinated.docx&action=default&mobileredirect=true) (currently restricted access).
+-   The project protocol which contains in depth details of the analysis plan can be found [`here`](./Protocol).
 -   Developers and epidemiologists interested in the framework should review the [`OpenSAFELY documentation`](https://docs.opensafely.org/)
 
 ## Repository navigation
